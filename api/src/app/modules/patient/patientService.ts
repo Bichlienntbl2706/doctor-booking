@@ -1,10 +1,9 @@
 // import {Patient} from '../../../models/Patient.model';
-import {Auth, IAuth } from '../../../models/auth.model';
+import Auth from '../../../models/auth.model';
 import bcrypt from 'bcrypt';
-import { UserRole } from '@prisma/client';
 import ApiError from '../../../errors/apiError';
 import httpStatus from 'http-status';
-import {Patient, IPatient} from '../../../models/Patient.model'
+import Patient from '../../../models/Patient.model'
 
 export const create = async (payload: any): Promise<any> => {
     try {
@@ -21,10 +20,10 @@ export const create = async (payload: any): Promise<any> => {
 
         // Create patient and authentication entry
         const patient = await Patient.create(othersData);
-        const authPayload: Partial<IAuth> = {
+        const authPayload = {
             email: payload.email,
             password: hashedPassword,
-            role: UserRole.patient,
+            role: 'patient',
             userId: payload.userId // Assuming userId is a reference to patient's _id
         };
         const auth = await Auth.create(authPayload);

@@ -2,7 +2,6 @@ import mongoose, {Schema, Document, Types}  from 'mongoose';
 
 
 export interface IMedicine extends Document{
-    id: string;
     prescriptionId: Types.ObjectId;	
     medicine?:string;
     dosage?:string;
@@ -13,7 +12,6 @@ export interface IMedicine extends Document{
 }
 
 const MedicineSchema: Schema = new Schema({
-    id: {type: String},
     prescriptionId: {type: mongoose.Schema.Types.ObjectId, ref: 'Prescription'},
     medicine:{type: String},
     dosage:{type: String},

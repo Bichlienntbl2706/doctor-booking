@@ -16,6 +16,7 @@ export const authApi = baseApi.injectEndpoints({
                     const result = (await queryFulfilled).data;
                     setUserInfo({ accessToken: result.accessToken });
                 } catch (error) {
+                    console.log("cannot login: ", error)
                 }
             },
         }),
@@ -51,9 +52,9 @@ export const authApi = baseApi.injectEndpoints({
 })
 
 export const { 
-    useUserLoginMutation, 
+    useUserLoginMutation,
+    usePatientSignUpMutation, 
     useDoctorSignUpMutation, 
-    usePatientSignUpMutation,
     useResetPasswordMutation, 
     useResetConfirmMutation
 } = authApi

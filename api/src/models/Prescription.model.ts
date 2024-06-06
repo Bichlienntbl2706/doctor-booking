@@ -2,7 +2,6 @@ import mongoose, {Schema, Document, Types}  from 'mongoose';
 
 
 export interface IPrescription extends Document{
-    id: string;
     patientId: Types.ObjectId;
     doctorId: Types.ObjectId;
     appointmentId:Types.ObjectId;
@@ -10,14 +9,13 @@ export interface IPrescription extends Document{
     instruction?:string;
     isFullfilled?:boolean;
     isArchived?:boolean;
-    daignosis?:string;
-    disease?:string;
+    // daignosis?:string;
+    diagnosis?:string;
     createdAt?: Date;  
     updatedAt?: Date;  
 }
 
 const PrescriptionSchema: Schema = new Schema({
-    id: {type: String},
     doctorId: {type: mongoose.Schema.Types.ObjectId, ref: 'Doctor'},
     patientId: {type: mongoose.Schema.Types.ObjectId, ref: 'Patient'},
     appointmentId: {type: mongoose.Schema.Types.ObjectId, ref: 'Appointment'},
@@ -25,8 +23,8 @@ const PrescriptionSchema: Schema = new Schema({
     instruction:{type:String},
     isFullfilled:{type:Boolean},
     isArchived:{type:Boolean},
-    daignosis:{type:String},
-    disease:{type:String},
+    //daignosis:{type:String},
+    diagnosis:{type:String},
     test: {type:String},
 }, { timestamps: true });
 

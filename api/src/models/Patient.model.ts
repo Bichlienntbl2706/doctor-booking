@@ -1,7 +1,6 @@
 import mongoose ,{ Schema, Document } from 'mongoose';
 
 export interface IPatient extends Document{
-    id: string;
     firstName?: string;
     lastName?: string;
     dateOfBirth?: Date;
@@ -20,7 +19,6 @@ export interface IPatient extends Document{
 }
 
 const patientSchema = new Schema({
-    id: { type: String, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     dateOfBirth: { type: Date },
@@ -37,5 +35,5 @@ const patientSchema = new Schema({
   }, { timestamps: true });
 
   const Patient = mongoose.model<IPatient>('Patient', patientSchema)
- export {Patient};
+ export default Patient;
   

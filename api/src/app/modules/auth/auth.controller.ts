@@ -4,15 +4,17 @@ import sendResponse from "../../../shared/sendResponse";
 import { AuthService } from "./auth.service";
 import config from "../../../config";
 import path from 'path';
-import prisma from "../../../shared/prisma";
 import ApiError from "../../../errors/apiError";
 import httpStatus from "http-status";
 import moment from "moment";
+import Doctor from "../../../models/Doctor.model";
+import Patient from "../../../models/Patient.model";
+import Verification from "../../../models/UserVerification.model";
 
 const Login = catchAsync(async (req: Request, res: Response) => {
     const result = await AuthService.loginUser(req.body);
     const { accessToken } = result;
-
+    console.log("result auth controller: ", result)
     const cookieOptions = {
         secure: config.env === 'production',
         httpOnly: true
@@ -36,7 +38,7 @@ const resetPassword = catchAsync(async (req: Request, res: Response) => {
 })
 
 const PasswordResetConfirm = catchAsync(async (req: Request, res: Response) => {
-    const result = await AuthService.PassworResetConfirm(req.body);
+    const result = await AuthService.PasswordResetConfirm(req.body);
     sendResponse(res, {
         statusCode: 200,
         message: 'Successfully Passwrod Changed!!',
@@ -46,46 +48,30 @@ const PasswordResetConfirm = catchAsync(async (req: Request, res: Response) => {
 })
 
 const VerifyUser = catchAsync(async (req: Request, res: Response) => {
-    const { userId } = req.params;
-    const isUserExist = await prisma.doctor.findUnique({
-        where: {
-            id: userId
-        }
-    })
+    const { userId, uniqueString } = req.params;
+    console.log("userid: ", userId);
+    console.log("uniqueString: ", uniqueString);
+
+    let isUserExist = await Doctor.findById(userId);
     if (!isUserExist) {
         throw new ApiError(httpStatus.NOT_FOUND, "User is not found !!");
     }
-    const getVerficationUser = await prisma.userVerfication.findFirst({
-        where: {
-            userId: userId
-        }
-    })
+
+    const getVerficationUser = await Verification.findOne({ userId });
     if (getVerficationUser) {
         const expiresAt = moment(getVerficationUser.expiresAt);
         const currentTime = moment();
-        // check currenttime is before then expires Time
         const isWithinNext6Hours = currentTime.isBefore(expiresAt);
 
         if (isWithinNext6Hours) {
-            await prisma.$transaction(async (tx) => {
-                await tx.doctor.update({
-                    where: {
-                        id: isUserExist.id
-                    },
-                    data: {
-                        verified: true
-                    }
-                });
-                await tx.userVerfication.delete({
-                    where: {
-                        id: getVerficationUser.id
-                    }
-                })
-            })
+            await Doctor.findByIdAndUpdate(isUserExist.id, { verified: true });
+            await Verification.findByIdAndDelete(getVerficationUser.id);
             res.redirect('/api/v1/auth/verified');
         } else {
             res.redirect('/api/v1/auth/expired/link');
         }
+    } else {
+        throw new ApiError(httpStatus.NOT_FOUND, "Verification record not found!!");
     }
 })
 

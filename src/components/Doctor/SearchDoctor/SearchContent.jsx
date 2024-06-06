@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import showImg from '../../../images/specialities/specialities-01.png'
+import showImg from '../../../images/specialities/specialities-01.png';
 import StarRatings from 'react-star-ratings';
 import { Tag } from 'antd';
 import './index.css';
@@ -8,13 +8,27 @@ import { FaLocationArrow, FaRegThumbsUp, FaDollarSign, FaComment } from "react-i
 import { truncate } from '../../../utils/truncate';
 
 const SearchContent = ({ data }) => {
-    const services = data?.services?.split(',')
+    let services = [];
+
+    // Handle different types for data.services
+    if (typeof data?.services === 'string') {
+        services = data.services.split(',');
+    } else if (Array.isArray(data?.services)) {
+        services = data.services; // If services is already an array
+    } else if (typeof data?.services === 'object' && data?.services !== null) {
+        // If services is an object, handle it accordingly (example: convert object values to an array)
+        services = Object.values(data.services);
+    } else {
+        console.error('Unexpected type for data.services:', typeof data.services);
+        services = [];
+    }
+
     return (
         <div className="mb-4 rounded" style={{ background: '#f3f3f3' }}>
             <div className='d-flex p-3 justify-content-between'>
                 <div className='d-flex gap-3'>
                     <div className='doc-img-fluid d-flex align-items-center'>
-                        { data?.img && <img src={data?.img} className="" alt="User Image" />}
+                        {data?.img && <img src={data.img} className="" alt="User Image" />}
                     </div>
                     <div className="doc-info">
                         <h5 className='mb-0'><Link to={`/doctors/profile/${data?.id}`}>Dr. {data?.firstName + ' ' + data?.lastName}</Link></h5>
@@ -53,9 +67,8 @@ const SearchContent = ({ data }) => {
                             </ul>
                         </div>
                         {
-                            services?.map((item, id) => (
+                            services.map((item, id) => (
                                 <Tag key={id + 51}>{item}</Tag>
-
                             ))
                         }
                     </div>
@@ -65,8 +78,8 @@ const SearchContent = ({ data }) => {
                         <ul>
                             <li><FaRegThumbsUp />  97%</li>
                             <li><FaComment /> 4 Feedback</li>
-                            <li><FaLocationArrow />{truncate(data?.clinicAddress, 20)}</li>
-                            <li><FaDollarSign /> {data?.price ? truncate(data?.price, 4) : 60} (Per Hour)</li>
+                            <li><FaLocationArrow />{truncate(data?.clinicAddress || '', 20)}</li>
+                            <li><FaDollarSign /> {data?.price ? truncate(String(data.price), 4) : 60} (Per Hour)</li>
                         </ul>
                     </div>
                     <div className="clinic-booking">
@@ -78,4 +91,5 @@ const SearchContent = ({ data }) => {
         </div>
     )
 }
-export default SearchContent
+
+export default SearchContent;

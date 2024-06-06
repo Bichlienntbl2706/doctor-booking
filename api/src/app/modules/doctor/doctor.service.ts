@@ -15,12 +15,13 @@ import { v4 as uuidv4 } from 'uuid';
 import UserVerificationModel from '../../../models/UserVerification.model';
 import DoctorModel, { IDoctor } from "../../../models/Doctor.model";
 import {DoctorSearchableFields} from './doctor.interface'
+import Auth from '../../../models/auth.model';
 
 const sendVerificationEmail = async (data: IDoctor) => {
     const currentUrl = process.env.NODE_ENV === 'production' ? config.backendLiveUrl : config.backendLocalUrl;
     const uniqueString = uuidv4() + data.id;
     const uniqueStringHashed = await bcrypt.hash(uniqueString, 12);
-    const url = `${currentUrl}user/verify/${data.id}/${uniqueString}`;
+    const url = `${currentUrl}/auth/user/verify/${data.id}/${uniqueString}`;
     const expiresDate = moment().add(6, 'hours');
 
     const verificationData = await UserVerificationModel.create({
@@ -28,7 +29,6 @@ const sendVerificationEmail = async (data: IDoctor) => {
         expiresAt: expiresDate.toDate(),
         uniqueString: uniqueStringHashed
     });
-
     if (verificationData) {
         const pathName = path.join(__dirname, '../../../../template/verify.html');
         const obj = { link: url };
@@ -46,18 +46,28 @@ const sendVerificationEmail = async (data: IDoctor) => {
     }
 }
 
-const create = async (payload: any): Promise<IDoctor> => {
+const create = async (payload: any): Promise<any> => {
     try {
         const { password, ...otherData } = payload;
-        const existEmail = await DoctorModel.findOne({ email: otherData.email });
+        const existEmail = await DoctorModel.findOne({ email: payload.email });
         if (existEmail) {
             throw new ApiError(httpStatus.BAD_REQUEST, "Email already exists!");
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
+
         const doctor = await DoctorModel.create({ ...otherData, password: hashedPassword });
+       
+        const authPayload = {
+            email: payload.email,
+            password: hashedPassword,
+            role: 'doctor',
+            userId: payload.userId // Assuming userId is a reference to doctor's _id
+        };
+        const auth = await Auth.create(authPayload);
+        
         await sendVerificationEmail(doctor);
-        return doctor;
+        return {doctor, auth};
     } catch (error) {
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "error");
     }
@@ -111,14 +121,30 @@ const getAllDoctors = async (filters: IDoctorFilters, options: IOption): Promise
     }
 }
 
-const getDoctor = async (id: string): Promise<IDoctor | null> => {
-    const result = await DoctorModel.findById(id);
-    return result;
+const getDoctor = async (id: string): Promise<any> => {
+    try {
+        const doctor = await DoctorModel.findById(id);
+        if (!doctor) {
+            throw new ApiError(httpStatus.NOT_FOUND, 'Doctor not found');
+        }
+        return doctor;
+    } catch (error) {
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "Can't get doctor");
+    }
 }
 
-const deleteDoctor = async (id: string): Promise<IDoctor | null> => {
-    const result = await DoctorModel.findByIdAndDelete(id);
-    return result;
+const deleteDoctor = async (id: string): Promise<any> => {
+    try{
+        const doctor = await DoctorModel.findByIdAndDelete(id);
+        if(!doctor){
+            throw new ApiError(httpStatus.NOT_FOUND, 'Doctor not found');
+
+        }
+        const authDeletetionResult = await Auth.findByIdAndDelete({email:doctor.email});
+        console.log(authDeletetionResult);
+    }catch(error){
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to delete doctor');
+    }
 }
 
 const updateDoctor = async (req: Request): Promise<IDoctor | null> => {

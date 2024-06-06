@@ -2,7 +2,6 @@
 import mongoose, {Schema, Document,Types} from 'mongoose'
 
 export interface IReview extends Document{
-    id: string;
     patientId: Types.ObjectId;
     doctorId: Types.ObjectId;
     description: string;
@@ -14,7 +13,6 @@ export interface IReview extends Document{
 }
 
 const ReviewSchema = new Schema({
-    id:{type: String},
     doctorId:{type: mongoose.Schema.Types.ObjectId, ref: 'Doctor'},
     patientId:{type: mongoose.Schema.Types.ObjectId, ref: 'Patient'},
     description:	{type: String},

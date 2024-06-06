@@ -16,44 +16,114 @@ import ForgotPassword from '../../../models/ForgotPassword.model';
 
 type ILoginResponse = {
     accessToken?: string;
-    user: {}
+    user: {},
+    // doctorData: {} | null;
 }
 
+// const loginUser = async (user: any): Promise<ILoginResponse> => {
+//     const { email: IEmail, password } = user;
+//     const isUserExist = await Auth.findOne({ email: IEmail });
+
+//     if (!isUserExist) {
+//         throw new ApiError(httpStatus.NOT_FOUND, "User does not exist!");
+//     }
+
+//     if (isUserExist.role === 'doctor') {
+//         const getDoctorInfo = await Doctor.findOne({ email: isUserExist.email });
+//         if (getDoctorInfo && getDoctorInfo.verified === false) {
+//             throw new ApiError(httpStatus.NOT_FOUND, "Please verify your email first!");
+//         }
+//     }
+
+//     if (!password || !isUserExist.password) {
+//         throw new ApiError(httpStatus.NOT_FOUND, "Password is not matched!");
+//     }
+
+//     const isPasswordMatched = await bcrypt.compare(password, isUserExist.password);
+
+//     if (!isPasswordMatched) {
+//         throw new ApiError(httpStatus.NOT_FOUND, "Password is not matched!");
+//     }
+
+//     const { role, _id: userId } = isUserExist;
+//     const accessToken = JwtHelper.createToken(
+//         { role, userId },
+//         config.jwt.secret as string,
+//         config.jwt.JWT_EXPIRES_IN as string
+//     );
+
+//     let doctorData: {} | null = null;
+//     if (isUserExist.role === 'doctor') {
+//         doctorData = await Doctor.findOne({ email: isUserExist.email });
+//     }else if(isUserExist.role === 'patient'){
+//         doctorData = await Patient.findOne({ email: isUserExist.email });
+//     }
+
+//     return { accessToken, user: { role, userId }, doctorData };
+// };
 const loginUser = async (user: any): Promise<ILoginResponse> => {
     const { email: IEmail, password } = user;
+  
     const isUserExist = await Auth.findOne({ email: IEmail });
-
+  
     if (!isUserExist) {
         throw new ApiError(httpStatus.NOT_FOUND, "User does not exist!");
     }
-
-    if (isUserExist.role === 'doctor') {
+  
+    let additionalInfo = {};
+  
+    if (isUserExist.role === "doctor") {
         const getDoctorInfo = await Doctor.findOne({ email: isUserExist.email });
         if (getDoctorInfo && getDoctorInfo.verified === false) {
-            throw new ApiError(httpStatus.NOT_FOUND, "Please verify your email first!");
+            throw new ApiError(
+                httpStatus.BAD_REQUEST,
+                "Please verify your email first!"
+            );
         }
+        if (getDoctorInfo) {
+            additionalInfo = { doctorId: getDoctorInfo._id };
+        }
+        console.log(getDoctorInfo)
+    } else if (isUserExist.role === "patient") {
+        const getPatientInfo = await Patient.findOne({ email: isUserExist.email });
+        if (getPatientInfo) {
+            additionalInfo = { patientId: getPatientInfo._id };
+        }
+        console.log(getPatientInfo)
     }
-
+  
     if (!password || !isUserExist.password) {
-        throw new ApiError(httpStatus.NOT_FOUND, "Password is not matched!");
+        console.error('Password is not provided or does not match!');
+        throw new ApiError(httpStatus.UNAUTHORIZED, "Password is not matched!");
     }
-
-    const isPasswordMatched = await bcrypt.compare(password, isUserExist.password);
-
+  
+    const isPasswordMatched = await bcrypt.compare(
+        password,
+        isUserExist.password
+    );
+  
     if (!isPasswordMatched) {
-        throw new ApiError(httpStatus.NOT_FOUND, "Password is not matched!");
+        console.error('Password does not match!');
+        throw new ApiError(httpStatus.UNAUTHORIZED, "Password is not matched!");
     }
-
+  
+    console.log('Generating access token...');
     const { role, _id: userId } = isUserExist;
     const accessToken = JwtHelper.createToken(
-        { role, userId },
+        { role, userId, ...additionalInfo },
         config.jwt.secret as string,
         config.jwt.JWT_EXPIRES_IN as string
     );
-
-    return { accessToken, user: { role, userId } };
-};
-
+  
+    console.log(accessToken)
+  
+    console.log('Login successful!');
+  
+    return {
+        accessToken,
+        user: { role, userId, ...additionalInfo }
+    };
+  };
 const VerificationUser = async (user: any): Promise<ILoginResponse> => {
     const { email: IEmail, password } = user;
     const isUserExist = await Auth.findOne({ email: IEmail });
@@ -77,8 +147,13 @@ const VerificationUser = async (user: any): Promise<ILoginResponse> => {
         { role, userId },
         config.jwt.secret as string,
         config.jwt.JWT_EXPIRES_IN as string
-    );
-
+    )
+    //msowi được thêm
+    let doctorData: {} | null = null;
+    if (isUserExist.role === 'doctor') {
+        doctorData = await Doctor.findOne({ email: isUserExist.email });
+    }
+    ///mới được thêm
     return { accessToken, user: { role, userId } };
 };
 
@@ -113,7 +188,7 @@ const resetPassword = async (payload: any): Promise<{ message: string }> => {
     const pathName = path.join(__dirname, '../../../../template/resetPassword.html');
     const obj = { link: resetLink };
     const subject = "Request to Reset Password";
-    const toMail: string = isUserExist.email ? isUserExist.email : 'bichlien.27062002.com';
+    const toMail: string = isUserExist.email ? isUserExist.email : 'bichlien.27062002@gmail.com';
 
     try {
         await EmailtTransporter({ pathName, replacementObj: obj, toMail, subject });

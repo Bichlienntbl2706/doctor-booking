@@ -4,7 +4,6 @@ import mongoose,{ Schema, Document }  from 'mongoose';
 const genderEnum = ['male', 'female'];
 
 export interface IDoctor extends Document{
-  id: string;
   firstName?: string;
   lastName?: string;
   email?: string;
@@ -41,7 +40,6 @@ export interface IDoctor extends Document{
     updatedAt?: Date; 
 }
 const doctorSchema = new Schema({
-  id: { type: String, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   email: { type: String, required: true, unique: true },

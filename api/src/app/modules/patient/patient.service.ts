@@ -6,8 +6,8 @@ import { Request } from "express";
 import { CloudinaryHelper } from "../../../helpers/uploadHelper";
 import ApiError from "../../../errors/apiError";
 import httpStatus from "http-status";
-import {Patient, IPatient} from '../../../models/Patient.model'
-import {Auth} from '../../../models/auth.model'
+import Patient, {IPatient} from '../../../models/Patient.model'
+import Auth from '../../../models/auth.model'
 
 const createPatient = async (payload: IPatient): Promise<IPatient> => {
     const result = await create(payload)

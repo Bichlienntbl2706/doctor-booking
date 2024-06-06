@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { PatientService } from "./patient.service";
-import { Patient } from "@prisma/client";
 
 const createPatient = catchAsync(async (req: Request, res: Response) => {
     await PatientService.createPatient(req.body);
@@ -15,7 +14,7 @@ const createPatient = catchAsync(async (req: Request, res: Response) => {
 
 const getAllPatients = catchAsync(async (req: Request, res: Response) => {
     const result = await PatientService.getAllPatients();
-    sendResponse<Patient[]>(res, {
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully Get Patients !!',
         success: true,
@@ -25,7 +24,7 @@ const getAllPatients = catchAsync(async (req: Request, res: Response) => {
 
 const getPatient = catchAsync(async (req: Request, res: Response) => {
     const result = await PatientService.getPatient(req.params.id);
-    sendResponse<Patient>(res, {
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully Get Patient !!',
         success: true,
@@ -35,7 +34,7 @@ const getPatient = catchAsync(async (req: Request, res: Response) => {
 
 const deletePatient = catchAsync(async (req: Request, res: Response) => {
     const result = await PatientService.deletePatient(req.params.id);
-    sendResponse<Patient>(res, {
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully Deleted Patient !!',
         success: true,
@@ -45,7 +44,7 @@ const deletePatient = catchAsync(async (req: Request, res: Response) => {
 
 const updatePatient = catchAsync(async (req: Request, res: Response) => {
     const result = await PatientService.updatePatient(req);
-    sendResponse<Patient>(res, {
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully Updated Patient !!',
         success: true,

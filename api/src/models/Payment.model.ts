@@ -1,7 +1,6 @@
 import mongoose,{ Schema, Document }  from 'mongoose';
 
 interface IPayment extends Document{
-  id: string;
   appointmentId: string;
   paymentMethod?: string;
   paymentType?: string;
@@ -14,7 +13,6 @@ interface IPayment extends Document{
 }
 
 const paymentSchema = new Schema({
-  id: { type: String, required: true },
   appointmentId: {type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', required: true },
   paymentMethod: { type: String, required: true },
   paymentType: { type: String, required: true },

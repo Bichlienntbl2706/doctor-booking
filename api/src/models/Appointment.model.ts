@@ -1,7 +1,6 @@
 import mongoose, {Schema, Document, Types}  from 'mongoose';
 
 interface IAppointment extends Document{
-    id: string;
     patientId: Types.ObjectId;
     doctorId: Types.ObjectId;
     trackingId: string;
@@ -24,7 +23,6 @@ interface IAppointment extends Document{
 }
 
 const appointmentSchema: Schema = new Schema({
-    id: { type: String, required: true },
     patientId: {type: mongoose.Schema.Types.ObjectId, ref: 'Patient'},
     doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
     trackingId: { type: String, unique: true },
