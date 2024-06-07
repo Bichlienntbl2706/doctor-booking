@@ -14,7 +14,6 @@ import Verification from "../../../models/UserVerification.model";
 const Login = catchAsync(async (req: Request, res: Response) => {
     const result = await AuthService.loginUser(req.body);
     const { accessToken } = result;
-    console.log("result auth controller: ", result)
     const cookieOptions = {
         secure: config.env === 'production',
         httpOnly: true

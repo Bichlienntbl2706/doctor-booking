@@ -1,15 +1,16 @@
 import mongoose, {Schema, Document, Types}  from 'mongoose';
 
 export interface IFavourites extends Document{
-    patientId: Types.ObjectId;
-    doctorId: Types.ObjectId;
+    patientId: mongoose.Types.ObjectId;
+    doctorId: mongoose.Types.ObjectId;
 }
 
 const FavouriteSchema: Schema = new Schema({
-    doctorId: {type: mongoose.Schema.Types.ObjectId, ref: 'Doctor'},
-    patientId: {type: mongoose.Schema.Types.ObjectId, ref: 'Patient'}
+    doctorId: {type: mongoose.Types.ObjectId, ref: 'Doctor'},
+    patientId: {type: mongoose.Types.ObjectId, ref: 'Patient'}
 });
 
-const Favourites = mongoose.model('Favourites',FavouriteSchema );
+// const Favourites = mongoose.model<IFavourites>('Favourites',FavouriteSchema );
+const Favourites = mongoose.models.Favourites || mongoose.model<IFavourites>('Favourites', FavouriteSchema);
 
-export { Favourites};
+export default Favourites;

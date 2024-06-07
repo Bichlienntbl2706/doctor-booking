@@ -1,77 +1,73 @@
-// // import { Appointments, Favourites } from "@prisma/client";
-// import prisma from "../../../shared/prisma";
-// import ApiError from "../../../errors/apiError";
-// import httpStatus from "http-status";
-// import Appointment from '../../../models/Appointment.model'
-// import  {Favourites, IFavourites} from '../../../models/Favourites.model'
-// import {Patient} from '../../../models/Patient.model'
 
-// const createFavourite = async (user: any, payload: any): Promise<IFavourites> => {
-//     const isUserExist = await Patient.findById(user.userId);
+import ApiError from "../../../errors/apiError";
+import httpStatus from "http-status";
+import Appointment from '../../../models/Appointment.model';
+import Favourites, {IFavourites } from '../../../models/Favourites.model';
+import Patient from '../../../models/Patient.model';
+import mongoose from 'mongoose';
 
-//     if (!isUserExist) {
-//         throw new ApiError(httpStatus.NOT_FOUND, 'Patient Account is not found !!')
-//     }
+const createFavourite = async (user: any, payload: any): Promise<IFavourites> => {
+    const isUserExist = await Patient.findById(user.userId).exec();
 
-//     //check already have or not
-//     const isFavourite = await Favourites.findOne({
-//         patientId: user.userId,
-//         doctorId: payload.doctorId
-        
-//     });
+    if (!isUserExist) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Patient Account is not found !!');
+    }
 
-//     if (isFavourite) {
-//         throw new ApiError(httpStatus.NOT_FOUND, 'AllReady doctor is Favourite !!')
-//     } else {
+    const isFavourite = await Favourites.findOne({
+        patientId: user.userId,
+        doctorId: payload.doctorId,
+    }).exec();
 
-//         const favourites = await Favourites.create({
-//             doctorId: payload.doctorId,
-//             patientId: isUserExist._id,
-//         });
-//         await favourites.save();
+    if (isFavourite) {
+        throw new ApiError(httpStatus.CONFLICT, 'Already doctor is Favourite !!');
+    }
 
-//         return favourites;
-//     }
-// }
-// const removeFavourite = async (user: any, payload: any): Promise<IFavourites> => {
-//     const isUserExist = await Patient.findById(user.userId);
+    const favourites = new Favourites({
+        doctorId: payload.doctorId,
+        patientId: isUserExist._id,
+    });
 
-//     if (!isUserExist) {
-//         throw new ApiError(httpStatus.NOT_FOUND, 'Patient Account is not found !!');
-//     }
+    await favourites.save();
+    return favourites.toObject() as IFavourites; // Casting to IFavourites
+};
 
-//     const isFavourite = await Favourites.findOne({
-//         doctorId: payload.doctorId,
-//         patientId: user.userId,
-//     });
+const removeFavourite = async (user: any, payload: any): Promise<IFavourites> => {
+    const isUserExist = await Patient.findById(user.userId).exec();
 
-//     if (!isFavourite) {
-//         throw new ApiError(httpStatus.NOT_FOUND, 'Doctor is not in favourites !!');
-//     }
+    if (!isUserExist) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Patient Account is not found !!');
+    }
 
-//     // Xóa mục yêu thích từ cơ sở dữ liệu
-//     const deletedFavourite = await Favourites.findByIdAndDelete(isFavourite._id);
+    const isFavourite = await Favourites.findOne({
+        doctorId: payload.doctorId,
+        patientId: user.userId,
+    }).exec();
 
-//     return deletedFavourite;
-// }
+    if (!isFavourite) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Doctor is not in favourites !!');
+    }
 
-// const getPatientFavourites = async (user: any): Promise<IFavourites[]> => {
-//     const isUserExist = await Patient.findById(user.userId);
+    const deletedFavourite = await Favourites.findByIdAndDelete(isFavourite._id).exec();
 
-//     if (!isUserExist) {
-//         throw new ApiError(httpStatus.NOT_FOUND, 'Patient Account is not found !!');
-//     }
+    return deletedFavourite?.toObject() as IFavourites; // Casting to IFavourites
+};
 
-//     // Tìm kiếm mục yêu thích của bệnh nhân và populate thông tin của bác sĩ liên quan
-//     const favourites = await Favourites.find({ patientId: isUserExist._id }).populate('doctor');
+const getPatientFavourites = async (user: any): Promise<IFavourites[]> => {
+    const isUserExist = await Patient.findById(user.userId).exec();
 
-//     return favourites;
-// }
+    if (!isUserExist) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Patient Account is not found !!');
+    }
 
+    const favourites = await Favourites.find({ patientId: isUserExist._id })
+        .populate('doctor')
+        .exec();
 
+    return favourites.map(fav => fav.toObject() as IFavourites); // Casting to IFavourites[]
+};
 
-// export const FavouritesService = {
-//     createFavourite,
-//     removeFavourite,
-//     getPatientFavourites
-// }
+export const FavouritesService = {
+    createFavourite,
+    removeFavourite,
+    getPatientFavourites,
+};

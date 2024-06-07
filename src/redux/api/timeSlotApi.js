@@ -6,10 +6,10 @@ const TIMELOT_URL = '/timeslot'
 export const timeSlotApi = baseApi.injectEndpoints({
     endpoints: (build) => ({
         createTimeSlot: build.mutation({
-            query: ({ data }) => ({
+            query: (data) => ({
                 url: `${TIMELOT_URL}/create`,
                 method: 'POST',
-                data: data
+                body: data  // Ensure it's 'body' not 'data'
             }),
             invalidatesTags: [tagTypes.timeSlot]
         }),

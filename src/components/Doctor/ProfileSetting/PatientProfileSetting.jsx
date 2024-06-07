@@ -27,7 +27,7 @@ const PatientProfileSetting = () => {
 
     useEffect(() => {
         if (data) {
-            setUserId(data.id)
+            setUserId(data._id)
             setSelectBloodGroup(data?.bloodGroup)
         }
     }, [data]);

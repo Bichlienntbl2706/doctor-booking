@@ -112,7 +112,6 @@ export default function useAuthCheck() {
         const localAuth = getUserInfo();
 
         if (localAuth && localAuth !== null) {
-            console.log(localAuth);
             setUserId(localAuth.userId);
             setRole(localAuth.role);
             if (localAuth.role === 'doctor') {

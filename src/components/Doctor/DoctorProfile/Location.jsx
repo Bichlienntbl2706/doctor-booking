@@ -1,6 +1,6 @@
 import React from 'react'
 import img from '../../../images/chair.png'
-const Location = () => {
+const Location = ({data}) => {
     return (
         <div className="location-list ">
             {
@@ -10,10 +10,10 @@ const Location = () => {
 
                             <div className="col-md-6">
                                 <div className=" clinic-content">
-                                    <h4 className="clinic-name"><a href="#">Smile Cute Dental Care Center</a></h4>
-                                    <p className="doc-speciality">MDS - Periodontology and Oral Implantology, BDS</p>
+                                    <h4 className="clinic-name"><a href="#">{data?.clinicName}</a></h4>
+                                    <p className="doc-speciality">{data?.specialization}</p>
                                     <div className="clinic-details mb-0">
-                                        <h5 className="clinic-direction"> <i className="fas fa-map-marker-alt"></i> 2286  Sundown Lane, Austin, Texas 78749, USA <br /><a>Get Directions</a></h5>
+                                        <h5 className="clinic-direction"> <i className="fas fa-map-marker-alt"></i> {data?.clinicAddress}<br /><a>Get Directions</a></h5>
                                         <ul>
                                             {
                                                 Array(4).fill(null).map((_item, index) => (

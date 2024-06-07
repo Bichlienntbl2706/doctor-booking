@@ -113,7 +113,7 @@ const CheckoutPage = ({ handleChange, selectValue, isCheck, setIsChecked, data, 
 
                 <div className="col-md-5 col-sm-12">
                     <div className="rounded p-3" style={{ background: "#f8f9fa" }}>
-                        {data && <Link to={`/doctors/profile/${data?.id}`} className="booking-doc-img d-flex justify-content-center mb-2">
+                        {data && <Link to={`/doctors/profile/${data?._id}`} className="booking-doc-img d-flex justify-content-center mb-2">
                             <img src={doctorImg} alt="" />
                         </Link>}
                         {data && <div className='doc-title-info mt-3 mb-3'>

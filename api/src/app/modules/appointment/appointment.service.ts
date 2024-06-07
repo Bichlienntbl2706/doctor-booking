@@ -250,9 +250,9 @@ const getPatientPaymentInfo = async (user: any): Promise<any[]> => {
 }
 
 const getDoctorInvoices = async (user: any): Promise<any[] | null> => {
-    const { userId } = user;
+    const { doctorId } = user;
 
-    const isUserExist = await Doctor.findById(userId)
+    const isUserExist = await Doctor.findById(doctorId)
     if (!isUserExist) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Doctor Account is not found !!')
     }
@@ -276,12 +276,11 @@ const updateAppointment = async (id: string, payload: Partial<any>): Promise<any
     return result;
 }
 const getDoctorAppointmentsById = async (user: any, filter: any): Promise<any[] | null> => {
-    const { userId } = user;
-
-    const isDoctor = await Doctor.findById(userId)
+    const { doctorId } = user;
+    const isDoctor = await Doctor.findById(doctorId)
     if (!isDoctor) { throw new ApiError(httpStatus.NOT_FOUND, 'Doctor Account is not found !!') }
 
-    let andCondition: any = { doctorId: userId };
+    let andCondition: any = { doctorId: doctorId };
 
     if (filter.sortBy == 'today') {
         const today = moment().startOf('day').format('YYYY-MM-DD HH:mm:ss');
@@ -311,14 +310,14 @@ const getDoctorAppointmentsById = async (user: any, filter: any): Promise<any[] 
     return result;
 }
 const getDoctorPatients = async (user: any): Promise<any[]> => {
-    const { userId } = user;
-    const isDoctor = await Doctor.findById(userId)
+    const { doctorId } = user;
+    const isDoctor = await Doctor.findById(doctorId)
 
     if (!isDoctor) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Doctor Account is not found !!')
     }
 
-    const appointments = await Appointment.find({ doctorId: userId }).distinct('patientId');
+    const appointments = await Appointment.find({ doctorId: doctorId }).distinct('patientId');
     const patientList = await Patient.find({ _id: { $in: appointments } });
     return patientList;
 }

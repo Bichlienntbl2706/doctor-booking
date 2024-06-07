@@ -1,34 +1,33 @@
 import httpStatus from "http-status";
 import ApiError from "../../../errors/apiError";
-import prisma from "../../../shared/prisma";
-// import { DoctorTimeSlot, ScheduleDay } from "@prisma/client";
 import moment from "moment";
 import Doctor from '../../../models/Doctor.model'
 import mongoose from 'mongoose';
 import {DoctorTimeSlotModel,ScheduleDayModel,IDoctorTimeSlot,IScheduleDay} from '../../../models/DoctorTimeSlot.model'
 
 const createTimeSlot = async (user: any, payload: any): Promise<any | null> => {
-    const { userId } = user;
-    const isDoctor = await Doctor.findById(userId);
+    const { doctorId } = user;
+    console.log("payload: ", payload);
 
-    if (!isDoctor) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Doctor Account is not found !!')
-    }
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
-    
     try {
+        // Check if the doctor exists
+        const isDoctor = await Doctor.findById(doctorId);
+        if (!isDoctor) {
+            throw new ApiError(httpStatus.NOT_FOUND, 'Doctor account not found.');
+        }
+
+        // Check if a timeslot already exists for the day
         const isAlreadyExist = await DoctorTimeSlotModel.findOne({
             doctorId: isDoctor._id,
             day: payload.day
         });
 
         if (isAlreadyExist) {
-            throw new ApiError(404, 'Time Slot Already Exist Please update or try another day');
+            throw new ApiError(httpStatus.CONFLICT, 'Time slot already exists for the selected day. Please update or choose another day.');
         }
 
-        const createTimeSlot = new DoctorTimeSlotModel({
+        // Create a new timeslot document
+        const newTimeSlot = new DoctorTimeSlotModel({
             day: payload.day,
             doctorId: isDoctor._id,
             maximumPatient: payload.maximumPatient,
@@ -39,17 +38,27 @@ const createTimeSlot = async (user: any, payload: any): Promise<any | null> => {
             }))
         });
 
-        await createTimeSlot.save({ session });
+        // Save the new timeslot
+        await newTimeSlot.save();
 
-        await session.commitTransaction();
-        session.endSession();
-        return createTimeSlot;
+        console.log("create time slot: ", newTimeSlot);
+
+        // Return the created timeslot
+        return newTimeSlot;
     } catch (error) {
-        await session.abortTransaction();
-        session.endSession();
-        throw error;
+        // Safe handling of 'unknown' type error
+        if (error instanceof ApiError) {
+            console.error("ApiError creating time slot:", error.message);
+            throw error;
+        } else if (error instanceof Error) {
+            console.error("Error creating time slot:", error.message);
+            throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+        } else {
+            console.error("Unexpected error creating time slot:", error);
+            throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'An unexpected error occurred while creating the timeslot.');
+        }
     }
-}
+};
 
 const deleteTimeSlot = async (id: string): Promise<IDoctorTimeSlot | null> => {
     const result = await DoctorTimeSlotModel.findByIdAndDelete(id);
@@ -62,8 +71,9 @@ const getTimeSlot = async (id: string): Promise<IDoctorTimeSlot | null> => {
 }
 
 const getMyTimeSlot = async (user: any, filter: any): Promise<IDoctorTimeSlot[] | null> => {
-    const { userId } = user;
-    const isDoctor = await Doctor.findById(userId);
+    const { doctorId } = user;
+    // console.log("get my time slot: ",user)
+    const isDoctor = await Doctor.findById(doctorId);
 
     if (!isDoctor) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Doctor Account is not found !!')

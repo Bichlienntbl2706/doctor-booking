@@ -19,7 +19,7 @@ const BookDoctor = () => {
 	const { data, isError, isLoading } = useGetDoctorsQuery({ limit: 10 });
 	const doctors = data?.doctors;
 	const [addFavourite, { isSuccess, isLoading: FIsLoading, isError: fIsError, error }] = useAddFavouriteMutation();
-
+	console.log("data: ", data)
 	const handleAddFavourite = (id) => {
 		addFavourite({ doctorId: id });
 	};
@@ -44,7 +44,7 @@ const BookDoctor = () => {
 					<SwiperSlide key={item.id}>
 						<div className="profile-widget">
 							<div className="doc-img">
-								<Link to={`/doctors/profile/${item?.id}`}>
+								<Link to={`/doctors/profile/${item?._id}`}>
 									{item?.img && <img className="img-fluid" alt="" src={item?.img} />}
 								</Link>
 								<a style={{ cursor: 'pointer' }} className="position-absolute top-0 end-0 me-2" onClick={() => handleAddFavourite(item?.id)}>
@@ -53,7 +53,7 @@ const BookDoctor = () => {
 							</div>
 							<div className="pro-content">
 								<h3 className="title">
-									<Link to={`/doctors/profile/${item?.id}`}>
+									<Link to={`/doctors/profile/${item?._id}`}>
 										<a>{item?.firstName + ' ' + item?.lastName}</a>
 									</Link>
 									<FaCheckCircle className='verified' />
@@ -73,7 +73,7 @@ const BookDoctor = () => {
 								</div>
 								<ul className="available-info">
 									<li>
-										<FaLocationArrow className='icon' /> Georgia, USA
+										<FaLocationArrow className='icon' />{item?.clinicAddress}
 									</li>
 									<li>
 										<FaClock className='icon' /> Available on Fri, 22 Mar
@@ -83,8 +83,8 @@ const BookDoctor = () => {
 									</li>
 								</ul>
 								<div className="d-flex justify-content-between align-items-center">
-									<Link to={`/doctors/profile/${item?.id}`} className="btn  btn-outline-info btn-sm view-profile-btn">Profile</Link>
-									<Link to={`/booking/${item?.id}`} className="btn btn-sm book-btn">Book</Link>
+									<Link to={`/doctors/profile/${item?._id}`} className="btn  btn-outline-info btn-sm view-profile-btn">Profile</Link>
+									<Link to={`/booking/${item?._id}`} className="btn btn-sm book-btn">Book</Link>
 								</div>
 							</div>
 						</div >

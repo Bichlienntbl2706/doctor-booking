@@ -15,22 +15,24 @@ import Availibility from './Availibility';
 
 const DoctorProfile = () => {
     const { id } = useParams();
+    // console.log("id profile doctor: ", id)
     const { data, isLoading, isError } = useGetDoctorQuery(id);
+    // console.log("data profile doctor: ", data)
     let content = null;
     if (!isLoading && isError) content = <div>{message.error('Something went Wrong!')}</div>
-    if (!isLoading && !isError && data?.id === undefined) content = <Empty />
-    if (!isLoading && !isError && data?.id) content = <SearchContent data={data} />
+    if (!isLoading && !isError && data?._id === undefined) content = <Empty />
+    if (!isLoading && !isError && data?._id) content = <SearchContent data={data} />
 
     const items = [
         {
             key: '1',
             label: 'Overview',
-            children: <OverView />,
+            children: <OverView data={data}/>,
         },
         {
             key: '2',
             label: 'Locations',
-            children: <Location />,
+            children: <Location data={data} />,
         },
         {
             key: '3',
