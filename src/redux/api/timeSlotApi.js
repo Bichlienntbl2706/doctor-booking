@@ -9,7 +9,7 @@ export const timeSlotApi = baseApi.injectEndpoints({
             query: (data) => ({
                 url: `${TIMELOT_URL}/create`,
                 method: 'POST',
-                body: data  // Ensure it's 'body' not 'data'
+                data, //truyền data chứ không vào body
             }),
             invalidatesTags: [tagTypes.timeSlot]
         }),
@@ -63,11 +63,11 @@ export const timeSlotApi = baseApi.injectEndpoints({
 })
 
 export const {
+    useCreateTimeSlotMutation,
     useGetAllTimeSlotQuery,
     useDeleteTimeSlotQuery,
     useGetDoctorTimeSlotQuery,
     useGetTimeSlotQuery,
-    useUpdateTimeSlotMutation,
-    useCreateTimeSlotMutation,
-    useGetAppointmentTimeQuery
+    useGetAppointmentTimeQuery,
+    useUpdateTimeSlotMutation
 } = timeSlotApi;

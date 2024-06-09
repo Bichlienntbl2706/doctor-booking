@@ -5,18 +5,16 @@ import Doctor from '../../../models/Doctor.model'
 import mongoose from 'mongoose';
 import {DoctorTimeSlotModel,ScheduleDayModel,IDoctorTimeSlot,IScheduleDay} from '../../../models/DoctorTimeSlot.model'
 
-const createTimeSlot = async (user: any, payload: any): Promise<any | null> => {
-    const { doctorId } = user;
-    console.log("payload: ", payload);
-
+const createTimeSlot = async (payload: any): Promise<any | null> => {
+    const doctorId = payload.doctorId;
+    // console.log("payload: ", payload);
+    // console.log("doctorId: ", doctorId);
     try {
-        // Check if the doctor exists
         const isDoctor = await Doctor.findById(doctorId);
         if (!isDoctor) {
             throw new ApiError(httpStatus.NOT_FOUND, 'Doctor account not found.');
         }
 
-        // Check if a timeslot already exists for the day
         const isAlreadyExist = await DoctorTimeSlotModel.findOne({
             doctorId: isDoctor._id,
             day: payload.day
@@ -26,27 +24,38 @@ const createTimeSlot = async (user: any, payload: any): Promise<any | null> => {
             throw new ApiError(httpStatus.CONFLICT, 'Time slot already exists for the selected day. Please update or choose another day.');
         }
 
-        // Create a new timeslot document
         const newTimeSlot = new DoctorTimeSlotModel({
             day: payload.day,
             doctorId: isDoctor._id,
-            maximumPatient: payload.maximumPatient,
-            weekDay: payload.weekDay,
+            maximumPatient: '10',
+            weekDay: payload.day,
             timeSlot: payload.timeSlot.map((item: any) => ({
                 startTime: item.startTime,
                 endTime: item.endTime
             }))
         });
 
-        // Save the new timeslot
+      
         await newTimeSlot.save();
+
+        if (!Array.isArray(newTimeSlot.timeSlot)) {
+            throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Time slots data structure is invalid.');
+        }
+
+        for (const item of newTimeSlot.timeSlot) {
+            await new ScheduleDayModel({
+                startTime: item.startTime,
+                endTime: item.endTime,
+                doctorTimeSlotId: newTimeSlot._id 
+            }).save();
+        }
 
         console.log("create time slot: ", newTimeSlot);
 
-        // Return the created timeslot
+       
         return newTimeSlot;
     } catch (error) {
-        // Safe handling of 'unknown' type error
+       
         if (error instanceof ApiError) {
             console.error("ApiError creating time slot:", error.message);
             throw error;
@@ -59,6 +68,7 @@ const createTimeSlot = async (user: any, payload: any): Promise<any | null> => {
         }
     }
 };
+
 
 const deleteTimeSlot = async (id: string): Promise<IDoctorTimeSlot | null> => {
     const result = await DoctorTimeSlotModel.findByIdAndDelete(id);
@@ -95,16 +105,22 @@ const getAllTimeSlot = async (): Promise<IDoctorTimeSlot[] | null> => {
     });
     return result;
 }
-const updateTimeSlot = async (user: any, id: string, payload: any): Promise<{ message: string }> => {
-    const { userId } = user;
-    const isDoctor = await Doctor.findById(userId)
+const updateTimeSlot = async (payload: any): Promise<{ message: string }> => {
+    const doctorId = payload.doctorId;
+    const isDoctor = await Doctor.findById(doctorId);
     if (!isDoctor) {
-        throw new ApiError(httpStatus.NOT_FOUND, 'Doctor Account is not found !!')
+        throw new ApiError(httpStatus.NOT_FOUND, 'Doctor Account is not found !!');
     }
-    const { timeSlot, create } = payload;
-
+    const create = payload.create;
+    const timeSlot = payload.timeSlot;
+    
     if (create && create.length > 0) {
-        const doctorTimeSlot = await DoctorTimeSlotModel.findById(create[0].doctorTimeSlotId);
+        const doctorTimeSlotId = create[0].doctorTimeSlotId;
+        console.log("doctorTimeSlotId: ", doctorTimeSlotId);
+        
+        const doctorTimeSlot = await DoctorTimeSlotModel.findById(doctorTimeSlotId);
+        console.log("doctorTimeSlot: ", doctorTimeSlot);
+        
         if (!doctorTimeSlot) {
             throw new ApiError(httpStatus.NOT_FOUND, 'Time Slot is not found !!');
         }
@@ -128,8 +144,7 @@ const updateTimeSlot = async (user: any, id: string, payload: any): Promise<{ me
     }
 
     return { message: 'Successfully Updated' };
-}
-
+};
 const getAppointmentTimeOfEachDoctor = async (id: string, filter: any): Promise<any> => {
     const doctorTimeSlots = await DoctorTimeSlotModel.find({ doctorId: id }).populate('timeSlot');
 

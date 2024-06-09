@@ -9,5 +9,6 @@ router.post('/login', AuthController.Login);
 router.post('/reset-password', AuthController.resetPassword);
 router.post('/reset-password/confirm', AuthController.PasswordResetConfirm);
 router.get('/expired/link', AuthController.VerficationExpired);
+router.patch('/change-password', AuthController.changePassword);
 
 export const AuthRouter = router;

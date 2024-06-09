@@ -6,6 +6,8 @@ import { FaWindowClose, FaPlus } from "react-icons/fa";
 import UseModal from '../../UI/UseModal';
 import TimePicer from '../../UI/form/TimePicer';
 import TabForm from '../../UI/form/TabForm';
+import { toast, ToastContainer } from 'react-toastify';
+import useAuthCheck from '../../../redux/hooks/useAuthCheck';
 
 const Schedule = () => {
     const [key, setKey] = useState('sunday');
@@ -15,12 +17,14 @@ const Schedule = () => {
     const [UpdateTimeSlot, { isError: uIsError, error: uError, isLoading: UIsLoading, isSuccess: uIsSuccess }] = useUpdateTimeSlotMutation();
     const { data, refetch, isLoading, isError } = useGetDoctorTimeSlotQuery({ day: key });
     const [createTimeSlot, { isError: AIsError, error, isLoading: AIsLoading, isSuccess }] = useCreateTimeSlotMutation();
-
+    // const [createTimeSlot] = useCreateTimeSlotMutation();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const showModal = () => { setIsModalOpen(!isModalOpen) };
     const handleCancel = () => { setIsModalOpen(false) };
     const showEditModal = () => { setIsEditModalOpen(!isEditModalOpen) };
+
+    const { doctorId } = useAuthCheck();
 
     const handleEditOk = () => {
         if (editTimeSlot.length > 0) {
@@ -28,11 +32,14 @@ const Schedule = () => {
                 if (cur.doctorTimeSlotId) {
                     acc.toUpdate.push(cur);
                 } else {
-                    acc.toCreate.push({ ...cur, day: key })
+                    acc.toCreate.push({ ...cur, day: key });
                 }
                 return acc;
             }, { toCreate: [], toUpdate: [] });
-            UpdateTimeSlot({ timeSlot: toUpdate, create: toCreate });
+    
+            console.log("time slot update: ", toUpdate);
+            console.log("create update: ", toCreate);
+            UpdateTimeSlot({ timeSlot: toUpdate, create: toCreate, doctorId: doctorId });
         }
         setIsEditModalOpen(UIsLoading ? true : false);
     };
@@ -62,7 +69,8 @@ const Schedule = () => {
 
     const handleEditStartTime = (id, time, timeString) => {
         const findIndex = timeSlot.find(item => item.id === id);
-        const updatedItem = { ...findIndex, startTime: timeString };
+        if (!findIndex) return;
+        const updatedItem = { ...findIndex, startTime: timeString, doctorTimeSlotId: findIndex.doctorTimeSlotId };
         setEditTimeSlot(prev => {
             const indexToUpdate = prev.findIndex(item => item.id === id);
             if (indexToUpdate !== -1) {
@@ -74,58 +82,82 @@ const Schedule = () => {
             }
         });
     };
-
+    
     const handleEditEndTime = (id, time, timeString) => {
         const findObject = timeSlot.find(item => item.id === id);
-        if (findObject) {
-            const editedObject = editTimeSlot.find(item => item.id === id);
-            const updateObject = editedObject.id ? { ...editedObject, endTime: timeString } : { ...findObject, endTime: timeString };
-            setEditTimeSlot(prev => {
-                const findIndex = prev.findIndex(item => item.id === id);
-                if (findIndex !== -1) {
-                    const updateArray = [...prev];
-                    updateArray[findIndex] = updateObject;
-                    return updateArray;
-                } else {
-                    return [...prev, updateObject];
-                }
-            });
-        }
+        if (!findObject) return;
+        const editedObject = editTimeSlot.find(item => item.id === id);
+        const updateObject = editedObject?.id ? { ...editedObject, endTime: timeString, doctorTimeSlotId: editedObject.doctorTimeSlotId } : { ...findObject, endTime: timeString, doctorTimeSlotId: findObject.doctorTimeSlotId };
+        setEditTimeSlot(prev => {
+            const findIndex = prev.findIndex(item => item.id === id);
+            if (findIndex !== -1) {
+                const updateArray = [...prev];
+                updateArray[findIndex] = updateObject;
+                return updateArray;
+            } else {
+                return [...prev, updateObject];
+            }
+        });
     };
 
-    const handleEditCancel = () => { setIsEditModalOpen(!isEditModalOpen) };
+    const handleEditCancel = () => { setIsEditModalOpen(!isEditModalOpen); };
 
     const handleOk = async () => {
         if (!Array.isArray(addTimeSlot) || addTimeSlot.length === 0) {
             message.error('Please add time slots before submitting.');
             return;
         }
-    
-        console.log('Add Time Slot:', addTimeSlot); // Debugging statement
-    
+
         const timeSlot = addTimeSlot.map(item => {
             const { id, ...rest } = item;
             return rest;
         });
-    
+
         const requestData = {
             day: key,
+            doctorId: doctorId, // Sử dụng doctorId đã khai báo từ useAuthCheck hook
             timeSlot: timeSlot
         };
-    
-        console.log('Request Data:', requestData); // Log the request data
-    
+
         try {
             const response = await createTimeSlot(requestData).unwrap();
-            console.log('Time slot created:', response);
-            message.success('Successfully Added Time Slots');
+            setTimeSlot(prevTimeSlots => [...prevTimeSlots, ...requestData.timeSlot]);
+            toast.success('Successfully Added Time Slots');
         } catch (error) {
             console.error('Failed to create time slot:', error);
             message.error('Failed to create time slot');
         }
-    
+
         setIsModalOpen(false);
     };
+    // const handleOk = async () => {
+    //     if (!Array.isArray(addTimeSlot) || addTimeSlot.length === 0) {
+    //         message.error('Please add time slots before submitting.');
+    //         return;
+    //     }
+
+    //     const timeSlot = addTimeSlot.map(item => {
+    //         const { id, ...rest } = item;
+    //         return { ...rest, doctorTimeSlotId: doctorId };
+    //     });
+
+    //     const requestData = {
+    //         day: key,
+    //         doctorId: doctorId,
+    //         timeSlot: timeSlot
+    //     };
+
+    //     try {
+    //         const response = await createTimeSlot(requestData).unwrap();
+    //         setTimeSlot(prevTimeSlots => [...prevTimeSlots, ...requestData.timeSlot]);
+    //         toast.success('Successfully Added Time Slots');
+    //     } catch (error) {
+    //         console.error('Failed to create time slot:', error);
+    //         message.error('Failed to create time slot');
+    //     }
+
+    //     setIsModalOpen(false);
+    // };
 
     useEffect(() => {
         if (!AIsLoading && AIsError) {
@@ -137,11 +169,11 @@ const Schedule = () => {
     }, [isSuccess, AIsError, error?.data?.message, AIsLoading]);
 
     const handleStartTime = (id, time, timeString) => {
-        setAddTimeSlot(prev => (prev.map(item => item.id === id ? { ...item, startTime: timeString } : item)));
+        setAddTimeSlot(prev => (prev.map(item => item.id === id ? { ...item, startTime: timeString, doctorTimeSlotId: doctorId } : item)));
     };
 
     const handleEndTime = (id, time, timeString) => {
-        setAddTimeSlot(prev => prev.map(item => item.id === id ? { ...item, endTime: timeString } : item));
+        setAddTimeSlot(prev => prev.map(item => item.id === id ? { ...item, endTime: timeString, doctorTimeSlotId: doctorId } : item));
     };
 
     const handleOnSelect = (value) => {
@@ -155,7 +187,11 @@ const Schedule = () => {
 
     const addField = (e) => {
         const getLastValue = timeSlot[timeSlot.length - 1];
-        setTimeSlot([...timeSlot, { id: getLastValue.id + 1 }]);
+        if (getLastValue && getLastValue.id) {
+            setTimeSlot([...timeSlot, { id: getLastValue.id + 1, doctorTimeSlotId: doctorId }]);
+        } else {
+            setTimeSlot([...timeSlot, { id: 1, doctorTimeSlotId: doctorId }]);
+        }
         e.preventDefault();
     };
 
@@ -165,9 +201,10 @@ const Schedule = () => {
 
     const addInAddTimeSlot = (e) => {
         const newId = addTimeSlot.length + 1;
-        setAddTimeSlot([...addTimeSlot, { id: newId }]);
+        setAddTimeSlot([...addTimeSlot, { id: newId, doctorTimeSlotId: doctorId }]);
         e.preventDefault();
     };
+
 
     let content = null;
     if (isLoading) content = <div>Loading...</div>;
@@ -194,6 +231,7 @@ const Schedule = () => {
 
     return (
         <>
+        {/* <ToastContainer/> */}
             <DashboardLayout>
                 <div className="w-100 mb-3 rounded p-3" style={{ background: '#f8f9fa', height: '90vh' }}>
                     <h5 className='text-title'>Schedule Timings</h5>

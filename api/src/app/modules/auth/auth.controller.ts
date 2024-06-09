@@ -10,6 +10,7 @@ import moment from "moment";
 import Doctor from "../../../models/Doctor.model";
 import Patient from "../../../models/Patient.model";
 import Verification from "../../../models/UserVerification.model";
+import Auth from '../../../models/auth.model';
 
 const Login = catchAsync(async (req: Request, res: Response) => {
     const result = await AuthService.loginUser(req.body);
@@ -82,11 +83,22 @@ const VerficationExpired = catchAsync(async (req: Request, res: Response) => {
     res.sendFile(path.join(__dirname, "../../../../template/expiredVarification.html"))
 })
 
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+    const result = await AuthService.changePasswordUser(req.body);
+    sendResponse(res, {
+        statusCode: 200,
+        message: 'Successfully Change Passwrod !!',
+        success: true,
+        data: result,
+    })
+  });
+
 export const AuthController = {
     Login,
     VerifyUser,
     Verified,
     VerficationExpired,
     resetPassword,
-    PasswordResetConfirm
+    PasswordResetConfirm,
+    changePassword
 }

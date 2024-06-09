@@ -9,7 +9,7 @@ import ApiError from '../../../errors/apiError';
 import config from '../../../config';
 import { JwtHelper } from '../../../helpers/jwtHelper';
 import { EmailtTransporter } from '../../../helpers/emailTransporter';
-import Auth from '../../../models/auth.model';
+import Auth, {IAuth} from '../../../models/auth.model';
 import Doctor from '../../../models/Doctor.model';
 import Patient from '../../../models/Patient.model';
 import ForgotPassword from '../../../models/ForgotPassword.model';
@@ -190,9 +190,40 @@ const PasswordResetConfirm = async (payload: any): Promise<{ message: string }> 
     return { message: "Password changed successfully!" };
 };
 
+const changePasswordUser = async (payload: any): Promise<any> => {
+    try{
+        const checkUsers = await Auth.findById({_id: payload.userId});
+        if (!checkUsers) {
+            throw new Error('User not found');
+        }
+
+        if (!checkUsers.password) {
+            throw new Error('User does not have a password set');
+        }
+
+        const isMatch = await bcrypt.compare(payload.oldPassword, checkUsers.password);
+        console.log(isMatch);
+
+        if (!isMatch) {
+            throw new Error('Old password is incorrect');
+        }
+
+        const hashedNewPassword = await bcrypt.hash(payload.newPassword, 10);
+
+        checkUsers.password = hashedNewPassword;
+        await checkUsers.save();
+  
+         return { message: 'Successfully Updated' };
+    }catch (err) {
+        throw err
+    }
+       
+};
+
 export const AuthService = {
     loginUser,
     VerificationUser,
     resetPassword,
-    PasswordResetConfirm
+    PasswordResetConfirm,
+    changePasswordUser
 };

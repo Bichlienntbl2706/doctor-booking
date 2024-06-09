@@ -5,10 +5,9 @@ import { TimeSlotService } from "./doctorTimeSlot.service";
 import { IDoctorTimeSlot } from "../../../models/DoctorTimeSlot.model";
 
 const createTimeSlot = catchAsync(async (req: Request, res: Response) => {
-    console.log("create time slot controller: ", req.body);
-    console.log("create time slot controller user : ", req.user);
-    const result = await TimeSlotService.createTimeSlot(req.user, req.body);
-    console.log("result time slot: ", result);
+    console.log("create time slot controller body: ", req.body);
+    const result = await TimeSlotService.createTimeSlot( req.body);
+   
     sendResponse(res, {
         statusCode: 200,
         message: 'Successfully created Time Slot !!',
@@ -16,6 +15,7 @@ const createTimeSlot = catchAsync(async (req: Request, res: Response) => {
         data: result
     });
 });
+
 
 const getAllTimeSlot = catchAsync(async (req: Request, res: Response) => {
     const result = await TimeSlotService.getAllTimeSlot();
@@ -48,8 +48,8 @@ const getTimeSlot = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateTimeSlot = catchAsync(async (req: Request, res: Response) => {
-    await TimeSlotService.updateTimeSlot(req.user, req.params.id, req.body);
-    sendResponse<IDoctorTimeSlot>(res, {
+    await TimeSlotService.updateTimeSlot(req.body);
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully updated Time Slot !!',
         success: true,
