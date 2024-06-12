@@ -7,8 +7,7 @@ import {DoctorTimeSlotModel,ScheduleDayModel,IDoctorTimeSlot,IScheduleDay} from 
 
 const createTimeSlot = async (payload: any): Promise<any | null> => {
     const doctorId = payload.doctorId;
-    // console.log("payload: ", payload);
-    // console.log("doctorId: ", doctorId);
+ ;
     try {
         const isDoctor = await Doctor.findById(doctorId);
         if (!isDoctor) {
@@ -75,8 +74,9 @@ const deleteTimeSlot = async (id: string): Promise<IDoctorTimeSlot | null> => {
     return result;
 }
 
-const getTimeSlot = async (id: string): Promise<IDoctorTimeSlot | null> => {
-    const result = await DoctorTimeSlotModel.findById(id).populate('timeSlot');
+const getTimeSlot = async (id: string): Promise<IDoctorTimeSlot[] | null> => {
+    const result = await DoctorTimeSlotModel.find({doctorId: id}).populate('timeSlot');
+    console.log("result:  ", result);
     return result;
 }
 
@@ -94,7 +94,12 @@ const getMyTimeSlot = async (user: any, filter: any): Promise<IDoctorTimeSlot[] 
         conditions.day = filter.day;
     }
 
-    const result = await DoctorTimeSlotModel.find(conditions).populate('timeSlot');
+    const result = await DoctorTimeSlotModel.find(conditions)
+    .select('_id')
+    .populate({
+        path: 'timeSlot',
+        select: '_id' // Chọn các trường bạn muốn lấy
+    });
     return result;
 }
 
@@ -107,6 +112,7 @@ const getAllTimeSlot = async (): Promise<IDoctorTimeSlot[] | null> => {
 }
 const updateTimeSlot = async (payload: any): Promise<{ message: string }> => {
     const doctorId = payload.doctorId;
+    // console.log("payload update time slot: ",payload)
     const isDoctor = await Doctor.findById(doctorId);
     if (!isDoctor) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Doctor Account is not found !!');
@@ -135,12 +141,24 @@ const updateTimeSlot = async (payload: any): Promise<{ message: string }> => {
     }
 
     if (timeSlot && timeSlot.length > 0) {
+        console.log("time slot: " , timeSlot)
         for (const item of timeSlot) {
-            await ScheduleDayModel.updateMany({ _id: item._id }, {
+            await ScheduleDayModel.updateMany({ doctorTimeSlotId: item.doctorTimeSlotId }, {
                 startTime: item.startTime,
                 endTime: item.endTime
             });
+            await DoctorTimeSlotModel.updateOne(
+                { _id: item.doctorTimeSlotId },
+                {
+                    $set: {
+                        'timeSlot.$[elem].startTime': item.startTime,
+                        'timeSlot.$[elem].endTime': item.endTime
+                    }
+                }
+            );
+
         }
+
     }
 
     return { message: 'Successfully Updated' };

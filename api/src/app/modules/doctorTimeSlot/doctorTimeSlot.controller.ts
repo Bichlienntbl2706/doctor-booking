@@ -31,7 +31,7 @@ const getMyTimeSlot = catchAsync(async (req: Request, res: Response) => {
     const result = await TimeSlotService.getMyTimeSlot(req.user, req.query);
     sendResponse<IDoctorTimeSlot[]>(res, {
         statusCode: 200,
-        message: 'Successfully  get all Time Slot !!',
+        message: 'Successfully get all Time Slot !!',
         success: true,
         data: result
     });
@@ -39,6 +39,7 @@ const getMyTimeSlot = catchAsync(async (req: Request, res: Response) => {
 
 const getTimeSlot = catchAsync(async (req: Request, res: Response) => {
     const result = await TimeSlotService.getTimeSlot(req.params.id);
+    console.log("get time slot: ",req.params.id);
     sendResponse<IDoctorTimeSlot>(res, {
         statusCode: 200,
         message: 'Successfully get Time Slot !!',

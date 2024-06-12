@@ -63,7 +63,10 @@ const ChangePassword = () => {
       toast.error('Password does not meet the validation criteria');
       return;
     }
-    if (user.newPassword !== user.confirmPassword) {
+    if (user.newPassword === user.oldPassword) {
+      toast.error('The new password must not be the same as the old password');
+    } 
+    else if (user.newPassword !== user.confirmPassword) {
       toast.error('Passwords do not match');
     } else {
       try {

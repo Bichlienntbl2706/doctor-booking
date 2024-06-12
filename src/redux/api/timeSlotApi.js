@@ -25,7 +25,7 @@ export const timeSlotApi = baseApi.injectEndpoints({
                 url: `${TIMELOT_URL}/${id}`,
                 method: 'GET'
             }),
-            providesTags: [tagTypes.timeSlot]
+            providesTags: (result, error, id) => [{ type: tagTypes.timeSlot, id }]
         }),
         getAppointmentTime: build.query({
             query: ({ day, id }) => ({

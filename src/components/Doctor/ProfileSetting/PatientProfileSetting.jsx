@@ -60,6 +60,7 @@ const PatientProfileSetting = () => {
         updatePatient({ data: formData, id: userId })
     };
 
+
     return (
         <div style={{ marginBottom: '10rem' }}>
             <div className="w-100 mb-3 rounded mb-5 p-2" style={{ background: '#f8f9fa' }}>
@@ -100,7 +101,7 @@ const PatientProfileSetting = () => {
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Date of Birth {moment(data?.dateOfBirth).format('LL')}</label>
-                            <DatePicker onChange={onChange} format={"YYYY-MM-DD"} style={{ width: '100%', padding: '6px' }} />
+                            <DatePicker  onChange={onChange} format={"YYYY-MM-DD"} style={{ width: '100%', padding: '6px' }} />
                         </div>
                     </div>
 
@@ -115,9 +116,9 @@ const PatientProfileSetting = () => {
                             <label>Gender</label>
                             <select className="form-control select" onChange={handleChange} name='gender'>
                                 <option value={''}>Select</option>
-                                <option className='text-capitalize'>male</option>
-                                <option className='text-capitalize'>female</option>
-                                <option className='text-capitalize'>shemale</option>
+                                <option className='text-capitalize'>Male</option>
+                                <option className='text-capitalize'>Female</option>
+                                <option className='text-capitalize'>Other</option>
                             </select>
                         </div>
                     </div>

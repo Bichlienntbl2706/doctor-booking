@@ -11,9 +11,9 @@ import './index.css';
 const PatientFavouriteDoctor = () => {
     const { data, isLoading, isError } = useGetFavouriteQuery();
     const [removeFavourite, { isLoading: FIsLoading, isError: fIsError, error: fError, isSuccess }] = useRemoveFavouriteMutation();
-
-    const handleRemoveFavourite = (id) => {
-        removeFavourite({ doctorId: id });
+console.log("data favorited: ", data)
+    const handleRemoveFavourite = (doctorId) => {
+        removeFavourite({ doctorId });
     };
 
     useEffect(() => {
@@ -34,20 +34,20 @@ const PatientFavouriteDoctor = () => {
                 <div className="col-md-4 col-sm-12 mb-4 mx-2 rounded shadow-sm" key={item?.id} style={{ background: '#f8f9fa', maxWidth: '20rem' }}>
                     <div className='rounded position-relative'>
                         <div className='fav-img my-3 d-flex justify-content-center'>
-                            <img alt="" src={img} />
+                            <img alt="" src={item?.doctorId?.img} />
                         </div>
-                        <div style={{ cursor: 'pointer' }} className="m-2 text-success position-absolute top-0 end-0 me-2" onClick={() => handleRemoveFavourite(item?.doctor?.id)}>
+                        <div style={{ cursor: 'pointer' }} className="m-2 text-success position-absolute top-0 end-0 me-2" onClick={() => handleRemoveFavourite(item?.doctorId?._id)}>
                             <FaBookmark />
                         </div>
 
                         <div className='p-2'>
                             <h5 className="d-flex align-items-center gap-2 mb-0" style={{ color: '#1977cc' }}>
-                                <Link to={`/doctors/profile/${item?.doctor?.id}`}>
-                                    {item?.doctor?.firstName + ' ' + item?.doctor?.lastName}
+                                <Link to={`/doctors/profile/${item?.doctorId?._id}`}>
+                                    {item?.doctorId?.firstName + ' ' + item?.doctorId?.lastName}
                                 </Link>
                                 <FaCheckCircle className='verified text-success' />
                             </h5>
-                            <p className="form-text">MBBS, MD - General Medicine, DNB - Cardiology</p>
+                            <p className="form-text">{item?.doctorId?.specialization}</p>
                             <div className="w-100 d-flex align-items-center">
                                 <StarRatings
                                     rating={5}
@@ -62,18 +62,18 @@ const PatientFavouriteDoctor = () => {
                             </div>
                             <ul className="available-info">
                                 <li>
-                                    <FaLocationArrow className='icon' /> Georgia, USA
+                                    <FaLocationArrow className='icon' />{item?.doctorId?.clinicAddress}
                                 </li>
                                 <li>
                                     <FaClock className='icon' /> Available on Fri, 22 Mar
                                 </li>
                                 <li>
-                                    <FaDollarSign className='icon' /> $100 - $400
+                                    <FaDollarSign className='icon' /> ${item?.doctorId?.price}
                                 </li>
                             </ul>
                             <div className="d-flex justify-content-between mb-3 mt-2">
-                                <Link to={'/doctors/profile'} className="btn  btn-outline-info" style={{ borderColor: '#1977cc', color: '#1977cc' }}>Profile</Link>
-                                <Link to={`/booking/${item?.doctor?.id}`} className="btn book-btn" style={{ backgroundColor: '#1977cc' }}>Book Now</Link>
+                                <Link to={`/doctors/profile/${item?.doctorId?._id}`} className="btn  btn-outline-info" style={{ borderColor: '#1977cc', color: '#1977cc' }}>Profile</Link>
+                                <Link to={`/booking/${item?.doctorId?._id}`} className="btn book-btn" style={{ backgroundColor: '#1977cc' }}>Book Now</Link>
                             </div>
                         </div>
                     </div>

@@ -16,8 +16,8 @@ const SearchSidebar = ({ setSearchTerm, setSorByGender, setSpecialist, setPriceR
       value: 'female',
     },
     {
-      label: 'Shemale',
-      value: 'shemale',
+      label: 'Other',
+      value: 'other',
     },
   ];
   const onSelectGender = (e) => setSorByGender(e.target.value)
@@ -61,7 +61,7 @@ const SearchSidebar = ({ setSearchTerm, setSorByGender, setSpecialist, setPriceR
 
         <div className='mb-3'>
           <h6 style={{ color: '#05335c' }}>Price Range</h6>
-          <Slider range defaultValue={[75, 150]} onChange={onRangeChange} />
+          <Slider range defaultValue={[50, 150]} onChange={onRangeChange} />
         </div>
 
         <div className='mb-3'>

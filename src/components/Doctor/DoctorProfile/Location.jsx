@@ -4,7 +4,7 @@ const Location = ({data}) => {
     return (
         <div className="location-list ">
             {
-                Array(2).fill(null).map((_item, index) => (
+                Array(1).fill(null).map((_item, index) => (
                     <div className='card shadow p-3 border-0 mb-3'>
                         <div className="row">
 
@@ -40,6 +40,7 @@ const Location = ({data}) => {
                                             <span>4:00 PM - 9:00 PM</span>
                                         </p>
                                     </div>
+
                                     <div>
                                         <p className="timings-days">
                                             <span>Sun</span>
@@ -53,7 +54,7 @@ const Location = ({data}) => {
 
                             <div className="col-md-2">
                                 <div className="consult-price">
-                                    $250
+                                    ${data?.price}
                                 </div>
                             </div>
                         </div>

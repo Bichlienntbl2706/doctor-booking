@@ -32,7 +32,7 @@ const DoctorProfile = () => {
         {
             key: '2',
             label: 'Locations',
-            children: <Location data={data} />,
+            children: <Location data={data} doctorId={id} />,
         },
         {
             key: '3',
@@ -42,7 +42,7 @@ const DoctorProfile = () => {
         {
             key: '4',
             label: 'Availability',
-            children: <Availibility />,
+            children: <Availibility doctorId={id} />,
         },
     ];
 

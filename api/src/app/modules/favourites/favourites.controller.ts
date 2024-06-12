@@ -7,7 +7,7 @@ import { IFavourites } from "../../../models/Favourites.model";
 
 const addFavourite = catchAsync(async (req: Request, res: Response) => {
     const result = await FavouritesService.createFavourite(req.user, req.body);
-    sendResponse<IFavourites>(res, {
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully Add Favourite !!',
         success: true,
