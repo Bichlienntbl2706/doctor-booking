@@ -6,7 +6,7 @@ import DashboardPage from './doctor/DashboardPage';
 import PatientDashboard from './PatientDashboard';
 
 const Dashboard = () => {
-    const { role, refetch } = useAuthCheck();
+    const { role } = useAuthCheck();
     return (
         <>
             <DashboardLayout>

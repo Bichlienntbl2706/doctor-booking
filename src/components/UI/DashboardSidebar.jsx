@@ -1,7 +1,7 @@
-import React from 'react';
+import React,{ useEffect, useState } from 'react';
 import img from '../../images/avatar.jpg';
 import './DashboardSidebar.css';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import useAuthCheck from '../../redux/hooks/useAuthCheck';
 import moment from 'moment';
 import {
@@ -14,14 +14,23 @@ import {
     FaLock,
     FaHouseUser
 } from "react-icons/fa";
+import { loggedOut } from '../../service/auth.service';
+import { Button, message } from 'antd';
 
 const DashboardSidebar = () => {
+    const [isLoggedIn, setIsLogged] = useState(false);
     const { data, role } = useAuthCheck();
+    const navigate = useNavigate();
 
     const calculateAge = (dob) => {
         return moment().diff(moment(dob), 'years');
     };
-
+    const hanldeSignOut = () => {
+        loggedOut();
+        message.success("Successfully Logged Out")
+        setIsLogged(false)
+        navigate('/')
+    }
     const formattedDateOfBirth = data?.dateOfBirth ? moment(data.dateOfBirth).format('DD MMM YYYY') : '';
     const age = data?.dateOfBirth ? calculateAge(data.dateOfBirth) : '';
     const fullAddress = `${data?.address || ''}, ${data?.city || ''}, ${data?.country || ''}`.replace(/(, )+/g, ', ').replace(/^, |, $/g, '');
@@ -160,7 +169,7 @@ const DashboardSidebar = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to={'/'}>
+                                <NavLink to={'/'}  onClick={hanldeSignOut}>
                                     <FaSignOutAlt className="icon" end />
                                     <span>Logout</span>
                                 </NavLink>
