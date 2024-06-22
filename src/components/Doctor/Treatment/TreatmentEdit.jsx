@@ -15,6 +15,7 @@ import { useGetPrescriptionQuery, useUpdatePrescriptionAndAppointmentMutation } 
 import { useCreateMedicineMutation, useDeleteMedicineMutation, useUpdateMedicineMutation } from "../../../redux/api/medicineApi";
 import { useMessageEffect } from "../../../utils/messageSideEffect";
 import TreatmentOverview from "./TreatmentOverview";
+import useAuthCheck from "../../../redux/hooks/useAuthCheck";
 
 const TreatmentEdit = () => {
     const [createMedicine, { isLoading: createLoading, isSuccess, isError, error }] = useCreateMedicineMutation();
@@ -24,12 +25,12 @@ const TreatmentEdit = () => {
     
     const { id } = useParams();
     const navigate = useNavigate();
-    const { data, isLoading } = useGetPrescriptionQuery(id);
+    const { data, isLoading, refetch } = useGetPrescriptionQuery(id);
     const [isReadyData, setIsReadyData] = useState(false);
     const { handleSubmit } = useForm();
     const [selectAppointmentStatus, setSelectAppointmentStatus] = useState('');
     const [patientStatus, setPatientStatus] = useState('');
-    const [daignosis, setDaignosis] = useState([]);
+    const [diagnosis, setDaignosis] = useState([]);
     const [disease, setDisease] = useState([]);
     const [medicalCheckup, setMedicalCheckup] = useState([]);
     const [instruction, setInstruction] = useState('');
@@ -38,10 +39,11 @@ const TreatmentEdit = () => {
     const [addMedicine, setAddMedicine] = useState([]);
     const [nextId, setNextId] = useState(1)
 
-    const defaultDaignosis = data?.daignosis.split(',');
+    const defaultDaignosis = data?.diagnosis.split(',');
     const defaultDisease = data?.disease.split(',');
     const defatulTests = data?.test.split(',');
-
+console.log("data treate edit: ", data)
+    const {doctorId} = useAuthCheck();
     const addField = (e) => {
         e.preventDefault();
         setAddMedicine([...addMedicine, { id: nextId + 1 }])
@@ -54,43 +56,64 @@ const TreatmentEdit = () => {
 
     const removeFromOldMedicineList = (id) => {
         setMedicineList(medicineList.filter((item) => item.id !== id))
-        deleteMedicine(id);
+        deleteMedicine(id).then(() => refetch());
     }
 
-    const handleFollowUpChange = (date) => {
-        if (date) {
-            setFollowUpdate(dayjs(date).format());
-        }
-    };
+    // const handleFollowUpChange = (date) => {
+    //     if (date) {
+    //         setFollowUpdate(dayjs(date).format());
+    //     }
+    // };
 
     const onSubmit = (data) => {
         const obj = {};
         obj.status = selectAppointmentStatus;
         obj.patientType = patientStatus;
-
-        daignosis.length && (obj["daignosis"] = daignosis.join(','))
-        disease.length && (obj["disease"] = disease.join(','))
-        medicalCheckup.length && (obj["test"] = medicalCheckup.join(','))
+    
+        // Chuyển đổi các mảng thành chuỗi (nếu cần)
+        diagnosis.length && (obj["diagnosis"] = diagnosis.join(','));
+        disease.length && (obj["disease"] = disease.join(','));
+        medicalCheckup.length && (obj["test"] = medicalCheckup.join(','));
         obj.followUpdate = followUpDate;
         obj.instruction = instruction;
-        obj.prescriptionId = id;
-
-        const filteredData = Object.fromEntries(Object.entries(obj).filter(([key, value]) => value !== ''))
-        updatePrescriptionAndAppointment({...filteredData});
+        obj.prescriptionId = id; // ID của prescription
+    
+        // Thu thập danh sách các ID của các thuốc mới
+        const newMedicineIds = addMedicine.map(med => med.id);
+        console.log("new medicine: ",newMedicineIds)
+    
+        // Gửi yêu cầu cập nhật prescription và appointment
+        const filteredData = Object.fromEntries(Object.entries(obj).filter(([key, value]) => value !== ''));
+        updatePrescriptionAndAppointment({ ...filteredData, doctorId, medicine: newMedicineIds }).then(() => refetch());
     }
 
     const handleUpdateMedicine = (id) => {
-        const findData = medicineList.find((item) => item.id === id);
-        updateMedicine(findData);
+        const findData = medicineList.find((item) => item._id === id);
+        console.log("handle update medicine: ",findData)
+        if (findData) {
+            updateMedicine(findData).then(() => refetch())
+        }
     }
 
     const handleAddMedicine = () => {
-        const updateNewMedicine = addMedicine.map((item) => {
+        const newMedicines = addMedicine.map((item) => {
             return {
-                ...item, prescriptionId: id
+                ...item,
+                prescriptionId: id
             }
         });
-        createMedicine(updateNewMedicine);
+    
+        // Lưu lại ID mới của thuốc trong state
+        setAddMedicine([]);
+    
+        // Gửi yêu cầu tạo mới thuốc với danh sách ID mới
+        createMedicine(newMedicines)
+            .then(response => {
+                refetch();
+            })
+            .catch(error => {
+                console.log('Create error: ', error);
+            });
     }
 
     // Side Effect
@@ -99,9 +122,9 @@ const TreatmentEdit = () => {
             setIsReadyData(true);
             setMedicineList(data?.medicines)
         }
-        if(presIsSuccess){
-            navigate('/dashboard/prescription')
-        }
+        // if(presIsSuccess){
+        //     navigate('/dashboard/prescription')
+        // }
     }, [data, presIsSuccess])
     useMessageEffect(presIsloading, presIsSuccess, presIsError, presError, 'Successfully Prescription Updated!');
     useMessageEffect(deleteIsloading, deleteIsSuccess, deleteIsError, deleteError, 'Successfully Medicine deleted!');
@@ -127,7 +150,7 @@ const TreatmentEdit = () => {
                                     showSearch={true}
                                     options={appointemntStatusOption}
                                     setSelectData={setSelectAppointmentStatus}
-                                    defaultValue={data?.appointment?.status}
+                                    defaultValue={data?.appointmentId?.status}
                                 />
                             }
                         </div>
@@ -143,7 +166,7 @@ const TreatmentEdit = () => {
                                     showSearch={true}
                                     options={PatientStatus}
                                     setSelectData={setPatientStatus}
-                                    defaultValue={data?.appointment?.patientType}
+                                    defaultValue={data?.appointmentId?.patientType}
                                 />
                             }
                         </div>
@@ -158,7 +181,7 @@ const TreatmentEdit = () => {
                                 <div className="col-md-6">
                                     <div className="form-group mb-3">
                                         <div>
-                                            <label>Daignosis</label>
+                                            <label>Diagnosis</label>
                                         </div>
                                         {isReadyData &&
                                             <SelectForm
@@ -265,7 +288,6 @@ const TreatmentEdit = () => {
                                                         medicineList={medicineList}
                                                         setMedicineList={setMedicineList}
                                                     />
-
                                                 </Space>
                                             </div>
                                         </div>
@@ -281,7 +303,7 @@ const TreatmentEdit = () => {
                                             <Popconfirm
                                                 title="Delete medicine"
                                                 description="Are you sure to delete this medicine?"
-                                                onConfirm={() => removeFromOldMedicineList(item.id)}
+                                                onConfirm={() => removeFromOldMedicineList(item._id)}
                                                 okText="Yes"
                                                 cancelText="No"
                                             >
@@ -375,7 +397,7 @@ const TreatmentEdit = () => {
                         </div>
                     </div>
 
-                    <div className="col-md-12 mb-3">
+                    {/* <div className="col-md-12 mb-3">
                         <label>Follow Up Date</label>
                         <div className="form-group mb-2">
                             <DatePicker
@@ -386,7 +408,7 @@ const TreatmentEdit = () => {
                                 style={{ width: '100%' }}
                             />
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="col-md-12 mb-3">
                         <div className="form-group mb-2">

@@ -10,18 +10,19 @@ import { Link } from 'react-router-dom';
 
 const DoctorInvoice = () => {
     const { data, isLoading } = useGetDoctorInvoicesQuery();
+console.log("doctor invoice: ", data)
     const columns = [
         {
             title: 'Patient Name',
             key: '1',
             width: 150,
             render: function (data) {
-                const fullName = `${data?.appointment?.patient?.firstName ?? ''} ${data?.appointment?.patient?.lastName ?? ''}`;
+                const fullName = `${data?.appointmentId?.patientId?.firstName ?? ''} ${data?.appointmentId?.patientId?.lastName ?? ''}`;
                 const patientName = fullName.trim() || "Private Patient";
                 return (
                     <div className="table-avatar">
                         <a className="avatar avatar-sm mr-2 d-flex gap-2">
-                            <img className="avatar-img rounded-circle" src={data?.appointment?.patient?.img ? data?.appointment?.patient?.img : img} alt="" />
+                            <img className="avatar-img rounded-circle" src={data?.appointmentId?.patientId?.img ? data?.appointmentId?.patientId?.img : img} alt="" />
                             <p className='p-0 m-0 text-nowrap'>{patientName}</p>
                         </a>
                     </div>
@@ -62,7 +63,7 @@ const DoctorInvoice = () => {
             width: 100,
             render: function (data) {
                 return (
-                    <Link to={`/booking/invoice/${data?.appointmentId}`}>
+                    <Link to={`/booking/invoice/${data?.appointmentId._id}`}>
                         <Button type="primary" shape="circle" icon={<FaEye />} size="small" />
                     </Link>
                 )

@@ -1,4 +1,4 @@
-import {Medicine, IMedicine } from '../../../models/Medicine.model';
+import Medicine, {IMedicine } from '../../../models/Medicine.model';
 import ApiError from '../../../errors/apiError';
 import httpStatus from 'http-status';
 
@@ -22,14 +22,23 @@ const createMedicine = async (payload: IMedicine[]): Promise<{ message: string }
     }
 };
 
-const updateMedicine = async (payload: IMedicine): Promise<IMedicine> => {
+const updateMedicine = async (payload: any): Promise<any | null> => {
     try {
-        const isPrescriptionId = await Medicine.findById(payload.prescriptionId);
+        console.log("update medicine: ", payload);
+
+        // Verify prescriptionId
+        const isPrescriptionId = await Medicine.find();
+        console.log("prescriptionId: ", isPrescriptionId);
         if (!isPrescriptionId) {
+            console.log('Prescription not found with ID:', payload.prescriptionId);
             throw new ApiError(httpStatus.NOT_FOUND, 'Prescription is not found !!');
         }
 
-        const result = await Medicine.findByIdAndUpdate(payload.id, {
+        // Log duration before updating
+        console.log('Updating with id:', payload._id);
+
+        // Update medicine
+        const result = await Medicine.findByIdAndUpdate(payload._id, {
             dosage: payload.dosage,
             duration: payload.duration,
             frequency: payload.frequency,
@@ -37,15 +46,16 @@ const updateMedicine = async (payload: IMedicine): Promise<IMedicine> => {
         }, { new: true });
 
         if (!result) {
+            console.log('Medicine not found with ID:', payload._id);
             throw new ApiError(httpStatus.NOT_FOUND, 'Medicine not found !!');
         }
 
         return result;
     } catch (error) {
+        console.log('Error updating medicine:');
         throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to update medicine');
     }
 };
-
 const deleteMedicine = async (id: string): Promise<IMedicine> => {
     try {
         const result = await Medicine.findByIdAndDelete(id);

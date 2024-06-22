@@ -196,7 +196,7 @@ model Prescription {
 
   disease String
   test    String?
-
+  
   medicines Medicine[]
 
   createdAt DateTime @default(now())

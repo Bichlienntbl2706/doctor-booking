@@ -84,7 +84,7 @@ const AppointmentPage = () => {
         message.success("Succcessfully Appointment Scheduled")
         setSelectValue(initialValue);
         dispatch(addInvoice({ ...appointmentData }))
-        navigation(`/booking/success/${appointmentData?.id}`)
+        navigation(`/booking/success/${appointmentData?._id}`)
     }
     if (isError) {
         message.error(error?.data?.message);

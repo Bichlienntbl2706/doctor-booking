@@ -1,3 +1,4 @@
+import React from 'react';
 import DashboardLayout from '../DashboardLayout/DashboardLayout';
 import CustomTable from '../../UI/component/CustomTable';
 import { Button, Tag, message } from 'antd';
@@ -5,19 +6,22 @@ import { FaRegEye, FaEdit, FaRegTimesCircle } from "react-icons/fa";
 import dayjs from 'dayjs';
 import { Link } from 'react-router-dom';
 import { useDeletePrescriptionMutation, useGetAllPrescriptionsQuery } from '../../../redux/api/prescriptionApi';
+import useAuthCheck from '../../../redux/hooks/useAuthCheck';
 
 const Prescription = () => {
     const { data, isLoading } = useGetAllPrescriptionsQuery();
     const [deleteBlog] = useDeletePrescriptionMutation();
+    const { doctorId } = useAuthCheck();
 
+    // Define columns outside of the data.map function
     const columns = [
         {
             title: 'Appointment Id',
-            dataIndex: "appointment",
+            dataIndex: "appointmentId",
             key: 1,
-            render: ({trackingId}) =>{
+            render: ({ _id }) => {
                 return (
-                    <Tag color="#f50">{trackingId}</Tag>
+                    <Tag color="#f50">{_id}</Tag>
                 )
             }
         },
@@ -39,8 +43,8 @@ const Prescription = () => {
             title: 'Archived',
             dataIndex: "isArchived",
             key: 4,
-            render: function ({isArchived}) {
-                return <Tag color={isArchived ? "#f50" : "#108ee9"}>{isArchived ? "Yes" :"Under Treatment"}</Tag>;
+            render: function ({ isArchived }) {
+                return <Tag color={isArchived ? "#f50" : "#108ee9"}>{isArchived ? "Yes" : "Under Treatment"}</Tag>;
             }
         },
         {
@@ -58,17 +62,17 @@ const Prescription = () => {
             render: function (data) {
                 return (
                     <div className='d-flex'>
-                        <Link to={`/dashboard/prescription/${data.id}`}>
+                        <Link to={`/dashboard/prescription/${data._id}`}>
                             <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
                                 <FaRegEye />
                             </Button>
                         </Link>
-                        <Link to={`/dashboard/appointment/treatment/edit/${data.id}`}>
+                        <Link to={`/dashboard/appointment/treatment/edit/${data._id}`}>
                             <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
                                 <FaEdit />
                             </Button>
                         </Link>
-                        <Button onClick={() => deleteHandler(data.id)} size='small' type='primary' style={{ margin: "5px 5px" }} danger>
+                        <Button onClick={() => deleteHandler(data._id)} size='small' type='primary' style={{ margin: "5px 5px" }} danger>
                             <FaRegTimesCircle />
                         </Button>
                     </div>
@@ -76,6 +80,9 @@ const Prescription = () => {
             }
         },
     ];
+
+    // Ensure data is valid before filtering
+    const filteredData = data ? data.filter(item => item.doctorId === doctorId) : [];
 
     const deleteHandler = async (id) => {
         message.loading("Deleting ...");
@@ -95,7 +102,7 @@ const Prescription = () => {
                 <CustomTable
                     loading={isLoading}
                     columns={columns}
-                    dataSource={data}
+                    dataSource={filteredData}
                     showPagination={true}
                     pageSize={20}
                     showSizeChanger={true}

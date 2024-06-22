@@ -30,7 +30,7 @@ const Location = ({data}) => {
                                 </div>
                             </div>
                             <div className="col-md-4">
-                                <div className="clinic-timing">
+                                {/* <div className="clinic-timing">
                                     <div>
                                         <p className="timings-days">
                                             <span> Mon - Sat </span>
@@ -49,14 +49,14 @@ const Location = ({data}) => {
                                             <span>10:00 AM - 2:00 PM</span>
                                         </p>
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
 
-                            <div className="col-md-2">
+                            {/* <div className="col-md-2">
                                 <div className="consult-price">
-                                    ${data?.price}
+                                   Price: ${data?.price}
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 ))

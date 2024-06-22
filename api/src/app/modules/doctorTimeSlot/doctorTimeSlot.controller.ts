@@ -40,7 +40,7 @@ const getMyTimeSlot = catchAsync(async (req: Request, res: Response) => {
 const getTimeSlot = catchAsync(async (req: Request, res: Response) => {
     const result = await TimeSlotService.getTimeSlot(req.params.id);
     console.log("get time slot: ",req.params.id);
-    sendResponse<IDoctorTimeSlot>(res, {
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully get Time Slot !!',
         success: true,
@@ -49,6 +49,7 @@ const getTimeSlot = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateTimeSlot = catchAsync(async (req: Request, res: Response) => {
+    // console.log("updateTimeSlot: ", req.body)
     await TimeSlotService.updateTimeSlot(req.body);
     sendResponse(res, {
         statusCode: 200,
@@ -58,8 +59,8 @@ const updateTimeSlot = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteTimeSlot = catchAsync(async (req: Request, res: Response) => {
-    const result = await TimeSlotService.deleteTimeSlot(req.params.id);
-    sendResponse<IDoctorTimeSlot>(res, {
+    const result = await TimeSlotService.deleteTimeSlot(req.body.id);
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully deleted Time Slot !!',
         success: true,

@@ -64,8 +64,8 @@ const removeFavourite = async (user: any, payload: any): Promise<any | null> => 
         doctorId: doctorId, // Ensure doctorId is of ObjectId type
         patientId: patient._id // Ensure patientId is of ObjectId type
     });
-    console.log('Payload doctorId:', doctorId);
-    console.log('Favourite:', favourite);
+    // console.log('Payload doctorId:', doctorId);
+    // console.log('Favourite:', favourite);
 
     if (!favourite) {
         throw new ApiError(httpStatus.CONFLICT, 'Doctor is not a favourite !!');
@@ -89,8 +89,8 @@ const getPatientFavourites = async (user: any): Promise<IFavourites[]> => {
 
     const favourites = await Favourites.find({ patientId: isPatient._id }).populate('doctorId');
     
-    console.log("patientId: ", isPatient._id)
-    console.log("Favou", favourites); 
+    // console.log("patientId: ", isPatient._id)
+    // console.log("Favou", favourites); 
 
     return favourites.map(fav => fav.toObject() as IFavourites); // Casting to IFavourites[]
 };

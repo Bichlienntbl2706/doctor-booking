@@ -4,6 +4,7 @@ export interface IPatient extends Document{
     firstName?: string;
     lastName?: string;
     dateOfBirth?: Date;
+    weight?: string;
     bloodGroup?: string;
     mobile?: string;
     city?: string;
@@ -22,6 +23,7 @@ const patientSchema = new Schema({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     dateOfBirth: { type: Date },
+    weight: { type: String },
     bloodGroup: { type: String },
     mobile: { type: String },
     city: { type: String },

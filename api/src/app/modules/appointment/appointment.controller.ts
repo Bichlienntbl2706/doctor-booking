@@ -36,7 +36,7 @@ const getAllAppointment = catchAsync(async (req: Request, res: Response) => {
 
 const getAppointment = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.getAppointment(req.params.id);
-    sendResponse<Appointments>(res, {
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully Get Appointment !!',
         success: true,
@@ -85,6 +85,7 @@ const getPatientAppointmentById = catchAsync(async (req: Request, res: Response)
 })
 
 const getDoctorAppointmentsById = catchAsync(async (req: Request, res: Response) => {
+    // console.log('getDoctorAppointmentsById', req.user, req.query)
     const result = await AppointmentService.getDoctorAppointmentsById(req.user, req.query);
     sendResponse(res, {
         statusCode: 200,
@@ -93,6 +94,7 @@ const getDoctorAppointmentsById = catchAsync(async (req: Request, res: Response)
         data: result
     })
 })
+
 
 const updateAppointmentByDoctor = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.updateAppointmentByDoctor(req.user, req.body);
@@ -105,8 +107,9 @@ const updateAppointmentByDoctor = catchAsync(async (req: Request, res: Response)
 })
 
 const getDoctorPatients = catchAsync(async (req: Request, res: Response) => {
+    // console.log("getDoctorPatients", req.user)
     const result = await AppointmentService.getDoctorPatients(req.user);
-    sendResponse<Patient[]>(res, {
+    sendResponse(res, {
         statusCode: 200,
         message: 'Successfully retrieve doctor patients !!',
         success: true,

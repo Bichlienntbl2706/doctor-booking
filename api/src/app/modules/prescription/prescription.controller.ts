@@ -13,6 +13,7 @@ const createPrescription = catchAsync(async (req: Request, res: Response) => {
 })
 
 const updatePrescriptionAndAppointment = catchAsync(async (req: Request, res: Response) => {
+    // console.log("req user: ", req.user, " req body: ", req.body)
     await PrescriptionService.updatePrescriptionAndAppointment(req.user, req.body);
     sendResponse(res, {
         statusCode: 200,

@@ -19,6 +19,6 @@ const MedicineSchema: Schema = new Schema({
     duration:{type: String},
 },{timestamps:true});
 
-const Medicine = mongoose.model<IMedicine>('Favourites',MedicineSchema );
+const Medicine = mongoose.model<IMedicine>('Medicine',MedicineSchema );
 
-export { Medicine};
+export default Medicine;

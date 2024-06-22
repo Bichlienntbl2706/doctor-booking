@@ -123,8 +123,8 @@ const PatientProfileSetting = () => {
                         </div>
                     </div>
 
-                    <div className="col-md-6">
-                        <div className="form-group mb-2">
+                    <div className="col-md-6 row pr-4">
+                        <div className="form-group mb-2 col-md-6">
                             <label className='form-label'>Blood Group</label>
                             <select className="form-control select"
                                 onChange={handleChange}
@@ -137,6 +137,10 @@ const PatientProfileSetting = () => {
                                     ))
                                 }
                             </select>
+                        </div>
+                        <div className="form-group mb-2 col-md-6">
+                            <label className='form-label'>Weight</label>
+                            <input defaultValue={data?.weight} {...register("weight")} className="form-control" />
                         </div>
                     </div>
 

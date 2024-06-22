@@ -14,7 +14,7 @@ const BookingInvoice = () => {
     const ref = useRef();
     const { id } = useParams();
     const { data, isLoading, isError } = useGetAppointmentedPaymentInfoQuery(id)
-
+console.log("data booking: ", data)
     let content = null;
     if (isLoading) content = <div>Loading ...</div>
     if (!isLoading && isError) content = <div>Something went Wrong!</div>
@@ -45,9 +45,9 @@ const BookingInvoice = () => {
                                 <div className="invoice-info">
                                     <strong className="customer-text">Invoice From</strong>
                                     <p className="invoice-details invoice-details-two">
-                                        Dr. {data?.appointment?.doctor?.firstName ? `${data?.appointment?.doctor?.firstName} ${data?.appointment?.doctor?.lastName}`: ' Of DoctorOnCall'} <br />
-                                        {data?.appointment?.doctor?.address ? data?.appointment?.doctor?.address : "Sylhet, Dhaka ,BD,3214"}, {data?.appointment?.doctor?.city && data?.appointment?.doctor?.city},<br />
-                                        {data?.appointment?.doctor?.country && data?.appointment?.doctor?.country} <br />
+                                        Dr. {data?.appointmentId?.doctorId?.firstName ? `${data?.appointmentId?.doctorId?.firstName} ${data?.appointmentId?.doctorId?.lastName}`: ' Of DoctorOnCall'} <br />
+                                        {data?.appointmentId?.doctorId?.address ? data?.appointment?.doctorId?.address : "Sylhet, Dhaka ,BD,3214"}, {data?.appointmentId?.doctorId?.city && data?.appointmentId?.doctorId?.city},<br />
+                                        {data?.appointmentId?.doctorId?.country && data?.appointmentId?.doctorId?.country} <br />
                                     </p>
                                 </div>
                             </div>
@@ -55,9 +55,9 @@ const BookingInvoice = () => {
                                 <div className="invoice-info invoice-info2">
                                     <strong className="customer-text">Invoice To</strong>
                                     <p className="invoice-details">
-                                        {data?.appointment?.patient?.firstName + ' ' + data?.appointment?.patient?.lastName} <br />
-                                        {data?.appointment?.patient?.address}, {data?.appointment?.patient?.city} ,<br />
-                                        {data?.appointment?.patient?.country} <br />
+                                        {data?.appointmentId?.patientId?.firstName + ' ' + data?.appointmentId?.patientId?.lastName} <br />
+                                        {data?.appointmentId?.patientId?.address}, {data?.appointmentId?.patientId?.city} ,<br />
+                                        {data?.appointmentId?.patientId?.country} <br />
                                     </p>
                                 </div>
                             </div>

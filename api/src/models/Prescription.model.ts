@@ -9,10 +9,12 @@ export interface IPrescription extends Document{
     instruction?:string;
     isFullfilled?:boolean;
     isArchived?:boolean;
-    // daignosis?:string;
     diagnosis?:string;
+    disease?:string;
+    test?:string;
     createdAt?: Date;  
     updatedAt?: Date;  
+    medicines?: Types.ObjectId[];
 }
 
 const PrescriptionSchema: Schema = new Schema({
@@ -22,12 +24,13 @@ const PrescriptionSchema: Schema = new Schema({
     followUpdate:{type:String},
     instruction:{type:String},
     isFullfilled:{type:Boolean},
-    isArchived:{type:Boolean},
-    //daignosis:{type:String},
+    isArchived:{type:Boolean, default: true},
     diagnosis:{type:String},
+    disease:{type:String},
     test: {type:String},
+    medicines: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Medicine' }]
 }, { timestamps: true });
 
 const Prescription = mongoose.model<IPrescription>('Prescription', PrescriptionSchema );
 
-export { Prescription};
+export default Prescription;

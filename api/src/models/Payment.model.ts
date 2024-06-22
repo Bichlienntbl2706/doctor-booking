@@ -13,7 +13,8 @@ interface IPayment extends Document{
 }
 
 const paymentSchema = new Schema({
-  appointmentId: {type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', required: true },
+  // appointmentId: {type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', required: true },
+  appointmentId: { type: String, ref: 'Appointment', required: true },
   paymentMethod: { type: String, required: true },
   paymentType: { type: String, required: true },
   DoctorFee: { type: Number, required: true },

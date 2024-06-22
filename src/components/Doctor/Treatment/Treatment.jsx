@@ -23,7 +23,7 @@ const Treatment = () => {
     const [isDisable, setIsDisable] = useState(true);
     const [selectAppointmentStatus, setSelectAppointmentStatus] = useState('');
     const [patientStatus, setPatientStatus] = useState('');
-    const [daignosis, setDaignosis] = useState([]);
+    const [diagnosis, setDaignosis] = useState([]);
     const [disease, setDisease] = useState([]);
     const [medicalCheckup, setMedicalCheckup] = useState([]);
     const [instruction, setInstruction] = useState('');
@@ -31,9 +31,9 @@ const Treatment = () => {
     const [medicineList, setMedicineList] = useState([{ id: 1 }]);
 
     useEffect(() => {
-        const isInputEmpty = !selectAppointmentStatus || !patientStatus || !instruction || !followUpDate || !daignosis.length === 0 || !disease.length === 0 || !medicalCheckup.length === 0;
+        const isInputEmpty = !selectAppointmentStatus || !patientStatus || !instruction  || !diagnosis.length === 0 || !disease.length === 0 || !medicalCheckup.length === 0;
         setIsDisable(isInputEmpty);
-    }, [selectAppointmentStatus, patientStatus, followUpDate, instruction, medicineList, daignosis, disease, medicalCheckup]);
+    }, [selectAppointmentStatus, patientStatus,instruction, medicineList, diagnosis, disease, medicalCheckup]);
 
     const [createPrescription, { isSuccess, isLoading, isError, error }] = useCreatePrescriptionMutation();
 
@@ -46,21 +46,21 @@ const Treatment = () => {
         setMedicineList(medicineList.filter((item) => item.id !== id))
     }
 
-    const handleFollowUpChange = (date) => {
-        if (date) {
-            setFollowUpdate(dayjs(date).format());
-        }
-    };
+    // const handleFollowUpChange = (date) => {
+    //     if (date) {
+    //         setFollowUpdate(dayjs(date).format());
+    //     }
+    // };
 
     const onSubmit = (data) => {
         const obj = {};
         obj.status = selectAppointmentStatus;
         obj.patientType = patientStatus;
 
-        daignosis.length && (obj["daignosis"] = daignosis.join(','))
+        diagnosis.length && (obj["diagnosis"] = diagnosis.join(','))
         disease.length && (obj["disease"] = disease.join(','))
         medicalCheckup.length && (obj["test"] = medicalCheckup.join(','))
-        obj.followUpdate = followUpDate;
+        // obj.followUpdate = followUpDate;
         obj.instruction = instruction;
         obj.medicine = medicineList;
         obj.appointmentId = id;
@@ -80,7 +80,7 @@ const Treatment = () => {
             setDisease([]);
             setMedicalCheckup([]);
             setInstruction('');
-            setFollowUpdate('');
+            // setFollowUpdate('');
             setMedicineList([{ id: 1 }]);
             navigate('/dashboard/prescription')
         }
@@ -246,7 +246,7 @@ const Treatment = () => {
                         </div>
                     </div>
 
-                    <div className="col-md-12 mb-3">
+                    {/* <div className="col-md-12 mb-3">
                         <label>Follow Up Date</label>
                         <div className="form-group mb-2">
                             <DatePicker
@@ -257,7 +257,7 @@ const Treatment = () => {
                                 style={{ width: '100%' }}
                             />
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="col-md-12 mb-3">
                         <div className="form-group mb-2">

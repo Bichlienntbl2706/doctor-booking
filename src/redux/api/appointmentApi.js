@@ -43,7 +43,7 @@ export const appointmentApi = baseApi.injectEndpoints({
             }),
             providesTags: [tagTypes.appointments]
         }),
-        getSingleAppointment: build.query({
+        getSingleAppointment: build.query({ //test
             query: (id) => ({
                 url: `${APPOINTMENT_URL}/${id}`,
                 method: 'GET'
@@ -101,4 +101,5 @@ export const {
     useUpdateAppointmentMutation,
     useCreateAppointmentByUnauthenticateUserMutation, 
     useTrackAppointmentMutation
+    
 } = appointmentApi;
