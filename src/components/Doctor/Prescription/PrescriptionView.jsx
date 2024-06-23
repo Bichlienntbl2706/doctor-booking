@@ -36,10 +36,23 @@ const PrescriptionView = () => {
             title: 'Period',
             key: 'duration',
             render: function (record) {
-                if (!record || !record.duration || !/^\d+\s+days$/.test(record.duration)) {
+                if (!record || !record.duration) {
                     return <>Invalid duration</>;
                 }
-                return <>{record.duration}</>;
+
+                const dates = record.duration.split(',');
+                if (dates.length !== 2) {
+                    return <>Invalid duration</>;
+                }
+
+                const startDate = moment(dates[0]);
+                const endDate = moment(dates[1]);
+                if (!startDate.isValid() || !endDate.isValid()) {
+                    return <>Invalid duration</>;
+                }
+
+                const duration = endDate.diff(startDate, 'days');
+                return <>{duration} days</>;
             }
         },
     ];

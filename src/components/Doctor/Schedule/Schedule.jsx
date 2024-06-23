@@ -248,12 +248,14 @@ const Schedule = () => {
                                             <div className="form-group">
                                                 <label>Start Time</label>
                                                 <TimePicker value={item.startTime ? dayjs(item.startTime, 'hh:mm A') : null} format="hh:mm A" onChange={(time, timeString) => handleEditStartTime(item.id, time, timeString)} />
+                                               
                                             </div>
                                         </div>
                                         <div className="col-12 col-md-6">
                                             <div className="form-group">
                                                 <label>End Time</label>
                                                 <TimePicker value={item.endTime ? dayjs(item.endTime, 'hh:mm A') : null} format="hh:mm A" onChange={(time, timeString) => handleEditEndTime(item.id, time, timeString)} />
+                                                
                                             </div>
                                         </div>
                                     </div>

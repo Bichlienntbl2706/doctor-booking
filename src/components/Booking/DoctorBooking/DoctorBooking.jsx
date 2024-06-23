@@ -378,7 +378,7 @@ const DoctorBooking = () => {
             message.success("Succcessfully Appointment Scheduled")
             setSelectValue(initialValue);
             dispatch(addInvoice({ ...appointmentData }))
-            navigation(`/booking/success/${appointmentData._id}`)
+            navigation(`/booking/success/${appointmentData[0]._id}`)
         }
         if (createIsError) {
             message.error(error?.data?.message);

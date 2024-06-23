@@ -42,22 +42,22 @@ const TreatmentEdit = () => {
     const defaultDaignosis = data?.diagnosis.split(',');
     const defaultDisease = data?.disease.split(',');
     const defatulTests = data?.test.split(',');
-console.log("data treate edit: ", data)
+// console.log("data treate edit: ", data)
     const {doctorId} = useAuthCheck();
-    const addField = (e) => {
-        e.preventDefault();
-        setAddMedicine([...addMedicine, { id: nextId + 1 }])
-        setNextId(nextId + 1)
-    }
+    // const addField = (e) => {
+    //     e.preventDefault();
+    //     setAddMedicine([...addMedicine, { id: nextId + 1 }])
+    //     setNextId(nextId + 1)
+    // }
 
-    const removeFromNewMedicineList = (id) => {
-        setAddMedicine(addMedicine.filter((item) => item.id !== id))
-    }
+    // const removeFromNewMedicineList = (id) => {
+    //     setAddMedicine(addMedicine.filter((item) => item.id !== id))
+    // }
 
-    const removeFromOldMedicineList = (id) => {
-        setMedicineList(medicineList.filter((item) => item.id !== id))
-        deleteMedicine(id).then(() => refetch());
-    }
+    // const removeFromOldMedicineList = (id) => {
+    //     setMedicineList(medicineList.filter((item) => item.id !== id))
+    //     deleteMedicine(id).then(() => refetch());
+    // }
 
     // const handleFollowUpChange = (date) => {
     //     if (date) {
@@ -65,56 +65,56 @@ console.log("data treate edit: ", data)
     //     }
     // };
 
-    const onSubmit = (data) => {
-        const obj = {};
-        obj.status = selectAppointmentStatus;
-        obj.patientType = patientStatus;
+    // const onSubmit = (data) => {
+    //     const obj = {};
+    //     obj.status = selectAppointmentStatus;
+    //     obj.patientType = patientStatus;
     
-        // Chuyển đổi các mảng thành chuỗi (nếu cần)
-        diagnosis.length && (obj["diagnosis"] = diagnosis.join(','));
-        disease.length && (obj["disease"] = disease.join(','));
-        medicalCheckup.length && (obj["test"] = medicalCheckup.join(','));
-        obj.followUpdate = followUpDate;
-        obj.instruction = instruction;
-        obj.prescriptionId = id; // ID của prescription
+    //     // Chuyển đổi các mảng thành chuỗi (nếu cần)
+    //     diagnosis.length && (obj["diagnosis"] = diagnosis.join(','));
+    //     disease.length && (obj["disease"] = disease.join(','));
+    //     medicalCheckup.length && (obj["test"] = medicalCheckup.join(','));
+    //     obj.followUpdate = followUpDate;
+    //     obj.instruction = instruction;
+    //     obj.prescriptionId = id; // ID của prescription
     
-        // Thu thập danh sách các ID của các thuốc mới
-        const newMedicineIds = addMedicine.map(med => med.id);
-        console.log("new medicine: ",newMedicineIds)
+    //     // Thu thập danh sách các ID của các thuốc mới
+    //     const newMedicineIds = addMedicine.map(med => med.id);
+    //     console.log("new medicine: ",newMedicineIds)
     
-        // Gửi yêu cầu cập nhật prescription và appointment
-        const filteredData = Object.fromEntries(Object.entries(obj).filter(([key, value]) => value !== ''));
-        updatePrescriptionAndAppointment({ ...filteredData, doctorId, medicine: newMedicineIds }).then(() => refetch());
-    }
+    //     // Gửi yêu cầu cập nhật prescription và appointment
+    //     const filteredData = Object.fromEntries(Object.entries(obj).filter(([key, value]) => value !== ''));
+    //     updatePrescriptionAndAppointment({ ...filteredData, doctorId, medicine: newMedicineIds }).then(() => refetch());
+    // }
 
-    const handleUpdateMedicine = (id) => {
-        const findData = medicineList.find((item) => item._id === id);
-        console.log("handle update medicine: ",findData)
-        if (findData) {
-            updateMedicine(findData).then(() => refetch())
-        }
-    }
+    // const handleUpdateMedicine = (id) => {
+    //     const findData = medicineList.find((item) => item._id === id);
+    //     console.log("handle update medicine: ",findData)
+    //     if (findData) {
+    //         updateMedicine(findData).then(() => refetch())
+    //     }
+    // }
 
-    const handleAddMedicine = () => {
-        const newMedicines = addMedicine.map((item) => {
-            return {
-                ...item,
-                prescriptionId: id
-            }
-        });
+    // const handleAddMedicine = () => {
+    //     const newMedicines = addMedicine.map((item) => {
+    //         return {
+    //             ...item,
+    //             prescriptionId: id
+    //         }
+    //     });
     
-        // Lưu lại ID mới của thuốc trong state
-        setAddMedicine([]);
+    //     // Lưu lại ID mới của thuốc trong state
+    //     setAddMedicine([]);
     
-        // Gửi yêu cầu tạo mới thuốc với danh sách ID mới
-        createMedicine(newMedicines)
-            .then(response => {
-                refetch();
-            })
-            .catch(error => {
-                console.log('Create error: ', error);
-            });
-    }
+    //     // Gửi yêu cầu tạo mới thuốc với danh sách ID mới
+    //     createMedicine(newMedicines)
+    //         .then(response => {
+    //             refetch();
+    //         })
+    //         .catch(error => {
+    //             console.log('Create error: ', error);
+    //         });
+    // }
 
     // Side Effect
     useEffect(() => {
@@ -139,7 +139,8 @@ console.log("data treate edit: ", data)
                     <h5 className="border-success border-bottom w-25 pb-2 border-5">Start Treatment</h5>
                 </div>
 
-                <form className="row form-row" onSubmit={handleSubmit(onSubmit)}>
+                {/* <form className="row form-row" onSubmit={handleSubmit(onSubmit)}> */}
+                <form className="row form-row">
                     <div className="col-md-6">
                         <div className="form-group mb-4">
                             <div className="mb-2">
@@ -147,9 +148,10 @@ console.log("data treate edit: ", data)
                             </div>
                             {isReadyData &&
                                 <SelectForm
+                                disabled={true}
                                     showSearch={true}
-                                    options={appointemntStatusOption}
-                                    setSelectData={setSelectAppointmentStatus}
+                                    // options={appointemntStatusOption}
+                                    // setSelectData={setSelectAppointmentStatus}
                                     defaultValue={data?.appointmentId?.status}
                                 />
                             }
@@ -163,9 +165,10 @@ console.log("data treate edit: ", data)
                             </div>
                             {isReadyData &&
                                 <SelectForm
+                                disabled={true}
                                     showSearch={true}
-                                    options={PatientStatus}
-                                    setSelectData={setPatientStatus}
+                                    // options={PatientStatus}
+                                    // setSelectData={setPatientStatus}
                                     defaultValue={data?.appointmentId?.patientType}
                                 />
                             }
@@ -185,9 +188,9 @@ console.log("data treate edit: ", data)
                                         </div>
                                         {isReadyData &&
                                             <SelectForm
-                                                mode={true}
-                                                options={DiagnosisOptions}
-                                                setSelectData={setDaignosis}
+                                                // mode={true}
+                                                // options={DiagnosisOptions}
+                                                // setSelectData={setDaignosis}
                                                 defaultValue={defaultDaignosis}
                                             />
                                         }
@@ -201,9 +204,9 @@ console.log("data treate edit: ", data)
                                         </div>
                                         {isReadyData &&
                                             <SelectForm
-                                                mode={true}
-                                                options={DiseaseOptions}
-                                                setSelectData={setDisease}
+                                                // mode={true}
+                                                // options={DiseaseOptions}
+                                                // setSelectData={setDisease}
                                                 defaultValue={defaultDisease}
                                             />
                                         }
@@ -222,8 +225,8 @@ console.log("data treate edit: ", data)
                                     {isReadyData &&
                                         <SelectForm
                                             mode={true}
-                                            setSelectData={setMedicalCheckup}
-                                            options={MedicalCheckupOptions}
+                                            // setSelectData={setMedicalCheckup}
+                                            // options={MedicalCheckupOptions}
                                             defaultValue={defatulTests}
                                         />
                                     }
@@ -244,8 +247,8 @@ console.log("data treate edit: ", data)
                                             <div className="form-group mb-2">
                                                 <InputAutoCompleteForm
                                                     id={item.id}
-                                                    medicineList={medicineList}
-                                                    setMedicineList={setMedicineList}
+                                                    // medicineList={medicineList}
+                                                    // setMedicineList={setMedicineList}
                                                     defaultValue={item.medicine}
                                                 />
                                             </div>
@@ -257,9 +260,9 @@ console.log("data treate edit: ", data)
                                                 <SelectFormForMedicine
                                                     id={item.id}
                                                     keyName={"dosage"}
-                                                    options={DosageOptions}
-                                                    medicineList={medicineList}
-                                                    setMedicineList={setMedicineList}
+                                                    // options={DosageOptions}
+                                                    // medicineList={medicineList}
+                                                    // setMedicineList={setMedicineList}
                                                     defaultValue={item?.dosage}
                                                 />
                                             </div>
@@ -271,9 +274,9 @@ console.log("data treate edit: ", data)
                                                 <SelectFormForMedicine
                                                     id={item.id}
                                                     keyName={"frequency"}
-                                                    options={FrequencyOptions}
-                                                    medicineList={medicineList}
-                                                    setMedicineList={setMedicineList}
+                                                    // options={FrequencyOptions}
+                                                    // medicineList={medicineList}
+                                                    // setMedicineList={setMedicineList}
                                                     defaultValue={item?.frequency}
                                                 />
                                             </div>
@@ -286,7 +289,7 @@ console.log("data treate edit: ", data)
                                                     <MedicineRangePickerForm
                                                         id={item.id}
                                                         medicineList={medicineList}
-                                                        setMedicineList={setMedicineList}
+                                                        // setMedicineList={setMedicineList}
                                                     />
                                                 </Space>
                                             </div>
@@ -295,7 +298,8 @@ console.log("data treate edit: ", data)
                                         <div className="text-end">
 
                                             <Tooltip title="Update Medicine">
-                                                <Button type="primary" shape="circle" icon={<FaCheck />} onClick={() => handleUpdateMedicine(item.id)} />
+                                                {/* <Button type="primary" shape="circle" icon={<FaCheck />} onClick={() => handleUpdateMedicine(item.id)} /> */}
+                                                <Button type="primary" shape="circle" icon={<FaCheck />} />
                                             </Tooltip>
                                         </div>
 
@@ -303,7 +307,8 @@ console.log("data treate edit: ", data)
                                             <Popconfirm
                                                 title="Delete medicine"
                                                 description="Are you sure to delete this medicine?"
-                                                onConfirm={() => removeFromOldMedicineList(item._id)}
+                                                // onConfirm={() => removeFromOldMedicineList(item._id)}
+                        
                                                 okText="Yes"
                                                 cancelText="No"
                                             >
@@ -328,7 +333,7 @@ console.log("data treate edit: ", data)
                                                             <InputAutoCompleteForm
                                                                 id={item.id}
                                                                 medicineList={addMedicine}
-                                                                setMedicineList={setAddMedicine}
+                                                                // setMedicineList={setAddMedicine}
                                                             />
                                                         </div>
                                                     </div>
@@ -341,7 +346,7 @@ console.log("data treate edit: ", data)
                                                                 keyName={"dosage"}
                                                                 options={DosageOptions}
                                                                 medicineList={addMedicine}
-                                                                setMedicineList={setAddMedicine}
+                                                                // setMedicineList={setAddMedicine}
                                                             />
                                                         </div>
                                                     </div>
@@ -354,7 +359,7 @@ console.log("data treate edit: ", data)
                                                                 keyName={"frequency"}
                                                                 options={FrequencyOptions}
                                                                 medicineList={addMedicine}
-                                                                setMedicineList={setAddMedicine}
+                                                                // setMedicineList={setAddMedicine}
                                                             />
                                                         </div>
                                                     </div>
@@ -366,7 +371,7 @@ console.log("data treate edit: ", data)
                                                                 <MedicineRangePickerForm
                                                                     id={item.id}
                                                                     medicineList={addMedicine}
-                                                                    setMedicineList={setAddMedicine}
+                                                                    // setMedicineList={setAddMedicine}
                                                                 />
 
                                                             </Space>
@@ -374,7 +379,8 @@ console.log("data treate edit: ", data)
                                                     </div>
 
                                                     <a className="text-danger position-absolute text-end mb-3 top-0"
-                                                        onClick={() => removeFromNewMedicineList(item?.id)}>
+                                                        // onClick={() => removeFromNewMedicineList(item?.id)}>
+                                                       >
                                                         <FaRegTrashAlt />
                                                     </a>
                                                 </div>
@@ -383,18 +389,20 @@ console.log("data treate edit: ", data)
                                     </div>
 
                                     <div className="text-end">
-                                        <Button type="primary" icon={<FaCheck />} onClick={handleAddMedicine} disabled={addMedicine.length === 0}>Add All Medicine</Button>
+                                        {/* <Button type="primary" icon={<FaCheck />} onClick={handleAddMedicine} disabled={addMedicine.length === 0}>Add All Medicine</Button> */}
+                                        <Button type="primary" icon={<FaCheck />}disabled={addMedicine.length === 0}>Add All Medicine</Button>
                                     </div>
                                 </>
                             }
 
                         </div>
 
-                        <div className="mb-4">
+                        {/* <div className="mb-4">
                             <Button style={{ width: '120px' }} type="primary" size='small' htmlType="button" onClick={addField} block icon={<FaPlus />}>
+                            
                                 Add
                             </Button>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* <div className="col-md-12 mb-3">
@@ -419,11 +427,11 @@ console.log("data treate edit: ", data)
                         </div>
                     </div>
 
-                    <div className='text-center my-3'>
+                    {/* <div className='text-center my-3'>
                         <Button htmlType='submit' type="primary" size='large' loading={isLoading}>
                             Submit
                         </Button>
-                    </div>
+                    </div> */}
                 </form>
             </div>
 

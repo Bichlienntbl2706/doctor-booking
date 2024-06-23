@@ -9,10 +9,10 @@ import moment from 'moment';
 import { Button } from 'antd';
 
 const TrackDetailPage = ({ data, setShowInfo }) => {
-  const patinetFirstName = data?.patient?.firstName ? data?.patient?.firstName : data?.firstName;
-  const patinetLastName = data?.patient?.lastName ? data?.patient?.lastName : data?.lastName
-  const doctorFirstName = data?.doctor?.firstName ? data?.doctor?.firstName : 'Not Setup yet'
-  const doctorLastName = data?.doctor?.lastName ? data?.doctor?.lastName : ''
+  const patinetFirstName = data?.patientId?.firstName ? data?.patientId?.firstName : data?.firstName;
+  const patinetLastName = data?.patientId?.lastName ? data?.patientId?.lastName : data?.lastName
+  const doctorFirstName = data?.doctorId?.firstName ? data?.doctorId?.firstName : 'Not Setup yet'
+  const doctorLastName = data?.doctorId?.lastName ? data?.doctorId?.lastName : ''
   return (
     <>
       <div className="container mb-2" style={{ marginTop: '8rem' }}>
@@ -33,11 +33,11 @@ const TrackDetailPage = ({ data, setShowInfo }) => {
                   <h6 className='text-start text-primary text-uppercase text-black'>Patient</h6>
                   <div className='d-flex gap-2'>
                     <div className='img-div'>
-                      {data?.patient?.img ? <img src={data?.patient?.img} alt='' /> : <img src={img} alt='' />}
+                      {data?.patientId?.img ? <img src={data?.patientId?.img} alt='' /> : <img src={img} alt='' />}
                     </div>
                     <div className='text-start'>
                       <h6 className='mb-0 text-white'>{patinetFirstName + ' ' + patinetLastName}</h6>
-                      <p className='form-text text-white'>{data?.patient?.address && data?.patient?.address + ',' + data?.patient?.city && data?.patient?.city}<br /> {data?.patient?.state + ',' + data?.patient?.country && data?.patient?.country}</p>
+                      <p className='form-text text-white'>{data?.patientId?.address && data?.patientId?.address + ',' + data?.patientId?.city && data?.patientId?.city}<br /> {data?.patientId?.state + ',' + data?.patientId?.country && data?.patientId?.country}</p>
                     </div>
                   </div>
                 </div>
@@ -48,11 +48,11 @@ const TrackDetailPage = ({ data, setShowInfo }) => {
                   <h6 className='text-start text-uppercase text-black'>Doctor</h6>
                   <div className='d-flex gap-2'>
                     <div className='img-div'>
-                      {data?.doctor?.img ? <img src={data?.doctor?.img} alt='' /> : <img src={img} alt='' />}
+                      {data?.doctor?.img ? <img src={data?.doctorId?.img} alt='' /> : <img src={img} alt='' />}
                     </div>
                     <div className='text-start'>
                       <h6 className='mb-0 text-white'>{doctorFirstName + ' ' + doctorLastName}</h6>
-                      <p className='form-text text-white'>{data?.doctor?.designation}</p>
+                      <p className='form-text text-white'>{data?.doctorId?.designation}</p>
                     </div>
                   </div>
                 </div>

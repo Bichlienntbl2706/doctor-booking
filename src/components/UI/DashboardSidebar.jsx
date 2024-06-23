@@ -96,7 +96,7 @@ const DashboardSidebar = () => {
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink to={'/'}>
+                                <NavLink to={'/'} onClick={hanldeSignOut}>
                                     <FaSignOutAlt className="icon" />
                                     <span>Logout</span>
                                 </NavLink>

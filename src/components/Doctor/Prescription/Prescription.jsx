@@ -72,9 +72,9 @@ const Prescription = () => {
                                 <FaEdit />
                             </Button>
                         </Link>
-                        <Button onClick={() => deleteHandler(data._id)} size='small' type='primary' style={{ margin: "5px 5px" }} danger>
+                        {/* <Button onClick={() => deleteHandler(data._id)} size='small' type='primary' style={{ margin: "5px 5px" }} danger>
                             <FaRegTimesCircle />
-                        </Button>
+                        </Button> */}
                     </div>
                 )
             }

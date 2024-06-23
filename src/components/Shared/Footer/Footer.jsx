@@ -63,7 +63,7 @@ const Footer = () => {
 									</p>
 									<p className="mb-0">
 										<i className="fas fa-envelope"></i>
-										ujjalzaman@gmail.com
+										doctorbooking@gmail.com
 									</p>
 								</div>
 							</div>
@@ -71,7 +71,7 @@ const Footer = () => {
 					</div>
 				</div>
 			</div>
-			<div className="footer-bottom">
+			{/* <div className="footer-bottom">
 				<div className="container-fluid">
 
 					<div className="copyright">
@@ -96,7 +96,7 @@ const Footer = () => {
 					</div>
 
 				</div>
-			</div>
+			</div> */}
 
 		</footer>
 	);

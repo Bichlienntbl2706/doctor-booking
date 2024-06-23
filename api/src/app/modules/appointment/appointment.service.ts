@@ -341,12 +341,29 @@ const getAppointment = async (id: string): Promise<any | null> => {
 };
 
 const getAppointmentByTrackingId = async (data: any): Promise<any> => {
-    const { id } = data;
-    const result = await Appointment.findById({ trackingId: id })
-    .populate('doctorId', 'firstName lastName designation college degree img')
-    .populate('patientId', 'firstName lastName address city country state img');
-    return result;
-
+    try {
+        const { id } = data;
+        // console.log("id: ", id);
+        
+        let result;
+        if (Types.ObjectId.isValid(id)) {
+            const objectId = new Types.ObjectId(id);
+            result = await Appointment.findOne({ trackingId: objectId })
+                .populate('doctorId', 'firstName lastName designation college degree img')
+                .populate('patientId', 'firstName lastName address city country state img');
+        } else {
+            // Nếu id không phải là ObjectId, tìm kiếm bằng trackingId trực tiếp
+            result = await Appointment.findOne({ trackingId: id })
+                .populate('doctorId', 'firstName lastName designation college degree img')
+                .populate('patientId', 'firstName lastName address city country state img');
+        }
+        
+        // console.log("data appointment tracking: ", result);
+        return result;
+    } catch (error) {
+        console.error('Error fetching appointment by id:', error);
+        throw error;
+    }
 }
 
 const getPatientAppointmentById = async (user: any): Promise<any[] | null> => {

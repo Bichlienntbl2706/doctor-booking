@@ -62,11 +62,11 @@ const appointmentStatus = [
     "pending",
     "scheduled",
     "cancel",
-    "confirmed",
-    "InProgress",
+    // "confirmed",
+    // "InProgress",
     "Completed",
-    "FollowUp",
-    "archived"
+    // "FollowUp",
+    // "archived"
 ]
 
 export const appointemntStatusOption = appointmentStatus.map((item) => {

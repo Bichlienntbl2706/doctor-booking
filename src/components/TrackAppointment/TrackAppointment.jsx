@@ -11,7 +11,7 @@ const { Search } = Input;
 const TrackAppointment = () => {
     const [trackAppointment, { data, isSuccess, isLoading, isError, error }] = useTrackAppointmentMutation();
     const [showInfo, setShowInfo] = useState(false);
-
+console.log("data tracking: ", data)
     const onSearch = (value) => {
         if (value.length > 5) {
             trackAppointment({ id: value })
@@ -19,14 +19,14 @@ const TrackAppointment = () => {
     }
 
     useEffect(() => {
-        if (isSuccess && !isError && data?.id) {
+        if (isSuccess && !isError && data?._id) {
             message.success("Succcessfully Get Information !")
             setShowInfo(!showInfo);
         }
         if (isError) {
             message.error(error?.data?.message);
         }
-        if (isSuccess && data?.id === undefined) {
+        if (isSuccess && data?._id === undefined) {
             message.error("No Data is Available !")
         }
     }, [isSuccess, isError, error, data]);
@@ -34,7 +34,7 @@ const TrackAppointment = () => {
     // What to render
     let content = null;
     if (!isLoading && isError) content = <div>Something Went Wrong!</div>
-    if (!isLoading && !isError && data?.id) content = <TrackDetailPage data={data} setShowInfo={setShowInfo} />
+    if (!isLoading && !isError && data?._id) content = <TrackDetailPage data={data} setShowInfo={setShowInfo} />
     return (
         <>
             <Header />

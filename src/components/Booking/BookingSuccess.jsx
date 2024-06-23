@@ -29,7 +29,7 @@ const BookingSuccess = () => {
             <Header />
             <div className="container mx-auto d-flex justify-content-center align-items-center text-center">
                 {
-                    data?.id ?
+                    data?._id ?
 
                         <div className=" p-3" style={{ marginTop: '8rem', marginBottom: '5rem', height: '60vh', background: '#f8f9fa', maxWidth: '400px' }}>
 

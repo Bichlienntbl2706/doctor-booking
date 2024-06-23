@@ -24,6 +24,7 @@ const Contact = () => {
             message.error(error?.data?.message);
         }
     }, [isSuccess, isError, error])
+    
     return (
         <>
             <Header />
@@ -46,7 +47,7 @@ const Contact = () => {
                                     <FaEnvelope className='icon' />
                                     <div>
                                         <h4>Email:</h4>
-                                        <p>ujjalzaman@gmail.com</p>
+                                        <p>doctorbooking@gmail.com</p>
                                     </div>
                                 </div>
 
@@ -109,8 +110,14 @@ const Contact = () => {
                 </div>
                 <div>
                     <div className="container">
-                        {/* eslint-disable-next-line */}
-                        <iframe style={{ border: 0, width: "100%", height: "350px" }} src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621" frameborder="0" allowfullscreen></iframe>
+                        <iframe 
+                            style={{ border: 0, width: "100%", height: "350px" }} 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3777.315389879111!2d108.2511662!3d15.9770631!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142108cc9483389%3A0xaa6900daa03e0d17!2sKhu%20%C4%91%C3%B4%20th%E1%BB%8B%20FPT%20City%2C%20H%C3%B2a%20H%E1%BA%A3i%2C%20Ng%C5%A9%20H%C3%A0nh%20S%C6%A1n%2C%20%C4%90%C3%A0%20N%E1%BA%B5ng%2C%20Vi%E1%BB%87t%20Nam!5e0!3m2!1svi!2s!4v1687473401227!5m2!1svi!2s" 
+                            frameborder="0" 
+                            allowfullscreen 
+                            aria-hidden="false" 
+                            tabindex="0">
+                        </iframe>
                     </div>
                 </div>
             </section>

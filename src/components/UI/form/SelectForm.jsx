@@ -5,6 +5,7 @@ const SelectForm = ({ showSearch, options, setSelectData, mode=false, defaultVal
     const onChange = (value) => {
         setSelectData(value)
     };
+    console.log("options: ", options)
     const filterOption = (input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
     return (
         <Select

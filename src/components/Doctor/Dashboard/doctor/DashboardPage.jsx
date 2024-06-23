@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react';
 import img from '../../../../images/avatar.jpg';
 import { FaEye, FaCheck, FaTimes, FaBriefcaseMedical } from "react-icons/fa";
-import { useGetDoctorAppointmentsQuery, useUpdateAppointmentMutation,userGetDoctorAppointmentsHistoriesQuery } from '../../../../redux/api/appointmentApi';
+import { useGetDoctorAppointmentsQuery, useUpdateAppointmentMutation } from '../../../../redux/api/appointmentApi';
 import moment from 'moment';
 import { Button, Tag, message } from 'antd';
 import CustomTable from '../../../UI/component/CustomTable';
@@ -12,30 +12,44 @@ const DashboardPage = () => {
     const [sortBy, setSortBy] = useState("upcoming");
     const { data, refetch, isLoading } = useGetDoctorAppointmentsQuery({ sortBy });
     const [updateAppointment, { isError, isSuccess, error }] = useUpdateAppointmentMutation();
+
     const handleOnselect = (value) => {
-        // eslint-disable-next-line eqeqeq
         setSortBy(value === '1' ? 'upcoming' : value === '2' ? 'today' : 'latest');
-        refetch()
-    }
-    console.log("data dashboar: ", data)
+        refetch();
+    };
+
     const updatedApppointmentStatus = async (id, type) => {
         const changeObj = { status: type };
         try {
             await updateAppointment({ id, data: changeObj }).unwrap();
-            // message.success("Successfully Updated Appointment");
-            refetch();  // Refetch to update the table data
+            refetch(); // Refetch to update the table data
         } catch (err) {
             message.error(err?.data?.message || "Failed to update appointment");
         }
-    }
+    };
+
     useEffect(() => {
         if (isSuccess) {
-            message.success("Succcessfully Appointment Updated")
+            message.success("Successfully Appointment Updated");
         }
         if (isError) {
             message.error(error?.data?.message);
         }
-    }, [isSuccess, isError, error])
+    }, [isSuccess, isError, error]);
+
+    const checkAndCancelPastAppointments = useCallback(() => {
+        const now = moment();
+        data?.forEach(appointment => {
+            const appointmentDateTime = moment(`${appointment.scheduleDate} ${appointment.scheduleTime}`, "YYYY-MM-DD hh:mm A");
+            if (now.isAfter(appointmentDateTime) && appointment.status !== 'Completed' && appointment.status !== 'cancel' && appointment.status !== 'archived') {
+                updatedApppointmentStatus(appointment._id, 'cancel');
+            }
+        });
+    }, [data]);
+
+    useEffect(() => {
+        checkAndCancelPastAppointments();
+    }, [data, checkAndCancelPastAppointments]);
 
     const upcomingColumns = [
         {
@@ -45,30 +59,29 @@ const DashboardPage = () => {
             render: function (data) {
                 const fullName = `${data?.patientId?.firstName ?? ''} ${data?.patientId?.lastName ?? ''}`;
                 const patientName = fullName.trim() || "Un Patient";
-                const imgdata = data?.patientId?.img ? data?.patientId?.img : img
-                return <>
+                const imgdata = data?.patientId?.img ? data?.patientId?.img : img;
+                return (
                     <div className="table-avatar">
                         <a className="avatar avatar-sm mr-2 d-flex gap-2">
                             <img className="avatar-img rounded-circle" src={imgdata} alt="" />
                             <div>
-                                <p className='p-0 m-0 text-nowrap'>
-                                    {patientName}
-                                </p>
+                                <p className='p-0 m-0 text-nowrap'>{patientName}</p>
                                 <p className='p-0 m-0'>{data?.patientId?.designation}</p>
                             </div>
                         </a>
                     </div>
-                </>
+                );
             }
         },
         {
             title: 'App Date',
             key: '2',
             width: 100,
+            sorter: (a, b) => new Date(a.scheduleDate) - new Date(b.scheduleDate),
             render: function (data) {
                 return (
                     <div>{moment(data?.scheduleDate).format("LL")} <span className="d-block text-info">{data?.scheduleTime}</span></div>
-                )
+                );
             }
         },
         {
@@ -78,7 +91,7 @@ const DashboardPage = () => {
             render: function (data) {
                 return (
                     <Tag color="#87d068" className='text-uppercase'>{data?.status}</Tag>
-                )
+                );
             }
         },
         {
@@ -104,7 +117,7 @@ const DashboardPage = () => {
                             </>
                         )}
                     </div>
-                )
+                );
             }
         },
     ];
@@ -128,13 +141,12 @@ const DashboardPage = () => {
             children: <CustomTable
                 loading={isLoading}
                 columns={upcomingColumns}
-                dataSource={data?.filter(item => item.status !== 'Completed'&& item.status !== 'cancel' && item.status !== 'archived')}
+                dataSource={data?.filter(item => item.status !== 'Completed' && item.status !== 'cancel' && item.status !== 'archived')}
                 showPagination={true}
                 pageSize={10}
                 showSizeChanger={true}
             />,
         },
-        ,
         {
             key: '3',
             label: 'latest',
@@ -151,10 +163,11 @@ const DashboardPage = () => {
 
     return (
         <Tabs defaultActiveKey="1" items={items} onChange={handleOnselect} />
-    )
-}
+    );
+};
 
 export default DashboardPage;
+
 
 // import React, { useEffect, useState } from 'react';
 // import img from '../../../../images/avatar.jpg';
