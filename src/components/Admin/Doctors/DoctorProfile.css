@@ -1,0 +1,20 @@
+/* profile.css */
+
+.profile-container {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .doctor-img,
+  .patient-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  
+  .doctor-img img,
+  .patient-img img {
+    width: 100
+  }  

@@ -1,0 +1,62 @@
+/* Prescriptions.css */
+
+/* General table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    min-width: 600px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+  }
+  
+  th {
+    color: black;
+    text-transform: uppercase;
+  } 
+  
+  tr {
+    border-bottom: 1px solid #dddddd;
+  } 
+  
+  tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+  } 
+  
+  /* Status indicator */
+  .status {
+    background-color: #3498db;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  
+  /* Action button */
+  button {
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+  }
+  
+  /* Custom text colors for specific fields */
+  span.appointment-id {
+    background-color: #f7dc6f;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  
+  span.disease {
+    background-color: #82e0aa;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+  }
+  
+  
+  

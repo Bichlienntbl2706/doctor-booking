@@ -4,7 +4,7 @@ import ApiError from "../../../errors/apiError";
 import httpStatus from "http-status";
 import calculatePagination, { IOption } from "../../../shared/paginationHelper";
 import {Review, IReview} from '../../../models/Review.model'
-import {Patient} from '../../../models/Patient.model'
+import Patient from '../../../models/Patient.model'
 import Doctor from '../../../models/Doctor.model'
 
 const create = async (user: any, payload: IReview): Promise<IReview> => {
