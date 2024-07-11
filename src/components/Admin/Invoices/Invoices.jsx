@@ -1,5 +1,5 @@
 import React from 'react'
-import { useGetInvoicesQuery} from '../../../redux/api/appointmentApi';
+import { useGetInvoicesQuery } from '../../../redux/api/appointmentApi';
 import CustomTable from '../../UI/component/CustomTable';
 import { Button } from 'antd';
 import moment from 'moment';

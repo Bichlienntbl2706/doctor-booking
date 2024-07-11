@@ -9,12 +9,24 @@ export const setUserInfo = ({ accessToken }) => {
 export const getUserInfo = () => {
     const authToken = getFromLocalStorage(authKey);
     if (authToken) {
-        const decodedToken = decodeToken(authToken);
-        return decodedToken
+        try {
+            const decodedToken = decodeToken(authToken);
+            if (decodedToken && decodedToken.userId) { // Kiểm tra xem token có chứa userId hay không
+                return decodedToken;
+            } else {
+                console.error('Token does not contain userId');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error decoding token:', error);
+            return null;
+        }
     } else {
-        return null
+        console.error('No auth token found in local storage');
+        return null;
     }
-}
+};
+
 export const isLoggedIn = () => {
     const authToken = getFromLocalStorage(authKey);
     return !!authToken;

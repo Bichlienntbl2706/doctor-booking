@@ -1,9 +1,26 @@
-import React from 'react'
 import AdminLayout from '../AdminLayout/AdminLayout'
 import userImg from '../../../images/avatar.jpg';
 import './Dashboard.css';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import axios for API calls
 
 const AdminDashboard = () => {
+    const [doctors, setDoctors] = useState([]);
+
+    useEffect(() => {
+        // Define a function to fetch doctors data
+        const fetchDoctors = async () => {
+            try {
+                const response = await axios.get('http://localhost:5050/api/v1/doctor'); // Adjust the endpoint as per your backend setup
+                setDoctors(response.data); // Assuming response.data is an array of doctors
+            } catch (error) {
+                console.error('Error fetching doctors:', error);
+            }
+        };
+
+        fetchDoctors(); // Call the fetch function when component mounts
+    }, []); // Empty dependency array means this effect runs only once, like componentDidMount
+
     return (
         <>
             <AdminLayout >
@@ -120,7 +137,9 @@ const AdminDashboard = () => {
 
                     </div>
                 </div>
+                
                 <div className="row">
+                
                     <div className="col-md-6 d-flex">
                         <div className="card card-table flex-fill">
                             <div className="card-header">

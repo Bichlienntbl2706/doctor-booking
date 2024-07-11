@@ -6,82 +6,85 @@ import pick from "../../../shared/pick";
 import { IReview } from "../../../models/Review.model";
 
 const creatReview = catchAsync(async (req: Request, res: Response) => {
-    const result = await ReviewService.create(req.user, req.body);
-    sendResponse<IReview>(res, {
-        statusCode: 200,
-        message: 'Successfully review Created !!',
-        success: true,
-        data: result
-    })
-})
+  const result = await ReviewService.create(req.user, req.body);
+  sendResponse<IReview>(res, {
+    statusCode: 200,
+    message: "Successfully review Created !!",
+    success: true,
+    data: result,
+  });
+});
 
 const getAllReview = catchAsync(async (req: Request, res: Response) => {
-    const result = await ReviewService.getAllReviews(req.query);
-    sendResponse<IReview[]>(res, {
-        statusCode: 200,
-        message: 'Successfully Retrieve review !!',
-        success: true,
-        data: result,
-    })
-})
+  const result = await ReviewService.getAllReviews();
+  sendResponse<IReview[]>(res, {
+    statusCode: 200,
+    message: "Successfully Retrieve review !!",
+    success: true,
+    data: result,
+  });
+});
 
 const getSingleReview = catchAsync(async (req: Request, res: Response) => {
-    const result = await ReviewService.getSingleReview(req.params.id as string);
-    sendResponse<IReview>(res, {
-        statusCode: 200,
-        message: 'Successfully Retrieve review !!',
-        success: true,
-        data: result,
-    })
-})
+  const result = await ReviewService.getSingleReview(req.params.id as string);
+  sendResponse<IReview>(res, {
+    statusCode: 200,
+    message: "Successfully Retrieve review !!",
+    success: true,
+    data: result,
+  });
+});
 
 const getDoctorReviews = catchAsync(async (req: Request, res: Response) => {
-    const result = await ReviewService.getDoctorReviews(req.params.id);
-    sendResponse<IReview[]>(res, {
-        statusCode: 200,
-        message: 'Successfully Retrieve review !!',
-        success: true,
-        data: result,
-    })
-})
-
+  const result = await ReviewService.getDoctorReviews(req.params.id);
+  sendResponse<IReview[]>(res, {
+    statusCode: 200,
+    message: "Successfully Retrieve review !!",
+    success: true,
+    data: result,
+  });
+});
 
 const deleteReview = catchAsync(async (req: Request, res: Response) => {
-    const result = await ReviewService.deleteReviews(req.params.id);
-    sendResponse<IReview>(res, {
-        statusCode: 200,
-        message: 'Successfully Deleted review !!',
-        success: true,
-        data: result,
-    })
-})
+  const result = await ReviewService.deleteReviews(req.params.id);
+  sendResponse<IReview>(res, {
+    statusCode: 200,
+    message: "Successfully Deleted review !!",
+    success: true,
+    data: result,
+  });
+});
 
 const updateReview = catchAsync(async (req: Request, res: Response) => {
-    const result = await ReviewService.updateReview(req.params.id, req.body);
-    sendResponse<IReview>(res, {
-        statusCode: 200,
-        message: 'Successfully Updated review !!',
-        success: true,
-        data: result,
-    })
-})
+  const result = await ReviewService.updateReview(req.params.id, req.body);
+  sendResponse<IReview>(res, {
+    statusCode: 200,
+    message: "Successfully Updated review !!",
+    success: true,
+    data: result,
+  });
+});
 
 const replyReviewByDoctor = catchAsync(async (req: Request, res: Response) => {
-    const result = await ReviewService.replyReviewByDoctor(req.user, req.params.id, req.body);
-    sendResponse<IReview>(res, {
-        statusCode: 200,
-        message: 'Successfully Reply review !!',
-        success: true,
-        data: result,
-    })
-})
+  const result = await ReviewService.replyReviewByDoctor(
+    req.user,
+    req.params.id,
+    req.body
+  );
+  sendResponse<IReview>(res, {
+    statusCode: 200,
+    message: "Successfully Reply review !!",
+    success: true,
+    data: result,
+  });
+});
 
 export const ReviewController = {
-    creatReview,
-    updateReview,
-    getAllReview,
-    getDoctorReviews,
-    deleteReview,
-    getSingleReview,
-    replyReviewByDoctor
-}
+  creatReview,
+  updateReview,
+  getAllReview,
+  getDoctorReviews,
+  deleteReview,
+  getSingleReview,
+  replyReviewByDoctor,
+};

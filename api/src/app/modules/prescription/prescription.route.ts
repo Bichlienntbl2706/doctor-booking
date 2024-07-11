@@ -5,8 +5,8 @@ import { PrescriptionController } from './prescription.controller';
 
 const router = express.Router();
 
-router.get('/doctor/prescription', auth(AuthUser.DOCTOR), PrescriptionController.getDoctorPrescriptionById);
-router.get('/patient/prescription', auth(AuthUser.PATIENT), PrescriptionController.getPatientPrescriptionById);
+router.get('/doctor/prescription', auth(AuthUser.DOCTOR, AuthUser.ADMIN), PrescriptionController.getDoctorPrescriptionById);
+router.get('/patient/prescription', auth(AuthUser.PATIENT, AuthUser.ADMIN), PrescriptionController.getPatientPrescriptionById);
 
 router.get('/:id', PrescriptionController.getPrescriptionById);
 router.get('/', PrescriptionController.getAllPrescriptions);

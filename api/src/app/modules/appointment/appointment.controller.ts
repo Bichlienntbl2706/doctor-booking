@@ -11,8 +11,9 @@ const createAppointment = catchAsync(async (req: Request, res: Response) => {
         message: 'Successfully Appointment Created !!',
         success: true,
         data: result
-    })
-})
+    });
+});
+
 const createAppointmentByUnAuthenticateUser = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.createAppointmentByUnAuthenticateUser(req.body);
     sendResponse(res, {
@@ -20,9 +21,8 @@ const createAppointmentByUnAuthenticateUser = catchAsync(async (req: Request, re
         message: 'Successfully Appointment Created !!',
         success: true,
         data: result
-    })
-})
-
+    });
+});
 
 const getAllAppointment = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.getAllAppointments();
@@ -31,18 +31,19 @@ const getAllAppointment = catchAsync(async (req: Request, res: Response) => {
         message: 'Successfully Retrieve All Appointment !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
 
 const getAppointment = catchAsync(async (req: Request, res: Response) => {
-    const result = await AppointmentService.getAppointment(req.params.id);
-    sendResponse(res, {
+    const { id } = req.params;
+    const result = await AppointmentService.getAppointment(id);
+    sendResponse<Appointments>(res, {
         statusCode: 200,
         message: 'Successfully Get Appointment !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
 
 const getAppointmentByTrackingId = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.getAppointmentByTrackingId(req.body);
@@ -51,8 +52,8 @@ const getAppointmentByTrackingId = catchAsync(async (req: Request, res: Response
         message: 'Successfully Get Appointment !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
 
 const deleteAppointment = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.deleteAppointment(req.params.id);
@@ -61,8 +62,8 @@ const deleteAppointment = catchAsync(async (req: Request, res: Response) => {
         message: 'Successfully Deleted Appointment !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
 
 const updateAppointment = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.updateAppointment(req.params.id, req.body);
@@ -71,8 +72,8 @@ const updateAppointment = catchAsync(async (req: Request, res: Response) => {
         message: 'Successfully Updated Appointment !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
 
 const getPatientAppointmentById = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.getPatientAppointmentById(req.user);
@@ -81,20 +82,18 @@ const getPatientAppointmentById = catchAsync(async (req: Request, res: Response)
         message: 'Successfully Updated Appointment !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
 
 const getDoctorAppointmentsById = catchAsync(async (req: Request, res: Response) => {
-    // console.log('getDoctorAppointmentsById', req.user, req.query)
     const result = await AppointmentService.getDoctorAppointmentsById(req.user, req.query);
     sendResponse(res, {
         statusCode: 200,
         message: 'Successfully Retrieve doctor apppointments !!',
         success: true,
         data: result
-    })
-})
-
+    });
+});
 
 const updateAppointmentByDoctor = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.updateAppointmentByDoctor(req.user, req.body);
@@ -103,19 +102,18 @@ const updateAppointmentByDoctor = catchAsync(async (req: Request, res: Response)
         message: 'Successfully updated apppointments !!',
         success: true,
         data: result
-    })
-})
+    });
+});
 
 const getDoctorPatients = catchAsync(async (req: Request, res: Response) => {
-    // console.log("getDoctorPatients", req.user)
     const result = await AppointmentService.getDoctorPatients(req.user);
     sendResponse(res, {
         statusCode: 200,
         message: 'Successfully retrieve doctor patients !!',
         success: true,
         data: result
-    })
-})
+    });
+});
 
 const getPaymentInfoViaAppintmentId = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.getPaymentInfoViaAppintmentId(req.params.id);
@@ -124,8 +122,8 @@ const getPaymentInfoViaAppintmentId = catchAsync(async (req: Request, res: Respo
         message: 'Successfully retrieve payment info !!',
         success: true,
         data: result
-    })
-})
+    });
+});
 
 const getPatientPaymentInfo = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.getPatientPaymentInfo(req.user);
@@ -134,8 +132,8 @@ const getPatientPaymentInfo = catchAsync(async (req: Request, res: Response) => 
         message: 'Successfully retrieve payment info !!',
         success: true,
         data: result
-    })
-})
+    });
+});
 
 const getDoctorInvoices = catchAsync(async (req: Request, res: Response) => {
     const result = await AppointmentService.getDoctorInvoices(req.user);
@@ -144,8 +142,19 @@ const getDoctorInvoices = catchAsync(async (req: Request, res: Response) => {
         message: 'Successfully retrieve Doctor info !!',
         success: true,
         data: result
-    })
-})
+    });
+});
+
+// Get all invoices
+const getInvoices = catchAsync(async (req: Request, res: Response) => {
+    const result = await AppointmentService.getInvoices();
+    sendResponse(res, {
+        statusCode: 200,
+        message: "Successfully retrieved all invoices",
+        data: result,
+        success: false
+    });
+  });
 
 export const AppointmentController = {
     getDoctorAppointmentsById,
@@ -161,5 +170,6 @@ export const AppointmentController = {
     getPatientPaymentInfo,
     getDoctorInvoices,
     createAppointmentByUnAuthenticateUser,
-    getAppointmentByTrackingId
-}
+    getAppointmentByTrackingId,
+    getInvoices  // Export the new function
+};

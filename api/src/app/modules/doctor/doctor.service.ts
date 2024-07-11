@@ -30,9 +30,9 @@ const sendVerificationEmail = async (data: IDoctor) => {
         uniqueString: uniqueStringHashed
     });
     if (verificationData) {
-        const pathName = path.join(__dirname, '../../../../template/verify.html');
-        const obj = { link: url };
-        const subject = "Email Verification";
+        const pathName = path.join(__dirname, '../../../../template/verify.html'); //Xác định đường dẫn đến tệp HTML của email xác minh.
+        const obj = { link: url }; //Tạo một đối tượng chứa thông tin cần thay thế trong email, trong trường hợp này là liên kết xác minh.
+        const subject = "Email Verification"; //đặt chủ đề cho email
         const toMail = data.email ?? ''; // Ensure toMail is not undefined
         if (!toMail) {
             throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'User email is required for verification');

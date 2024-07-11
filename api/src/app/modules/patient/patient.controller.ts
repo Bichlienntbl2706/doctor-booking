@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { PatientService } from "./patient.service";
+import ApiError from "../../../errors/apiError";
+import httpStatus from "http-status";
+import Patient from "../../../models/Patient.model";
 
 const createPatient = catchAsync(async (req: Request, res: Response) => {
     await PatientService.createPatient(req.body);
@@ -9,8 +12,8 @@ const createPatient = catchAsync(async (req: Request, res: Response) => {
         statusCode: 200,
         message: 'Successfully Patient Created !!',
         success: true
-    })
-})
+    });
+});
 
 const getAllPatients = catchAsync(async (req: Request, res: Response) => {
     const result = await PatientService.getAllPatients();
@@ -19,8 +22,8 @@ const getAllPatients = catchAsync(async (req: Request, res: Response) => {
         message: 'Successfully Get Patients !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
 
 const getPatient = catchAsync(async (req: Request, res: Response) => {
     const result = await PatientService.getPatient(req.params.id);
@@ -29,8 +32,8 @@ const getPatient = catchAsync(async (req: Request, res: Response) => {
         message: 'Successfully Get Patient !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
 
 const deletePatient = catchAsync(async (req: Request, res: Response) => {
     const result = await PatientService.deletePatient(req.params.id);
@@ -39,8 +42,8 @@ const deletePatient = catchAsync(async (req: Request, res: Response) => {
         message: 'Successfully Deleted Patient !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
 
 const updatePatient = catchAsync(async (req: Request, res: Response) => {
     const result = await PatientService.updatePatient(req);
@@ -49,8 +52,8 @@ const updatePatient = catchAsync(async (req: Request, res: Response) => {
         message: 'Successfully Updated Patient !!',
         success: true,
         data: result
-    })
-})
+    });
+});
 
 export const PatientController = {
     createPatient,
@@ -58,4 +61,4 @@ export const PatientController = {
     getPatient,
     getAllPatients,
     deletePatient,
-}
+};
