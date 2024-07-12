@@ -1,9 +1,18 @@
-import React from 'react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../../images/logo.png';
 import userImg from '../../images/avatar.jpg';
 import './AdminHeader.css';
 
-const AdminHeader = () => {
+const AdminHeader = ({ userData }) => {
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token'); // Remove authentication token from local storage
+        // Optionally clear other user-related information from local storage
+        navigate('/login'); // Redirect to login page after logout
+    };
+
     return (
         <div className="header">
             <div className="header-left">
@@ -12,53 +21,20 @@ const AdminHeader = () => {
                 </a>
             </div>
 
-            <a id="toggle_btn">
-                <i className="fe fe-text-align-left"></i>
-            </a>
-
-            <div className="top-nav-search">
+            {/* <div className="top-nav-search">
                 <form>
                     <input type="text" className="form-control" placeholder="Search here" />
                     <button className="btn" type="submit"><i className="fa fa-search"></i></button>
                 </form>
+            </div> */}
+
+            <div className="user-info">
+                <img className="rounded-circle" src={userImg} width="31" alt="User Avatar" />
+                <span className="user-name">{userData && `${userData.admin.firstName} ${userData.admin.lastName}`}</span>
+                <button className="btn btn-outline-secondary" onClick={handleLogout}>Logout</button>
             </div>
-
-            <a className="mobile_btn" id="mobile_btn">
-                <i className="fa fa-bars"></i>
-            </a>
-            <ul className="nav user-menu">
-
-                <li className="nav-item dropdown noti-dropdown">
-                    <a href="#" className="dropdown-toggle nav-link" data-toggle="dropdown">
-                        <i className="fe fe-bell"></i> <span className="badge badge-pill">3</span>
-                    </a>
-                    <div className="dropdown-menu notifications">
-                    </div>
-                </li>
-                <li className="nav-item dropdown has-arrow">
-                    <a href="#" className="dropdown-toggle nav-link" data-toggle="dropdown">
-                        <span className="user-img"><img className="rounded-circle" src={userImg} width="31" alt="Ryan Taylor" /></span>
-                    </a>
-                    <div className="dropdown-menu">
-                        <div className="user-header">
-                            <div className="avatar avatar-sm">
-                                <img src={userImg} alt="" className="avatar-img rounded-circle" />
-                            </div>
-                            <div className="user-text">
-                                <h6>Ryan Taylor</h6>
-                                <p className="text-muted mb-0">Administrator</p>
-                            </div>
-                        </div>
-                        <a className="dropdown-item" href="profile.html">My Profile</a>
-                        <a className="dropdown-item" href="settings.html">Settings</a>
-                        <a className="dropdown-item" href="login.html">Logout</a>
-                    </div>
-                </li>
-
-            </ul>
-
         </div>
-    )
+    );
 }
 
-export default AdminHeader
+export default AdminHeader;

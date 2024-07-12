@@ -27,8 +27,8 @@ const PatientDashboard = () => {
                             <img className="avatar-img rounded-circle" src={img} alt="" />
                         </div>
                         <div>
-                            <h6 className='text-nowrap mb-0'>{data?.appointment?.doctor?.firstName + ' ' + data?.appointment?.doctor?.lastName}</h6>
-                            <p className='form-text'>{data?.appointment?.doctor?.designation}</p>
+                            <h6 className='text-nowrap mb-0'>{data?.doctorId?.firstName + ' ' + data?.doctorId?.lastName}</h6>
+                            <p className='form-text'>{data?.doctorId?.designation}</p>
                         </div>
                     </div>
                 )
@@ -38,7 +38,9 @@ const PatientDashboard = () => {
             title: 'Total Paid',
             key: 2,
             width: 100,
-            dataIndex: "totalAmount"
+            render: function (data) {
+                return <Tag color='#87d068'>{data?.paymentId?.totalAmount}</Tag>
+            }
         },
         {
             title: 'Paid On',
@@ -52,13 +54,17 @@ const PatientDashboard = () => {
             title: 'Payment Method',
             key: 4,
             width: 100,
-            dataIndex: "paymentMethod"
+            render: function (data) {
+                return <div>{data?.paymentId?.paymentMethod}</div>
+            }
         },
         {
             title: 'Payment Type',
             key: 4,
             width: 100,
-            dataIndex: "paymentType"
+            render: function (data) {
+                return <div>{data?.paymentId?.paymentType}</div>
+            } 
         },
         {
             title: 'Action',
@@ -66,7 +72,7 @@ const PatientDashboard = () => {
             width: 100,
             render: function (data) {
                 return (
-                    <Link to={`/booking/invoice/${data?.appointment?.id}`}>
+                    <Link to={`/booking/invoice/${data?._id}`}>
                         <Button type='primary' size='medium'>View</Button>
 
                     </Link>
@@ -86,8 +92,8 @@ const PatientDashboard = () => {
                             <img className="avatar-img rounded-circle" src={img} alt="" />
                         </div>
                         <div>
-                            <h6 className='text-nowrap mb-0'>{data?.doctor?.firstName + ' ' + data?.doctor?.lastName}</h6>
-                            <p className='form-text'>{data?.doctor?.designation}</p>
+                            <h6 className='text-nowrap mb-0'>{data?.doctorId?.firstName + ' ' + data?.doctorId?.lastName}</h6>
+                            <p className='form-text'>{data?.doctorId?.designation}</p>
                         </div>
                     </div>
                 </>
@@ -95,7 +101,7 @@ const PatientDashboard = () => {
         },
         {
             title: 'Appointment Id',
-            dataIndex: "appointment",
+            dataIndex: "appointmentId",
             key: 1,
             render: ({trackingId}) =>{
                 return (
@@ -169,8 +175,8 @@ const PatientDashboard = () => {
                             <img className="avatar-img rounded-circle" src={img} alt="" />
                         </div>
                         <div>
-                            <h6 className='text-nowrap mb-0'>{data?.doctor?.firstName + ' ' + data?.doctor?.lastName}</h6>
-                            <p className='form-text'>{data?.doctor?.designation}</p>
+                            <h6 className='text-nowrap mb-0'>{data?.doctorId?.firstName + ' ' + data?.doctorId?.lastName}</h6>
+                            <p className='form-text'>{data?.doctorId?.designation}</p>
                         </div>
                     </div>
                 </>
@@ -208,7 +214,7 @@ const PatientDashboard = () => {
             width: 100,
             render: function (data) {
                 return (
-                    <Link to={`/dashboard/appointments/${data.id}`}>
+                    <Link to={`/dashboard/appointments/${data._id}`}>
                         <Button type='primary'>View</Button>
                     </Link>
                 )

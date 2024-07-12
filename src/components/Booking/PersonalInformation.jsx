@@ -108,6 +108,8 @@ const PersonalInformation = ({ handleChange, selectValue, setPatientId = () => {
         setChecked(e.target.checked);
     };
 
+    // console.log(formData)
+
     useEffect(() => {
         if (checked) {
             if (data._id) {
@@ -118,8 +120,8 @@ const PersonalInformation = ({ handleChange, selectValue, setPatientId = () => {
                     lastName: data.lastName || '',
                     email: data.email || '',
                     mobile: data.mobile || '',
-                    reasonForVisit: formData.reasonForVisit, 
-                    description: formData.description, 
+                    reasonForVisit: formData.reasonForVisit, // Keep existing value if any
+                    description: formData.description, // Keep existing value if any
                     address: data.address || '',
                 });
             } else {
@@ -196,3 +198,4 @@ const PersonalInformation = ({ handleChange, selectValue, setPatientId = () => {
 };
 
 export default PersonalInformation;
+

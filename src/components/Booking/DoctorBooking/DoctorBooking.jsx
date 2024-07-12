@@ -295,15 +295,15 @@ const DoctorBooking = () => {
     //What to render
     let content = null;
     if (!isLoading && isError) content = <div>Something Went Wrong!</div>
-    if (!isLoading && !isError && data?.id === undefined) content = <Empty />
-    if (!isLoading && !isError && data?.id) content =
+    if (!isLoading && !isError && data?._id === undefined) content = <Empty />
+    if (!isLoading && !isError && data?._id) content =
         <>
             <div className="booking-doc-img my-3 mb-3 rounded">
-                <Link to={`/doctors/${data?.id}`}>
+                <Link to={`/doctors/${data?._id}`}>
                     <img src={img} alt="" />
                 </Link>
                 <div className='text-start'>
-                    <Link to={`/doctors/${data?.id}`} style={{ textDecoration: 'none' }}>Dr. {data?.firstName + ' ' + data?.lastName}</Link>
+                    <Link to={`/doctors/${data?._id}`} style={{ textDecoration: 'none' }}>Dr. {data?.firstName + ' ' + data?.lastName}</Link>
                     <p className="form-text mb-0"><FaArchway /> {data?.specialization + ',' + data?.experienceHospitalName}</p>
                 </div>
             </div>
