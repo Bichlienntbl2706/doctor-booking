@@ -114,7 +114,7 @@ const deleteReviews = async (id: string): Promise<IReview> => {
   try {
     const result = await Review.findByIdAndDelete(id);
     if (!result) {
-      throw new Error("Reviews not found");
+      throw new Error(`Reviews not found`);
     }
     return result;
   } catch (error: any) {
@@ -129,7 +129,7 @@ const updateReview = async (
   try {
     const result = await Review.findByIdAndUpdate(id, payload, { new: true });
     if (!result) {
-      throw new Error("Reviews can not update");
+      throw new Error(`Reviews can not update`);
     }
     return result;
   } catch (error: any) {
@@ -158,7 +158,7 @@ const replyReviewByDoctor = async (
       { new: true }
     );
     if (!result) {
-      throw new Error("Reviews can not rely");
+      throw new Error(`Reviews can not rely`);
     }
     return result;
   } catch (error: any) {

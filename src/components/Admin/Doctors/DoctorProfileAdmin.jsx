@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import { Link, useParams } from "react-router-dom";
-import {
-  useGetDoctorQuery,
-  useUpdateDoctorMutation,
-} from "../../../redux/api/doctorApi";
+import { useGetDoctorQuery, useUpdateDoctorMutation } from "../../../redux/api/doctorApi";
 import { message } from "antd";
 import dImage from "../../../images/avatar.jpg";
 import { DatePicker } from "antd";
@@ -13,41 +10,27 @@ import ImageUpload from "../../UI/form/ImageUpload";
 import AdminLayout from "../AdminLayout/AdminLayout";
 
 const DoctorProfileAdmin = () => {
-  const { id } = useParams(); // Lấy ID của bác sĩ từ URL
-  const { data: doctorData, isLoading, isError, error } = useGetDoctorQuery(id); // Lấy dữ liệu bác sĩ từ API
+  const { id } = useParams();
+  const { data: doctorData, isLoading, isError, error } = useGetDoctorQuery(id);
 
-  const { register, handleSubmit, setValue } = useForm({}); // Thiết lập form sử dụng react-hook-form
-  const [selectedImage, setSelectedImage] = useState(null); // Quản lý hình ảnh được chọn
-  const [date, setDate] = useState(null); // Quản lý ngày sinh
-  const [file, setFile] = useState(null); // Quản lý file hình ảnh tải lên
+  const { register, handleSubmit, setValue } = useForm();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [date, setDate] = useState(null);
+  const [file, setFile] = useState(null);
   const [selectValue, setSelectValue] = useState({});
 
-  const [
-    updateDoctor,
-    {
-      isLoading: updateLoading,
-      isSuccess,
-      isError: isUpdateError,
-      error: updateError,
-    },
-  ] = useUpdateDoctorMutation(); // Hook cập nhật bác sĩ
+  const [updateDoctor, { isLoading: updateLoading, isSuccess, isError: isUpdateError, error: updateError }] = useUpdateDoctorMutation();
 
   const onChange = (date, dateString) => {
     setDate(moment(dateString).format());
   };
-  // const { data: adminData } = useAuthCheck(); // Kiểm tra dữ liệu admin để xác định quyền chỉnh sửa
-  // const canEdit = adminData?.role === "admin"; // Kiểm tra quyền chỉnh sửa dựa trên vai trò admin
 
   useEffect(() => {
     if (doctorData) {
-      // Thiết lập giá trị ban đầu cho form khi có dữ liệu bác sĩ
       setValue("firstName", doctorData.firstName);
       setValue("lastName", doctorData.lastName);
       setValue("email", doctorData.email);
-      setValue(
-        "dateOfBirth",
-        moment(doctorData?.dob).format("YYYY-MM-DD")
-      );
+      setValue("dateOfBirth", moment(doctorData?.dob).format("YYYY-MM-DD"));
       setValue("phone", doctorData.phone);
       setValue("specialization", doctorData.specialization);
       setValue("education", doctorData.education);
@@ -64,40 +47,34 @@ const DoctorProfileAdmin = () => {
 
   useEffect(() => {
     if (!isLoading && isError) {
-      message.error(error?.data?.message); // Hiển thị lỗi nếu có
+      message.error(error?.data?.message);
     }
     if (isSuccess) {
-      message.success("Successfully Profile Updated"); // Hiển thị thành công khi cập nhật
+      message.success("Profile updated successfully");
     }
     if (!updateLoading && isUpdateError) {
-      message.error(updateError?.data?.message); // Hiển thị lỗi khi cập nhật thất bại
+      message.error(updateError?.data?.message);
     }
-  }, [
-    isLoading,
-    isError,
-    error,
-    isSuccess,
-    updateLoading,
-    isUpdateError,
-    updateError,
-  ]);
+  }, [isLoading, isError, error, isSuccess, updateLoading, isUpdateError, updateError]);
 
   const onSubmit = (data) => {
     const obj = data;
     const newObj = { ...obj, ...selectValue };
-    date && (newObj["dateOfBirth"] = date);
-    const changedValue = Object.fromEntries(
-      Object.entries(newObj).filter(([key, value]) => value !== "")
-    );
+    if (date) {
+      newObj["dateOfBirth"] = date;
+    }
+    const changedValue = Object.fromEntries(Object.entries(newObj).filter(([key, value]) => value !== ""));
     const formData = new FormData();
-    selectedImage && formData.append("file", file);
+    if (selectedImage) {
+      formData.append("file", file);
+    }
     const changeData = JSON.stringify(changedValue);
     formData.append("data", changeData);
     updateDoctor({ data: formData, id });
   };
 
   if (isLoading || !doctorData) {
-    return <p>Loading...</p>; // Hiển thị loading khi dữ liệu đang được tải
+    return <p>Loading...</p>;
   }
 
   return (
@@ -113,60 +90,44 @@ const DoctorProfileAdmin = () => {
                     <img src={selectedImage ? selectedImage : dImage} alt="" />
                   </Link>
                   <div className="mt-3">
-                    <ImageUpload
-                      setSelectedImage={setSelectedImage}
-                      setFile={setFile}
-                    />
+                    <ImageUpload setSelectedImage={setSelectedImage} setFile={setFile} />
                   </div>
                 </div>
               </div>
             </div>
-
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>First Name</label>
+                <label style={{ marginBottom: "20px"}}>First Name</label>
                 <input {...register("firstName")} className="form-control" />
               </div>
             </div>
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Last Name</label>
+                <label style={{ marginBottom: "20px"}}>Last Name</label>
                 <input {...register("lastName")} className="form-control" />
               </div>
             </div>
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Email</label>
-                <input
-                  {...register("email", { readOnly: true })}
-                  className="form-control"
-                  disabled
-                />
+                <label style={{ marginBottom: "20px"}}>Email</label>
+                <input {...register("email", { readOnly: true })} className="form-control" disabled />
               </div>
             </div>
-
-            <div className="col-md-6">
-            <div className="form-group mb-2 card-label">
-                <label>
-                  Date of Birth {moment(doctorData?.dob).format("LL")}
-                </label>
-                <DatePicker
-                  onChange={onChange}
-                  format={"YYYY-MM-DD"}
-                  style={{ width: "100%", padding: "6px" }}
-                />
-              </div>
-            </div>
-
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Phone Number</label>
+                <label style={{ marginBottom: "10px"}}>Date of Birth {moment(doctorData?.dob).format("LL")}</label>
+                <DatePicker onChange={onChange} format={"YYYY-MM-DD"} style={{ width: "100%", padding: "6px" }} />
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="form-group mb-2 card-label">
+                <label style={{ marginBottom: "20px"}}>Phone Number</label>
                 <input {...register("phone")} className="form-control" />
               </div>
             </div>
             <div className="col-md-6">
-              <div className="form-group mb-2">
-                <label>Gender</label>
+              <div className="form-group mb-2 card-label">
+                <label >Gender</label>
                 <select {...register("gender")} className="form-control">
                   <option value="">Select</option>
                   <option value="Male">Male</option>
@@ -175,69 +136,57 @@ const DoctorProfileAdmin = () => {
                 </select>
               </div>
             </div>
-
             <div className="col-md-6">
-              <div className="form-group mb-2">
-                <label className="form-label">Specialization</label>
-                <input
-                  {...register("specialization")}
-                  className="form-control"
-                />
+              <div className="form-group mb-2 card-label">
+                <label style={{ marginBottom: "20px"}}>Specialization</label>
+                <input {...register("specialization")} className="form-control" />
               </div>
             </div>
-
             <div className="col-md-6">
-              <div className="form-group mb-2">
-                <label className="form-label">Education</label>
+              <div className="form-group mb-2 card-label">
+                <label style={{ marginBottom: "20px"}}>Education</label>
                 <input {...register("education")} className="form-control" />
               </div>
             </div>
-
             <div className="col-md-6">
-              <div className="form-group mb-2">
-                <label className="form-label">Experience</label>
+              <div className="form-group mb-2 card-label">
+                <label style={{ marginBottom: "20px"}}>Experience</label>
                 <input {...register("experience")} className="form-control" />
               </div>
             </div>
-
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>City</label>
+                <label style={{ marginBottom: "20px"}}>City</label>
                 <input {...register("city")} className="form-control" />
               </div>
             </div>
-
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>State</label>
+                <label style={{ marginBottom: "20px"}}>State</label>
                 <input {...register("state")} className="form-control" />
               </div>
             </div>
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Zip Code</label>
+                <label style={{ marginBottom: "20px"}}>Zip Code</label>
                 <input {...register("zipCode")} className="form-control" />
               </div>
             </div>
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Country</label>
+                <label style={{ marginBottom: "20px"}}>Country</label>
                 <input {...register("country")} className="form-control" />
               </div>
             </div>
-            <div className="col-md-12">
+            <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Address</label>
+                <label style={{ marginBottom: "20px"}}>Address</label>
                 <input {...register("address")} className="form-control" />
               </div>
             </div>
             <div className="text-center">
-              <button
-                type="submit"
-                className="btn btn-primary my-3"
-                disabled={isLoading ? true : false}
-              >
-                {isLoading ? "Updating.." : "Save Changes"}
+              <button type="submit" className="btn btn-primary my-3" disabled={updateLoading}>
+                {updateLoading ? "Updating.." : "Save Changes"}
               </button>
             </div>
           </form>

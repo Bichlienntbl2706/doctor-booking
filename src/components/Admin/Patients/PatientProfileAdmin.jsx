@@ -144,7 +144,7 @@ const PatientProfileAdmin = () => {
 
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>
+                <label style={{ marginBottom: "20px"}}>
                   First Name <span className="text-danger">*</span>
                 </label>
                 <input
@@ -156,7 +156,7 @@ const PatientProfileAdmin = () => {
             </div>
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>
+                <label style={{ marginBottom: "20px"}}>
                   Last Name <span className="text-danger">*</span>
                 </label>
                 <input
@@ -168,7 +168,7 @@ const PatientProfileAdmin = () => {
             </div>
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>
+                <label style={{ marginBottom: "20px"}}>
                   Email <span className="text-danger">*</span>
                 </label>
                 <input
@@ -181,7 +181,7 @@ const PatientProfileAdmin = () => {
 
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>
+                <label style={{ marginBottom: "10px"}}>
                   Date of Birth {moment(patientData?.dateOfBirth).format("LL")}
                 </label>
                 <DatePicker
@@ -194,7 +194,7 @@ const PatientProfileAdmin = () => {
 
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Phone Number</label>
+                <label style={{ marginBottom: "20px"}}>Phone Number</label>
                 <input
                   defaultValue={patientData?.mobile}
                   {...register("mobile")}
@@ -203,7 +203,7 @@ const PatientProfileAdmin = () => {
               </div>
             </div>
             <div className="col-md-6">
-              <div className="form-group mb-2">
+              <div className="form-group mb-2 card-label">
                 <label>Gender</label>
                 <select
                   className="form-control select"
@@ -224,9 +224,9 @@ const PatientProfileAdmin = () => {
               </div>
             </div>
 
-            <div className="col-md-6 row pr-4">
-              <div className="form-group mb-2 col-md-6">
-                <label className="form-label">Blood Group</label>
+            <div className="col-md-6 row">
+              <div className="form-group mb-2 col-md-6 card-label">
+                <label style={{ marginBottom: "10px"}}>Blood Group</label>
                 <select
                   className="form-control select"
                   onChange={handleChange}
@@ -244,30 +244,32 @@ const PatientProfileAdmin = () => {
                   ))}
                 </select>
               </div>
-              <div className="form-group mb-2 col-md-6">
-                <label className="form-label">Weight</label>
+              <div className="form-group mb-2 col-md-6 card-label">
+                <label style={{ marginBottom: "20px", marginLeft: "20px"}} >Weight</label>
                 <input
                   defaultValue={patientData?.weight}
                   {...register("weight")}
                   className="form-control"
-                />
-              </div>
-            </div>
-
-            <div className="col-md-6">
-              <div className="form-group mb-2">
-                <label className="form-label">City</label>
-                <input
-                  defaultValue={patientData?.city}
-                  {...register("city")}
-                  className="form-control"
+                  style={{ marginLeft: "20px"}}
                 />
               </div>
             </div>
 
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>State</label>
+                <label style={{ marginBottom: "20px", marginLeft: "20px"}}>City</label>
+                <input
+                  defaultValue={patientData?.city}
+                  {...register("city")}
+                  className="form-control"
+                  style={{ marginLeft: "20px"}}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-6">
+              <div className="form-group mb-2 card-label">
+                <label style={{ marginBottom: "20px"}}>State</label>
                 <input
                   defaultValue={patientData?.state}
                   {...register("state")}
@@ -277,7 +279,7 @@ const PatientProfileAdmin = () => {
             </div>
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Zip Code</label>
+                <label style={{ marginBottom: "20px"}}>Zip Code</label>
                 <input
                   defaultValue={patientData?.zipCode}
                   {...register("zipCode")}
@@ -287,7 +289,7 @@ const PatientProfileAdmin = () => {
             </div>
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Country</label>
+                <label style={{ marginBottom: "20px"}}>Country</label>
                 <input
                   defaultValue={patientData?.country}
                   {...register("country")}
@@ -297,7 +299,7 @@ const PatientProfileAdmin = () => {
             </div>
             <div className="col-md-6">
               <div className="form-group mb-2 card-label">
-                <label>Address</label>
+                <label style={{ marginBottom: "20px"}}>Address</label>
                 <input
                   defaultValue={patientData?.address}
                   {...register("address")}
