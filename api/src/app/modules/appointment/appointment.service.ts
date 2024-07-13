@@ -233,36 +233,13 @@ const createAppointmentByUnAuthenticateUser = async (
 
 const getAllAppointments = async (): Promise<any[]> => {
   const result = await Appointment.find()
-    .populate("doctorId")
-    .populate("paymentId");
+    .populate("doctorId", "firstName lastName designation college degree img specialization")
+    
+    .populate("paymentId")
+
+    .populate("patientId", "firstName lastName address city country state img")
   return result;
 };
-// const getAllAppointments = async (req: Request, res: Response) => {
-//   try {
-//     const appointments = await Appointment.find().populate('doctorId');
-
-//     res.status(200).json({
-//       success: true,
-//       message: 'Successfully retrieved all appointments',
-//       data: appointments,
-//     });
-//   } catch (error) {
-//     console.error('Error fetching appointments:', error);
-//     res.status(500).json({
-//       success: false,
-//       message: 'Failed to retrieve appointments',
-//       error: error.message,
-//     });
-//   }
-// };
-
-// const getAppointment = async (id: string): Promise<any | null> => {
-//     const result = await Appointment.findById(id)
-//     .populate('doctor')
-//     .populate('patient');
-//     console.log(id)
-//     return result;
-// };
 
 const getAppointment = async (id: string): Promise<any | null> => {
   try {
@@ -382,18 +359,6 @@ const getPaymentInfoViaAppintmentId = async (
     return null;
   }
 };
-
-// const result = await Payment.findOne({ appointmentId: id })
-// .populate({
-//     path: 'appointmentId',
-//     populate: [
-//         { path: 'patientId', select: 'firstName lastName address country city' },
-//         { path: 'doctorId', select: 'firstName lastName address country city' }
-//     ]
-// });
-// console.log({appointmentId: id})
-// console.log(result)
-// return result;
 
 const getPatientPaymentInfo = async (user: any): Promise<any[]> => {
   const { userId } = user;

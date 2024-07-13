@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../AdminLayout/AdminLayout";
 import axios from "axios";
-import "./Prescriptions.css";
+import { Badge, Button } from "react-bootstrap";
 
 const Prescriptions = () => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -15,8 +15,8 @@ const Prescriptions = () => {
           "http://localhost:5050/api/v1/prescription"
         );
         if (response.status === 200 && response.data.success) {
-          const prescriptionsData = response.data.data; // Lấy dữ liệu đơn thuốc từ phản hồi
-          setPrescriptions(prescriptionsData); // Lưu dữ liệu vào state
+          const prescriptionsData = response.data.data;
+          setPrescriptions(prescriptionsData);
         } else {
           console.error("Error fetching prescriptions:", response.data.message);
         }
@@ -38,66 +38,68 @@ const Prescriptions = () => {
         {/* Add any filters or search inputs if needed */}
       </div>
       <div className="prescription-list">
-        <table>
-          <thead>
-            <tr>
-              <th>Appointment Id</th>
-              <th>Disease</th>
-              <th>Follow-Up Date</th>
-              <th>Archived</th>
-              <th>Created At</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {prescriptions.length > 0 ? (
-              prescriptions.map((prescription) => (
-                // Prescriptions.js
-
-                <tr key={prescription._id}>
-                  <td>
-                    <span className="appointment-id">
-                      {prescription.appointmentId.trackingId}
-                    </span>
-                  </td>
-                  <td>
-                    <span className="disease">{prescription.disease}</span>
-                  </td>
-                  <td className="follow-up-date">
-                    {prescription.followUpdate}
-                  </td>
-                  <td className="archived">
-                    <span className="status">
-                      {prescription.isArchived ? "Yes" : "No"}
-                    </span>
-                  </td>
-                  <td className="created-at">
-                    {new Date(prescription.createdAt).toLocaleDateString(
-                      "en-US",
-                      {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "numeric",
-                        hour12: true,
-                      }
-                    )}
-                  </td>
-                  <td>
-                    <button onClick={() => handleView(prescription._id)}>
-                      👁️
-                    </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
+        <div className="table-responsive">
+          <table className="table table-striped table-hover">
+            <thead>
               <tr>
-                <td colSpan="6">No prescriptions found</td>
+                <th>Appointment Id</th>
+                <th>Disease</th>
+                <th>Follow-Up Date</th>
+                <th>Archived</th>
+                <th>Created At</th>
+                <th>Action</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {prescriptions.length > 0 ? (
+                prescriptions.map((prescription) => (
+                  <tr key={prescription._id}>
+                    <td>
+                      <Badge bg="warning" text="dark">
+                        {prescription.appointmentId.trackingId}
+                      </Badge>
+                    </td>
+                    <td>
+                      <Badge bg="success">{prescription.disease}</Badge>
+                    </td>
+                    <td>{prescription.followUpdate}</td>
+                    <td>
+                      <Badge bg={prescription.isArchived ? "danger" : "info"}>
+                        {prescription.isArchived ? "Yes" : "No"}
+                      </Badge>
+                    </td>
+                    <td>
+                      {new Date(prescription.createdAt).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                          hour12: true,
+                        }
+                      )}
+                    </td>
+                    <td>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => handleView(prescription._id)}
+                      >
+                        👁️ View
+                      </Button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6">No prescriptions found</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </AdminLayout>
   );

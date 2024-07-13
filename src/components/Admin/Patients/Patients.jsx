@@ -1,12 +1,11 @@
-// Import necessary components and libraries
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import AdminLayout from "../AdminLayout/AdminLayout";
-import "./Patients.css";
 import { Modal } from "antd"; // Import Modal from Ant Design
 import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
 import "react-toastify/dist/ReactToastify.css"; // Import react-toastify CSS
+import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
@@ -131,8 +130,8 @@ const Patients = () => {
   };
 
   const handleGenderChange = (event) => {
-  setSelectedGender(event.target.value);
-};
+    setSelectedGender(event.target.value);
+  };
 
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
@@ -154,95 +153,115 @@ const Patients = () => {
 
   return (
     <AdminLayout>
-      <div className="form-wrapper">
-        <input
-          type="text"
-          placeholder='Search "Patients"'
-          value={searchTerm}
-          onChange={handleSearchChange}
-        />
-        <select value={selectedGender} onChange={handleGenderChange}>
-          <option value="">Gender...</option>
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-        </select>
-        <input type="date" value={selectedDate} onChange={handleDateChange} />
-      </div>
-      <div className="patient-list">
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Patient</th>
-                <th>Created At</th>
-                <th>Email</th>
-                <th>Gender</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredPatients.map((patient) => (
-                <tr
-                  key={patient._id}
-                  className={`patient-row ${
-                    patient.isBlocked ? "blocked" : ""
-                  }`}
-                >
-                  <td>
-                    <Link to={`/admin/patient/${patient._id}`}>
-                      {`${patient.firstName} ${patient.lastName}`}
-                    </Link>
-                  </td>
-                  <td>{new Date(patient.createdAt).toLocaleDateString()}</td>
-                  <td>{patient.email}</td>
-                  <td>{patient.gender}</td>
-                  <td className="actions">
-                    <button
-                      className="action-btn"
-                      onClick={() => handleActionClick(patient._id)}
-                    >
-                    </button>
-                    {activeDropdown === patient._id && (
-                      <div className="dropdown-content show">
-                        {patient.isBlocked ? (
-                          <button onClick={() => handleUnbanClick(patient._id)}>
-                            Unblock
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => handleBanClick(patient._id)}
-                            disabled={patient.isBlocked}
-                          >
-                            Block
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </td>
+      <div className="container mt-4">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="input-group">
+            <input
+              type="text"
+              className="form-control"
+              placeholder='Search "Patients"'
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
+          <div className="input-group ms-3">
+            <select className="form-select" value={selectedGender} onChange={handleGenderChange}>
+              <option value="">Gender...</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div className="input-group ms-3">
+            <input
+              type="date"
+              className="form-control"
+              value={selectedDate}
+              onChange={handleDateChange}
+            />
+          </div>
+        </div>
+        <div className="table-responsive">
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <table className="table table-hover">
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Created At</th>
+                  <th>Email</th>
+                  <th>Gender</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {filteredPatients.map((patient) => (
+                  <tr
+                    key={patient._id}
+                    className={patient.isBlocked ? "table-secondary" : ""}
+                    style={{ backgroundColor: patient.isBlocked ? "#d3d3d3" : "#ffffff" }}
+                  >
+                    <td>
+                      <Link to={`/admin/patient/${patient._id}`}>
+                        {`${patient.firstName} ${patient.lastName}`}
+                      </Link>
+                    </td>
+                    <td>{new Date(patient.createdAt).toLocaleDateString()}</td>
+                    <td>{patient.email}</td>
+                    <td>{patient.gender}</td>
+                    <td className="actions">
+                      <button
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => handleActionClick(patient._id)}
+                      >
+                        ...
+                      </button>
+                      {activeDropdown === patient._id && (
+                        <div className="dropdown-menu show">
+                          {patient.isBlocked ? (
+                            <button
+                              className="dropdown-item"
+                              onClick={() => handleUnbanClick(patient._id)}
+                            >
+                              Unblock
+                            </button>
+                          ) : (
+                            <button
+                              className="dropdown-item"
+                              onClick={() => handleBanClick(patient._id)}
+                              disabled={patient.isBlocked}
+                            >
+                              Block
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+        <Link to="/admin/createPatient">
+          <button className="btn btn-primary btn-lg rounded-circle position-fixed" style={{ bottom: '2rem', right: '2rem', width: '4rem', height: '4rem' }}>
+            +
+          </button>
+        </Link>
+
+        {/* Ban Confirmation Modal */}
+        <Modal
+          title="Ban Patient"
+          open={confirmBanModalVisible}
+          onOk={handleConfirmBan}
+          onCancel={handleCancelBan}
+        >
+          <p>Are you sure you want to ban this patient?</p>
+        </Modal>
+
+        {/* Toast container for displaying notifications */}
+        <ToastContainer />
       </div>
-      <Link to="/admin/createPatient">
-        <button className="floating-action-btn">+</button>
-      </Link>
-
-      {/* Ban Confirmation Modal */}
-      <Modal
-        title="Ban Patient"
-        open={confirmBanModalVisible}
-        onOk={handleConfirmBan}
-        onCancel={handleCancelBan}
-      >
-        <p>Are you sure you want to ban this patient?</p>
-      </Modal>
-
-      {/* Toast container for displaying notifications */}
-      <ToastContainer />
     </AdminLayout>
   );
 };

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import AdminLayout from "../AdminLayout/AdminLayout";
-import "./Reviews.css";
 import ReviewFilterBar from "../AdminFilterBar/ReviewFilterBar";
 
 const AdminReviews = () => {
@@ -18,8 +17,7 @@ const AdminReviews = () => {
         if (response.status === 200 && response.data.success) {
           const reviewsData = response.data.data.map((review) => ({
             ...review,
-            // Đảm bảo giá trị sao là chuỗi
-            star: review.star.toString(),
+            star: review.star.toString(), // Ensure star rating is a string
           }));
           console.log("Fetched Reviews: ", reviewsData);
           setReviews(reviewsData);
@@ -66,11 +64,11 @@ const AdminReviews = () => {
   return (
     <AdminLayout>
       <ReviewFilterBar onFilterChange={handleFilterChange} />
-      <div className="review-list">
+      <div className="review-list bg-white rounded p-4 shadow-sm">
         {loading ? (
           <p>Loading...</p>
         ) : (
-          <table>
+          <table className="table">
             <thead>
               <tr>
                 <th>#</th>
@@ -89,31 +87,30 @@ const AdminReviews = () => {
                     <img
                       src={`https://i.pravatar.cc/150?img=${review.id}`}
                       alt="avatar"
-                      className="avatar-img"
+                      className="avatar-img rounded-circle me-2"
                     />
                     {review.patientId ? (
-                      <a href="#">
+                      <Link to={`/profile/${review.patientId._id}`}>
                         {`${review.patientId.firstName} ${review.patientId.lastName}`}
-                      </a>
+                      </Link>
                     ) : (
                       <span>Unknown Patient</span>
                     )}
                   </td>
-                  <td className="rating" style={{ color: "orange" }}>
+                  <td className="text-warning">
                     {"★".repeat(Number(review.star))}
                     {"☆".repeat(5 - Number(review.star))}
                   </td>
-                  <td style={{ fontSize: "12px" }}>
-                    <Link
-                      style={{ color: "#00bfa5" }}
-                      to={`/profile/${review.doctorId}`}
-                    >
+                  <td>
+                    <Link to={`/profile/${review.doctorId?._id}`}>
                       {`${review.doctorId?.firstName} ${review.doctorId?.lastName}`}
                     </Link>
                   </td>
                   <td>{new Date(review.createdAt).toLocaleDateString()}</td>
                   <td>
-                    <div className="comment">{review.description}</div>
+                    <div className="comment border rounded p-2">
+                      {review.description}
+                    </div>
                   </td>
                 </tr>
               ))}

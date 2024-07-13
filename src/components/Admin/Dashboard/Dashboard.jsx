@@ -244,7 +244,7 @@ const AdminDashboard = () => {
                       <tr>
                         <th>Patient Name</th>
                         <th>Phone</th>
-                        <th>Email</th>
+                        <th>Gender</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -266,7 +266,7 @@ const AdminDashboard = () => {
                             </h2>
                           </td>
                           <td>{patient.mobile}</td>
-                          <td>{patient.email}</td>
+                          <td>{patient.gender}</td>
                         </tr>
                       ))}
                     </tbody>
