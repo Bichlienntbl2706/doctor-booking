@@ -26,7 +26,7 @@ const getPatient = async (id: string): Promise<IPatient | null> => {
         return result;
 
     } catch (error) {
-        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to get all patients');
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to get patients');
     }
 }
 

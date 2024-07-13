@@ -15,7 +15,7 @@ const SignIn = ({ handleResponse }) => {
     const [show, setShow] = useState(true);
     const { register, handleSubmit, watch, formState: { errors } } = useForm();
     const navigate = useNavigate();
-    const [userLogin, { isError, isLoading, isSuccess, error }] = useUserLoginMutation();
+    const [userLogin, { isError, isLoading, isSuccess, error, data }] = useUserLoginMutation();
     const [forgotEmail, setForgotEmail] = useState('');
     const [resetPassword, { isError: resetIsError, isSuccess: resetIsSuccess, error: resetError, isLoading: resetIsLoading }] = useResetPasswordMutation();
 
@@ -24,26 +24,37 @@ const SignIn = ({ handleResponse }) => {
     }, 10000);
 
     const onSubmit = async (event) => {
-        userLogin({ ...event })
+        userLogin({ ...event });
     }
 
     const onHandleForgotPassword = async (e) => {
         e.preventDefault();
-        resetPassword({ email: forgotEmail })
+        resetPassword({ email: forgotEmail });
         setForgotEmail("");
         setShowForgotPassword(false);
     }
-    useMessageEffect(resetIsLoading, resetIsSuccess, resetIsError, resetError, "Successfully Reset Password, Please check your Email!!")
+
+    useMessageEffect(resetIsLoading, resetIsSuccess, resetIsError, resetError, "Successfully Reset Password, Please check your Email!!");
+
     useEffect(() => {
         if (isError) {
-            message.error(error?.data?.message)
-            setInfoError(error?.data?.message)
+            message.error(error?.data?.message);
+            setInfoError(error?.data?.message);
         }
         if (isSuccess) {
             message.success('Successfully Logged in');
-            navigate('/')
+            const role = data?.user?.role;
+            if (role === 'admin') {
+                navigate('/admin/dashboard');
+            } else if (role === 'doctor') {
+                navigate('/');
+            } else if (role === 'patient') {
+                navigate('/');
+            } else {
+                navigate('/');
+            }
         }
-    }, [isError, error, isSuccess, navigate])
+    }, [isError, error, isSuccess, data, navigate]);
 
     const handleShowForgotPassword = () => {
         setShowForgotPassword(!showForgotPassword);
@@ -59,31 +70,15 @@ const SignIn = ({ handleResponse }) => {
                         <div>To Forgot Your Password Please Enter your email</div>
                         <div className="input-field">
                             <span className="fIcon"><FaEnvelope /></span>
-                            <input value={forgotEmail !== undefined && forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} placeholder="Enter Your Email" type="email" required />
+                            <input value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} placeholder="Enter Your Email" type="email" required />
                         </div>
-                        <div onClick={handleShowForgotPassword} className='text-bold' style={{ cursor: "pointer", color: '#4C25F5' }}>Stil Remember Password ?</div>
-                        <button className="iBtn" type="submit" value="sign In" >
+                        <div onClick={handleShowForgotPassword} className='text-bold' style={{ cursor: "pointer", color: '#4C25F5' }}>Still Remember Password?</div>
+                        <button className="iBtn" type="submit" value="sign In">
                             {resetIsLoading ? <Spinner animation="border" variant="info" /> : "Submit"}
                         </button>
                     </form>
                     :
                     <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
-                        {/* <Toast show={show} onClose={() => setShow(!show)} className="signInToast">
-                            <Toast.Header>
-                                <strong className="mr-auto">Demo credential</strong>
-                            </Toast.Header>
-                            <Toast.Body>Use this account to sign in as a doctor <br />
-                                <hr />
-                                <div className='bg-dark text-white p-2 px-3 rounded'>
-                                    email : doctor@gmail.com <br />
-                                    password : 123456 <br />
-                                </div>
-                                <hr />
-                                <div className='bg-primary p-2 rounded text-white'>
-                                    Please do not abuse the facility
-                                </div>
-                            </Toast.Body>
-                        </Toast> */}
                         <h2 className="title">Sign in</h2>
                         <div className="input-field">
                             <span className="fIcon"><FaEnvelope /></span>
@@ -96,8 +91,8 @@ const SignIn = ({ handleResponse }) => {
                         </div>
                         {errors.password && <span className="text-danger">This field is required</span>}
                         {infoError && <p className="text-danger">{infoError}</p>}
-                        <div onClick={handleShowForgotPassword} className='text-bold' style={{ cursor: "pointer", color: '#4C25F5' }}>Forgot Password ?</div>
-                        <button className="iBtn" type="submit" value="sign In" >
+                        <div onClick={handleShowForgotPassword} className='text-bold' style={{ cursor: "pointer", color: '#4C25F5' }}>Forgot Password?</div>
+                        <button className="iBtn" type="submit" value="sign In">
                             {isLoading ? <Spinner animation="border" variant="info" /> : "Sign In"}
                         </button>
                         <p className="social-text">Or Sign in with social platforms</p>

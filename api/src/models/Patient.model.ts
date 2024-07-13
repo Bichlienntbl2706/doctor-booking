@@ -17,6 +17,7 @@ export interface IPatient extends Document{
     img?: string;
     createdAt?: Date; 
     updatedAt?: Date; 
+    isBlocked?: Boolean;
 }
 
 const patientSchema = new Schema({
@@ -33,6 +34,10 @@ const patientSchema = new Schema({
     country: { type: String },
     email: { type: String, required: true, unique: true },
     address: { type: String },
+    isBlocked: {
+        type: Boolean,
+        default: false,
+    },
     img: { type: String }
   }, { timestamps: true });
 

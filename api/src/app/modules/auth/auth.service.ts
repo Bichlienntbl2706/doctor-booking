@@ -13,76 +13,88 @@ import Auth, {IAuth} from '../../../models/auth.model';
 import Doctor from '../../../models/Doctor.model';
 import Patient from '../../../models/Patient.model';
 import ForgotPassword from '../../../models/ForgotPassword.model';
+import Admin from '../../../models/Admin.model';
 
 type ILoginResponse = {
     accessToken?: string;
-    user: {},
-}
-
-const loginUser = async (user: any): Promise<ILoginResponse> => {
+    user: {};
+  };
+  
+  const loginUser = async (user: any): Promise<ILoginResponse> => {
     const { email: IEmail, password } = user;
-  
+
     const isUserExist = await Auth.findOne({ email: IEmail });
-  
+
     if (!isUserExist) {
-        throw new ApiError(httpStatus.NOT_FOUND, "User does not exist!");
+        throw new ApiError(httpStatus.NOT_FOUND, 'User does not exist!');
     }
-  
+
     let additionalInfo = {};
-  
-    if (isUserExist.role === "doctor") {
+
+    if (isUserExist.role === 'doctor') {
         const getDoctorInfo = await Doctor.findOne({ email: isUserExist.email });
-        console.log("doctor", isUserExist.email)
+        console.log('doctor', isUserExist.email);
         if (getDoctorInfo && getDoctorInfo.verified === false) {
             throw new ApiError(
                 httpStatus.BAD_REQUEST,
-                "Please verify your email first!"
+                'Please verify your email first!'
+            );
+        }
+        if (getDoctorInfo && getDoctorInfo.isBlocked) {
+            throw new ApiError(
+                httpStatus.FORBIDDEN,
+                'This account has been blocked!'
             );
         }
         if (getDoctorInfo) {
             additionalInfo = { doctorId: getDoctorInfo._id };
         }
-        
-
-    } else if (isUserExist.role === "patient") {
+    } else if (isUserExist.role === 'patient') {
         const getPatientInfo = await Patient.findOne({ email: isUserExist.email });
+        if (getPatientInfo && getPatientInfo.isBlocked) {
+            throw new ApiError(httpStatus.FORBIDDEN, 'This account has been blocked');
+        }
         if (getPatientInfo) {
             additionalInfo = { patientId: getPatientInfo._id };
         }
-       
     }
-  
+    else if (isUserExist.role === 'admin') {
+        const getAdminInfo = await Admin.findOne({ email: isUserExist.email });
+        if (getAdminInfo) {
+            additionalInfo = { adminId: getAdminInfo._id };
+        }
+    }
+
     if (!password || !isUserExist.password) {
         console.error('Password is not provided or does not match!');
-        throw new ApiError(httpStatus.UNAUTHORIZED, "Password is not matched!");
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is not matched!');
     }
-  
-    const isPasswordMatched = await bcrypt.compare(
-        password,
-        isUserExist.password
-    );
-  
+
+    const isPasswordMatched = await bcrypt.compare(password, isUserExist.password);
+
     if (!isPasswordMatched) {
         console.error('Password does not match!');
-        throw new ApiError(httpStatus.UNAUTHORIZED, "Password is not matched!");
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Password is not matched!');
     }
-  
-    
+
     const { role, _id: userId } = isUserExist;
     const accessToken = JwtHelper.createToken(
         { role, userId, ...additionalInfo },
         config.jwt.secret as string,
         config.jwt.JWT_EXPIRES_IN as string
     );
-  
-  console.log('id doctor: ',additionalInfo )
+
+    console.log('id doctor: ', additionalInfo);
     console.log('Login successful!');
-  
+
     return {
         accessToken,
-        user: { role, userId, ...additionalInfo }
+        user: { role, userId, ...additionalInfo },
     };
-  };
+};
+
+  
+
 const VerificationUser = async (user: any): Promise<ILoginResponse> => {
     const { email: IEmail, password } = user;
     const isUserExist = await Auth.findOne({ email: IEmail });

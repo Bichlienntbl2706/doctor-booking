@@ -12,21 +12,25 @@ import Patient from "../../../models/Patient.model";
 import Verification from "../../../models/UserVerification.model";
 import Auth from '../../../models/auth.model';
 
+
 const Login = catchAsync(async (req: Request, res: Response) => {
     const result = await AuthService.loginUser(req.body);
     const { accessToken } = result;
+
     const cookieOptions = {
         secure: config.env === 'production',
-        httpOnly: true
-    }
-    res.cookie('accessToken', accessToken, cookieOptions)
+        httpOnly: true,
+    };
+    res.cookie('accessToken', accessToken, cookieOptions);
+
     sendResponse(res, {
         statusCode: 200,
         message: 'Successfully Logged !!',
         success: true,
         data: result,
-    })
-})
+    });
+});
+
 const resetPassword = catchAsync(async (req: Request, res: Response) => {
     const result = await AuthService.resetPassword(req.body);
     sendResponse(res, {
