@@ -37,6 +37,7 @@ import Treatment from './components/Doctor/Treatment/Treatment';
 import Prescription from './components/Doctor/Prescription/Prescription';
 import PrescriptionView from './components/Doctor/Prescription/PrescriptionView';
 import TreatmentEdit from './components/Doctor/Treatment/TreatmentEdit';
+import TreatmentView from './components/Doctor/Treatment/TreatmentView';
 import ViewAppointment from './components/Doctor/Appointments/ViewAppointment';
 import ForgotPassword from './components/Login/ForgotPassword';
 import Dashboard from './components/Doctor/Dashboard/Dashboard';
@@ -58,6 +59,7 @@ function App() {
           <Route path='/dashboard/prescription' element={<Prescription />} />
           <Route path='/dashboard/prescription/:id' element={<PrescriptionView />} />
           <Route path='/dashboard/appointment/treatment/:id' element={<Treatment />} />
+          <Route path='/dashboard/treatment/view/:id' element={<TreatmentView/>} />
           <Route path='/dashboard/appointment/treatment/edit/:id' element={<TreatmentEdit />} />
           <Route path='/dashboard/change-password' element={<ChangePassword />} />
           <Route path='/dashboard/profile-setting' element={<ProfileSetting />} />

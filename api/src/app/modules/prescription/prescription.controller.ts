@@ -12,6 +12,15 @@ const createPrescription = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const createMedicine = catchAsync(async (req: Request, res: Response) => {
+    await PrescriptionService.createMedicine(req.user, req.body);
+    sendResponse(res, {
+        statusCode: 200,
+        message: 'Successfully Created Medicine !!',
+        success: true,
+    })
+})
+
 const updatePrescriptionAndAppointment = catchAsync(async (req: Request, res: Response) => {
     // console.log("req user: ", req.user, " req body: ", req.body)
     await PrescriptionService.updatePrescriptionAndAppointment(req.user, req.body);
@@ -84,6 +93,7 @@ const getAllPrescriptions = catchAsync(async (req: Request, res: Response) => {
 
 export const PrescriptionController = {
     createPrescription,
+    createMedicine,
     getAllPrescriptions,
     getPrescriptionById,
     deletePrescription,

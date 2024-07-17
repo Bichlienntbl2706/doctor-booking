@@ -12,22 +12,22 @@ const Prescription = () => {
     const { data, isLoading } = useGetAllPrescriptionsQuery();
     const [deleteBlog] = useDeletePrescriptionMutation();
     const { doctorId } = useAuthCheck();
-
+console.log("data: ", data)
     // Define columns outside of the data.map function
     const columns = [
         {
             title: 'Appointment Id',
             dataIndex: "appointmentId",
             key: 1,
-            render: ({ _id }) => {
+            render: ({ trackingId }) => {
                 return (
-                    <Tag color="#f50">{_id}</Tag>
+                    <Tag color="#f50">{trackingId}</Tag>
                 )
             }
         },
         {
             title: 'Disease',
-            sorter: true,
+            // sorter: true,
             dataIndex: "disease",
             key: 3,
         },
@@ -51,7 +51,7 @@ const Prescription = () => {
             title: 'createdAt',
             dataIndex: 'createdAt',
             key: 5,
-            sorter: true,
+            // sorter: true,
             render: function (data) {
                 return data && dayjs(data).format('MMM D, YYYY hh:mm A');
             }
@@ -61,21 +61,32 @@ const Prescription = () => {
             key: 4,
             render: function (data) {
                 return (
-                    <div className='d-flex'>
-                        <Link to={`/dashboard/prescription/${data._id}`}>
-                            <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
-                                <FaRegEye />
-                            </Button>
-                        </Link>
-                        <Link to={`/dashboard/appointment/treatment/edit/${data._id}`}>
-                            <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
-                                <FaEdit />
-                            </Button>
-                        </Link>
-                        {/* <Button onClick={() => deleteHandler(data._id)} size='small' type='primary' style={{ margin: "5px 5px" }} danger>
-                            <FaRegTimesCircle />
-                        </Button> */}
-                    </div>
+                    <>
+                        {data.appointmentId.status ==='Completed' ?(
+                            <div className='d-flex'>
+                                <Link to={`/dashboard/prescription/${data._id}`}>
+                                <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
+                                    <FaRegEye />
+                                </Button>
+                                </Link>
+                            </div>
+                        ):(
+                            <div className='d-flex'>
+                                <Link to={`/dashboard/prescription/${data._id}`}>
+                                    <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
+                                        <FaRegEye />
+                                    </Button>
+                                </Link>
+                                <Link to={`/dashboard/appointment/treatment/edit/${data._id}`}>
+                                    <Button type='primary' size='small' className="bg-primary" style={{ margin: "5px 5px" }}>
+                                        <FaEdit />
+                                    </Button>
+                                </Link>
+                             </div>
+                            
+                        )
+                        }
+                   </>
                 )
             }
         },
@@ -104,7 +115,7 @@ const Prescription = () => {
                     columns={columns}
                     dataSource={filteredData}
                     showPagination={true}
-                    pageSize={20}
+                    pageSize={5}
                     showSizeChanger={true}
                 />
             </div>

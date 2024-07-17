@@ -109,7 +109,7 @@ const PrescriptionView = () => {
                                                 <div>
                                                     <p>Sex : {data?.patientId?.gender}</p>
                                                     <p>Age : {moment().diff(data?.patientId?.dateOfBirth, 'years')}</p>
-                                                    <p>Weight : {data?.patientId?.weight}</p>
+                                                    <p>Weight : {data?.patientId?.weight} Kg</p>
                                                 </div>
                                             </div>
                                         </div>

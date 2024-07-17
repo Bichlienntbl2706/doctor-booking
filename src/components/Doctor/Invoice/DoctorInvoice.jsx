@@ -78,7 +78,7 @@ console.log("doctor invoice: ", data)
                     columns={columns}
                     dataSource={data}
                     showPagination={true}
-                    pageSize={10}
+                    pageSize={5}
                     showSizeChanger={true}
                 />
             </div>

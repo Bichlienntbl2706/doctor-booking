@@ -56,7 +56,7 @@ const BookingSuccess = () => {
                                 </div>
                                 <div className='d-flex gap-3 mb-1'>
                                     <FaBriefcase style={{ fontSize: '1rem' }} />
-                                    <p>With Doctor</p>
+                                    <p>With Dr. {data.doctorId.firstName} {data.doctorId.lastName}</p>
                                 </div>
                                 <div className='d-flex gap-3 mb-1'>
                                     <FaRegClock style={{ fontSize: '1rem' }} />

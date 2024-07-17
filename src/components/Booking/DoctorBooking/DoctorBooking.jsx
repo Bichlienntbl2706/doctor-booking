@@ -246,7 +246,7 @@ const DoctorBooking = () => {
     const { doctorId } = useParams();
     const navigation = useNavigate();
     const { data, isLoading, isError, error } = useGetDoctorQuery(doctorId);
-    const { data: time, refetch, isLoading: dIsLoading, isError: dIsError, error: dError } = useGetAppointmentTimeQuery({ day: selectDay, id: doctorId });
+    const { data: time, refetch, isLoading: dIsLoading, isError: dIsError, error: dError } = useGetAppointmentTimeQuery({ day: selectDay, id: doctorId, time: selectTime });
 
     const [selectValue, setSelectValue] = useState(initialValue);
     const [IsdDisable, setIsDisable] = useState(true);
@@ -283,13 +283,21 @@ const DoctorBooking = () => {
     if (!dIsLoading && !dIsError && time.length === 0) dContent = <Empty children="Doctor Is not Available" />
     if (!dIsLoading && !dIsError && time.length > 0) dContent =
         <>
-            {
-                time && time.map((item, id) => (
-                    <div className="col-md-4" key={id + 155}>
-                        <Button type={item?.slot?.time === selectTime ? "primary" : "default"} shape="round" size='large' className='mb-3' onClick={() => handleSelectTime(item?.slot?.time)}> {item?.slot?.time} </Button>
-                    </div>
-                ))
-            }
+             {
+            time && time.map((item, id) => (
+                <div className="col-md-4" key={id + 155}>
+                    <Button
+                        type={item.slot.time === selectTime ? "primary" : "default"}
+                        shape="round" size='large'
+                        className='mb-3'
+                        onClick={() => handleSelectTime(item.slot.time)}
+                        disabled={item.slot.disabled} // Thêm dòng này
+                    >
+                        {item.slot.time}
+                    </Button>
+                </div>
+            ))
+        }
         </>
 
     //What to render
@@ -303,7 +311,7 @@ const DoctorBooking = () => {
                     <img src={img} alt="" />
                 </Link>
                 <div className='text-start'>
-                    <Link to={`/doctors/${data?.id}`} style={{ textDecoration: 'none' }}>Dr. {data?.firstName + ' ' + data?.lastName}</Link>
+                    <Link to={`/doctors/${data?._id}`} style={{ textDecoration: 'none' }}>Dr. {data?.firstName + ' ' + data?.lastName}</Link>
                     <p className="form-text mb-0"><FaArchway /> {data?.specialization + ',' + data?.experienceHospitalName}</p>
                 </div>
             </div>

@@ -8,6 +8,71 @@ import Patient from '../../../models/Patient.model'
 
 
 const createPrescription = async (user: any, payload: any): Promise<{ message: string }> => {
+    const { diagnosis, ...others } = payload;
+    const { doctorId } = user;
+
+    const isDoctor = await Doctor.findById(doctorId);
+    if (!isDoctor) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Doctor Account is not found !!');
+    }
+
+    const isAppointment = await Appointment.findById(payload.appointmentId);
+    if (!isAppointment) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Appointment is not found !!');
+    }
+    
+    if (payload.status === 'Completed') {
+        await Appointment.findByIdAndUpdate(isAppointment._id, {
+            prescriptionStatus: 'issued'
+        });
+    }
+
+    await Appointment.findByIdAndUpdate(isAppointment._id, {
+        status: payload.status,
+        patientType: payload.patientType,
+    });
+
+    const prescription = await Prescription.create({
+        ...others,
+        diagnosis,
+        doctorId: isDoctor.id,
+        patientId: isAppointment.patientId,
+        appointmentId: isAppointment._id,
+        // medicines: []
+    });
+
+    // try {
+    //     const medicinePromises = payload.medicine.map(async (med: any) => {
+    //         const createdMedicine = await Medicine.create({
+    //             ...med,
+    //             prescriptionId: prescription.id
+    //         });
+    //         return createdMedicine;
+    //     });
+
+    //     const medicines = await Promise.all(medicinePromises);
+        
+    //     const medicineIds = medicines.map(med => med.id);
+    //     prescription.medicines = medicineIds;
+    //     await prescription.save();
+    // } catch (error) {
+    //     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error creating medicines');
+    // }
+
+    // Update the appointment with the prescription ID
+    try {
+        const appointmentUpdateResult = await Appointment.findByIdAndUpdate(isAppointment._id, {
+            prescriptionId: prescription._id
+        });
+        console.log("Appointment Update Result with prescriptionId:", appointmentUpdateResult);
+    } catch (error) {
+        console.error('Error updating appointment with prescription ID:', error);
+        throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Error updating appointment with prescription ID');
+    }
+
+    return { message: "Successfully Prescription Created" };
+}
+const createMedicine = async (user: any, payload: any): Promise<{ message: string }> => {
     const { medicine, ...others } = payload;
     const { doctorId } = user;
 
@@ -72,7 +137,6 @@ const createPrescription = async (user: any, payload: any): Promise<{ message: s
     return { message: "Successfully Prescription Created" };
 }
 
-
 const updatePrescriptionAndAppointment = async (user: any, payload: any): Promise<{ message: string }> => {
     const { status, patientType, followUpdate, prescriptionId, diagnosis, medicine, ...others } = payload;
     const { doctorId } = user;
@@ -98,6 +162,15 @@ const updatePrescriptionAndAppointment = async (user: any, payload: any): Promis
             status: status,
             patientType: patientType,
         });
+        
+        if (status === 'Completed') {
+            console.log("true")
+            await Appointment.updateOne({
+                _id: isPrescribed.appointmentId
+            }, {
+                prescriptionStatus: 'issued'
+            });
+        }
 
         // Update the prescription with diagnosis and other details
         await Prescription.updateOne({
@@ -229,7 +302,7 @@ const updatePrescriptionAndAppointment = async (user: any, payload: any): Promis
 
 const getAllPrescriptions = async (): Promise<IPrescription[] | null> => {
     try {
-        const result = await Prescription.find().populate('appointmentId', 'trackingId');
+        const result = await Prescription.find().populate('appointmentId', 'trackingId status');
         return result;
     } catch (error) {
         console.error('Error retrieving prescriptions:', error);
@@ -257,18 +330,36 @@ const getPrescriptionById = async (id: string): Promise<any | null> => {
 }
 
 
+// const getPatientPrescriptionById = async (user: any): Promise<IPrescription[] | null> => {
+//     const { userId } = user;
+
+//     const isPatient = await Patient.findById(userId);
+//     if (!isPatient) {
+//         throw new ApiError(httpStatus.NOT_FOUND, 'Patient Account is not found !!');
+//     }
+
+//     const result = await Prescription.find({ patientId: userId })
+//         .populate('doctor', 'firstName lastName designation')
+//         .populate('appointment', 'scheduleDate scheduleTime status trackingId');
+    
+//     return result;
+// }
+
 const getPatientPrescriptionById = async (user: any): Promise<IPrescription[] | null> => {
     const { userId } = user;
+    console.log("userId", userId)
 
-    const isPatient = await Patient.findById(userId);
+    console.log(user.patientId)
+    const isPatient = await Patient.findById(user.patientId);
     if (!isPatient) {
         throw new ApiError(httpStatus.NOT_FOUND, 'Patient Account is not found !!');
     }
-
-    const result = await Prescription.find({ patientId: userId })
-        .populate('doctor', 'firstName lastName designation')
-        .populate('appointment', 'scheduleDate scheduleTime status trackingId');
+    console.log("PatientId", {patientId: user})
+    const result = await Prescription.find({ patientId: user.patientId })
+        .populate('doctorId', 'firstName lastName designation')
+        .populate('appointmentId', 'scheduleDate scheduleTime status trackingId');
     
+    console.log(result); 
     return result;
 }
 
@@ -304,11 +395,12 @@ const updatePrescription = async (id: string, payload: Partial<IPrescription>): 
 
 export const PrescriptionService = {
     createPrescription,
+    createMedicine,
     getDoctorPrescriptionById,
     updatePrescription,
     getPatientPrescriptionById,
     deletePrescription,
     getPrescriptionById,
     getAllPrescriptions,
-    updatePrescriptionAndAppointment
+    updatePrescriptionAndAppointment,
 }

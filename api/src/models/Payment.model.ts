@@ -1,7 +1,7 @@
-import mongoose,{ Schema, Document }  from 'mongoose';
+import mongoose,{ Schema, Document, Types }  from 'mongoose';
 
-interface IPayment extends Document{
-  appointmentId: string;
+export interface IPayment extends Document{
+  appointmentId: Types.ObjectId;
   paymentMethod?: string;
   paymentType?: string;
   DoctorFee?: number;
@@ -9,12 +9,11 @@ interface IPayment extends Document{
   vat?: number;
   totalAmount?: number;
   createdAt?: Date; 
-    updatedAt?: Date; 
+  updatedAt?: Date; 
 }
 
 const paymentSchema = new Schema({
-  // appointmentId: {type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', required: true },
-  appointmentId: { type: String, ref: 'Appointment', required: true },
+  appointmentId: {type: mongoose.Schema.Types.ObjectId, ref: 'Appointment', required: true },
   paymentMethod: { type: String, required: true },
   paymentType: { type: String, required: true },
   DoctorFee: { type: Number, required: true },

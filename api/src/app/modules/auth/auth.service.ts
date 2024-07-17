@@ -118,7 +118,7 @@ const resetPassword = async (payload: any): Promise<{ message: string }> => {
         throw new ApiError(httpStatus.NOT_FOUND, "User does not exist!");
     }
 
-    const clientUrl = `${config.clientUrl}/reset-password/`;
+    const clientUrl = `http://localhost:3000/reset-password/`;
     const uniqueString = uuidv4() + isUserExist._id;
     const uniqueStringHashed = await bcrypt.hash(uniqueString, 12);
     const encodedUniqueStringHashed = uniqueStringHashed.replace(/\//g, '-');
@@ -156,36 +156,36 @@ const resetPassword = async (payload: any): Promise<{ message: string }> => {
 const PasswordResetConfirm = async (payload: any): Promise<{ message: string }> => {
     const { userId, uniqueString, password } = payload;
 
-    await mongoose.connection.transaction(async (session) => {
-        const isUserExist = await Auth.findById(userId).session(session);
+    const isUserExist = await Auth.findById(userId);
+    console.log("isUserExist", isUserExist)
+    if (!isUserExist) {
+        throw new ApiError(httpStatus.NOT_FOUND, "User does not exist!");
+    }
 
-        if (!isUserExist) {
-            throw new ApiError(httpStatus.NOT_FOUND, "User does not exist!");
-        }
-
-        const resetLink = `${config.clientUrl}/reset-password/${isUserExist._id}/${uniqueString}`;
-        const getForgotRequest = await ForgotPassword.findOne({
-            userId,
-            uniqueString: resetLink
-        }).session(session);
-
-        if (!getForgotRequest) {
-            throw new ApiError(httpStatus.NOT_FOUND, "Forgot request was not found or is invalid!");
-        }
-
-        const expiresAt = moment(getForgotRequest.expiresAt);
-        const currentTime = moment();
-        if (expiresAt.isBefore(currentTime)) {
-            throw new ApiError(httpStatus.NOT_FOUND, "Forgot request has expired!");
-        }
-
-        if (password) {
-            isUserExist.password = await bcrypt.hash(password, 12);
-            await isUserExist.save({ session });
-        }
-
-        await ForgotPassword.deleteOne({ _id: getForgotRequest._id }).session(session);
+    const resetLink = `http://localhost:3000/reset-password/${isUserExist._id}/${uniqueString}`;
+    console.log("resetLink", resetLink)
+    const getForgotRequest = await ForgotPassword.findOne({
+        userId,
+        // uniqueString: resetLink
     });
+    console.log("getForgotRequest", getForgotRequest)
+
+    if (!getForgotRequest) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Forgot request was not found or is invalid!");
+    }
+
+    const expiresAt = moment(getForgotRequest.expiresAt);
+    const currentTime = moment();
+    if (expiresAt.isBefore(currentTime)) {
+        throw new ApiError(httpStatus.NOT_FOUND, "Forgot request has expired!");
+    }
+
+    if (password) {
+        isUserExist.password = await bcrypt.hash(password, 12);
+        await isUserExist.save();
+    }
+
+    await ForgotPassword.deleteOne({ _id: getForgotRequest._id });
 
     return { message: "Password changed successfully!" };
 };

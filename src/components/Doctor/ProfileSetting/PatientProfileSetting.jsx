@@ -112,7 +112,7 @@ const PatientProfileSetting = () => {
                         </div>
                     </div>
                     <div className="col-md-6">
-                        <div className="form-group mb-2">
+                        <div className="form-group mb-2 card-label">
                             <label>Gender</label>
                             <select className="form-control select" onChange={handleChange} name='gender'>
                                 <option value={''}>Select</option>
@@ -124,8 +124,8 @@ const PatientProfileSetting = () => {
                     </div>
 
                     <div className="col-md-6 row pr-4">
-                        <div className="form-group mb-2 col-md-6">
-                            <label className='form-label'>Blood Group</label>
+                        <div className="form-group mb-2 col-md-6  card-label">
+                            <label>Blood Group</label>
                             <select className="form-control select"
                                 onChange={handleChange}
                                 name='bloodGroup'
@@ -138,15 +138,15 @@ const PatientProfileSetting = () => {
                                 }
                             </select>
                         </div>
-                        <div className="form-group mb-2 col-md-6">
-                            <label className='form-label'>Weight</label>
-                            <input defaultValue={data?.weight} {...register("weight")} className="form-control" />
+                        <div className="form-group mb-2 col-md-6  card-label">
+                            <label >Weight</label>
+                            <input style={{width:"269px"}} defaultValue={data?.weight} {...register("weight")} className="form-control" />
                         </div>
                     </div>
 
                     <div className="col-md-6">
-                        <div className="form-group mb-2">
-                            <label className='form-label'>City</label>
+                        <div className="form-group mb-2 card-label" style={{marginBottom:"0.5rem", marginLeft:"24px", width:"538px"}}>
+                            <label >City</label>
                             <input defaultValue={data?.city} {...register("city")} className="form-control" />
                         </div>
                     </div>

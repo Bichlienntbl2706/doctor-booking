@@ -45,9 +45,9 @@ console.log("data booking: ", data)
                                 <div className="invoice-info">
                                     <strong className="customer-text">Invoice From</strong>
                                     <p className="invoice-details invoice-details-two">
-                                        Dr. {data?.appointmentId?.doctorId?.firstName ? `${data?.appointmentId?.doctorId?.firstName} ${data?.appointmentId?.doctorId?.lastName}`: ' Of DoctorOnCall'} <br />
-                                        {data?.appointmentId?.doctorId?.address ? data?.appointment?.doctorId?.address : "Sylhet, Dhaka ,BD,3214"}, {data?.appointmentId?.doctorId?.city && data?.appointmentId?.doctorId?.city},<br />
-                                        {data?.appointmentId?.doctorId?.country && data?.appointmentId?.doctorId?.country} <br />
+                                        Dr. {data?.doctorId?.firstName ? `${data?.doctorId?.firstName} ${data?.doctorId?.lastName}`: ' Of DoctorOnCall'} <br />
+                                        {data?.doctorId?.address ? data?.doctorId?.address : "Sylhet, Dhaka ,BD,3214"}, {data?.doctorId?.city && data?.doctorId?.city},<br />
+                                        {data?.doctorId?.country && data?.doctorId?.country} <br />
                                     </p>
                                 </div>
                             </div>
@@ -55,9 +55,9 @@ console.log("data booking: ", data)
                                 <div className="invoice-info invoice-info2">
                                     <strong className="customer-text">Invoice To</strong>
                                     <p className="invoice-details">
-                                        {data?.appointmentId?.patientId?.firstName + ' ' + data?.appointmentId?.patientId?.lastName} <br />
-                                        {data?.appointmentId?.patientId?.address}, {data?.appointmentId?.patientId?.city} ,<br />
-                                        {data?.appointmentId?.patientId?.country} <br />
+                                        {data?.patientId?.firstName + ' ' + data?.patientId?.lastName} <br />
+                                        {data?.patientId?.address}, {data?.patientId?.city} ,<br />
+                                        {data?.patientId?.country} <br />
                                     </p>
                                 </div>
                             </div>
@@ -69,9 +69,9 @@ console.log("data booking: ", data)
                                 <div className="invoice-info">
                                     <strong className="customer-text">Payment Method</strong>
                                     <p className="invoice-details invoice-details-two">
-                                        {data?.paymentType} <br />
+                                        {data?.paymentId?.paymentType} <br />
                                         XXXXXXXXXXXX-2541 <br />
-                                        {data?.paymentMethod}<br />
+                                        {data?.paymentId?.paymentMethod}<br />
                                     </p>
                                 </div>
                             </div>
@@ -93,9 +93,9 @@ console.log("data booking: ", data)
                                         <tbody>
                                             <tr>
                                                 <td>General Consultation</td>
-                                                <td className="text-center">${data?.DoctorFee}</td>
-                                                <td className="text-center">${data?.vat}</td>
-                                                <td className="text-right">${data?.totalAmount}</td>
+                                                <td className="text-center">${data?.paymentId?.DoctorFee}</td>
+                                                <td className="text-center">${data?.paymentId?.vat}</td>
+                                                <td className="text-right">${data?.paymentId?.totalAmount}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -107,7 +107,7 @@ console.log("data booking: ", data)
                                         <tbody>
                                             <tr>
                                                 <th>Subtotal:</th>
-                                                <td><span>${data?.totalAmount}</span></td>
+                                                <td><span>${data?.paymentId?.totalAmount}</span></td>
                                             </tr>
                                             <tr>
                                                 <th>Discount:</th>
@@ -115,7 +115,7 @@ console.log("data booking: ", data)
                                             </tr>
                                             <tr>
                                                 <th>Total Amount:</th>
-                                                <td><span>${data?.totalAmount}</span></td>
+                                                <td><span>${data?.paymentId?.totalAmount}</span></td>
                                             </tr>
                                         </tbody>
                                     </table>

@@ -4,6 +4,7 @@ import moment from "moment";
 import Doctor from '../../../models/Doctor.model'
 import mongoose from 'mongoose';
 import {DoctorTimeSlotModel,ScheduleDayModel,IDoctorTimeSlot,IScheduleDay} from '../../../models/DoctorTimeSlot.model'
+import Appointment from "../../../models/Appointment.model";
 
 const createTimeSlot = async (payload: any): Promise<any | null> => {
     const doctorId = payload.doctorId;
@@ -297,9 +298,44 @@ const updateTimeSlot = async (payload: any): Promise<{ message: string }> => {
     return { message: 'Successfully Updated' };
 };
 
-
 const getAppointmentTimeOfEachDoctor = async (id: string, filter: any): Promise<any> => {
     const doctorTimeSlots = await DoctorTimeSlotModel.find({ doctorId: id }).populate('timeSlot');
+
+    // Thêm debug để kiểm tra id và filter.day
+    console.log("Doctor ID:", id);
+    console.log("Filter Day:", filter.day);
+
+    // Kiểm tra xem filter.day có hợp lệ không
+    if (!filter.day) {
+        console.error("Filter Day is missing or invalid.");
+        return [];
+    }
+
+    // Chuyển đổi filter.day nếu nó là một ngày trong tuần
+    let filterDayFormatted;
+    if (moment(filter.day, 'dddd', true).isValid()) {
+        filterDayFormatted = moment().day(filter.day).format('YYYY-MM-DD');
+    } else {
+        filterDayFormatted = moment(filter.day, 'YYYY-MM-DD').format('YYYY-MM-DD');
+    }
+
+    if (filterDayFormatted === 'Invalid date') {
+        console.error("Filter Day is not in a valid format.");
+        return [];
+    }
+    console.log("Formatted Filter Day:", filterDayFormatted);
+
+    // Lấy danh sách các time slot đã được booking
+    const bookings = await Appointment.find({ doctorId: id, scheduleDate: { $regex: `^${filterDayFormatted}` } }).select('scheduleTime');
+
+    // Thêm debug để kiểm tra truy vấn MongoDB
+    console.log("MongoDB Query:", { doctorId: id, scheduleDate: { $regex: `^${filterDayFormatted}` } });
+
+    const bookedTimeSlots = bookings.map(booking => booking.scheduleTime);
+
+    // Thêm debug để kiểm tra bookings và bookedTimeSlots
+    console.log("Bookings:", bookings);
+    console.log("Booked Time Slots:", bookedTimeSlots);
 
     const allSlots = doctorTimeSlots.map((item) => ({
         day: item.day,
@@ -316,12 +352,16 @@ const getAppointmentTimeOfEachDoctor = async (id: string, filter: any): Promise<
             item?.timeSlot.forEach((slot: IScheduleDay) => {
                 const startDate = moment(slot.startTime, 'hh:mm a');
                 const endDate = moment(slot.endTime, 'hh:mm a');
+                console.log("Start Date:", startDate.format('hh:mm a'));
+                console.log("End Date:", endDate.format('hh:mm a'));
 
                 while (startDate < endDate) {
                     const selectableTime = {
                         id: newTimeSlots.length + 1,
-                        time: startDate.format('hh:mm a')
+                        time: startDate.format('hh:mm a'), 
+                        disabled: bookedTimeSlots.includes(startDate.format('hh:mm a'))
                     };
+                    console.log("Selectable Time:", selectableTime);
                     newTimeSlots.push({ day, slot: selectableTime });
                     startDate.add(interval, 'minutes');
                 }
@@ -340,6 +380,50 @@ const getAppointmentTimeOfEachDoctor = async (id: string, filter: any): Promise<
 
     return generateTimeSlot(allSlots);
 }
+
+
+// const getAppointmentTimeOfEachDoctor = async (id: string, filter: any): Promise<any> => {
+//     const doctorTimeSlots = await DoctorTimeSlotModel.find({ doctorId: id }).populate('timeSlot');
+
+//     const allSlots = doctorTimeSlots.map((item) => ({
+//         day: item.day,
+//         timeSlot: item.timeSlot
+//     }));
+
+//     const generateTimeSlot = (timeSlot: any) => {
+//         const selectedTime: any[] = [];
+//         timeSlot.forEach((item: any) => {
+//             const interval = 30;
+//             const newTimeSlots: any[] = [];
+//             const day: string = item?.day;
+
+//             item?.timeSlot.forEach((slot: IScheduleDay) => {
+//                 const startDate = moment(slot.startTime, 'hh:mm a');
+//                 const endDate = moment(slot.endTime, 'hh:mm a');
+
+//                 while (startDate < endDate) {
+//                     const selectableTime = {
+//                         id: newTimeSlots.length + 1,
+//                         time: startDate.format('hh:mm a')
+//                     };
+//                     newTimeSlots.push({ day, slot: selectableTime });
+//                     startDate.add(interval, 'minutes');
+//                 }
+//             });
+
+//             if (filter.day) {
+//                 const newTime = newTimeSlots.filter((item) => item.day === filter.day);
+//                 selectedTime.push(...newTime);
+//             } else {
+//                 selectedTime.push(...newTimeSlots);
+//             }
+//         });
+
+//         return selectedTime;
+//     };
+
+//     return generateTimeSlot(allSlots);
+// }
 
 export const TimeSlotService = {
     updateTimeSlot,

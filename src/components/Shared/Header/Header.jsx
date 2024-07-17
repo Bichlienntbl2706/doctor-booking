@@ -11,7 +11,7 @@ import HeaderNav from './HeaderNav';
 
 const Header = () => {
     const navigate = useNavigate();
-    const { authChecked, data } = useAuthCheck();
+    const { authChecked, data, role } = useAuthCheck();
     const [isLoggedIn, setIsLogged] = useState(false);
     const [show, setShow] = useState(true);
     const [open, setOpen] = useState(false);
@@ -67,7 +67,9 @@ const Header = () => {
                     </Link>
                     <HeaderNav isLoggedIn={isLoggedIn} data={data}
                         avatar={avatar} content={content} open={open} setOpen={setOpen} />
-                    <Link to={'/appointment'} className="appointment-btn scrollto"><span className="d-none d-md-inline">Make an</span> Appointment</Link>
+                    { role === "patient" && 
+                        <Link to={'/doctors'} className="appointment-btn scrollto"><span className="d-none d-md-inline">Make an</span> Appointment</Link>
+                    }
                 </div>
             </header>
         </>

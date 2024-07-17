@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import './BookDoctor.css';
 import { Link } from 'react-router-dom';
 import { useGetDoctorsQuery } from '../../../redux/api/doctorApi';
-import { FaLocationArrow, FaCheckCircle, FaRegHeart, FaDollarSign, FaClock } from "react-icons/fa";
+import { FaLocationArrow, FaCheckCircle, FaRegHeart, FaDollarSign, FaClock, FaHeart } from "react-icons/fa";
 import { useAddFavouriteMutation } from '../../../redux/api/favouriteApi';
 import StarRatings from 'react-star-ratings';
 import { message } from 'antd';
@@ -19,6 +19,7 @@ const BookDoctor = () => {
   const doctors = data?.doctors;
   const [addFavourite, { isSuccess, isLoading: FIsLoading, isError: fIsError, error }] = useAddFavouriteMutation();
   const { userId } = useAuthCheck();
+  const [favoriteDoctors, setFavoriteDoctors] = useState(new Set(JSON.parse(localStorage.getItem('favoriteDoctors')) || []));
   console.log("Data:", data);
   console.log("UserId: ", userId);
   // console.log("isLoading:", isLoading);
@@ -26,6 +27,12 @@ const BookDoctor = () => {
   console.log("addFavourite", addFavourite)
 
   const handleAddFavourite = (id) => {
+    setFavoriteDoctors((prev) => {
+      const newSet = new Set(prev);
+      newSet.add(id);
+      localStorage.setItem('favoriteDoctors', JSON.stringify(Array.from(newSet)));
+      return newSet;
+    });
     addFavourite({ doctorId: id, userId: userId });
     console.log("DocId: ", id);
   };
@@ -33,12 +40,24 @@ const BookDoctor = () => {
   useEffect(() => {
     if (!FIsLoading && fIsError) {
       message.error(error?.data?.message);
+      setFavoriteDoctors((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        localStorage.setItem('favoriteDoctors', JSON.stringify(Array.from(newSet)));
+        return newSet;
+      });
     }
     if (isSuccess) {
       message.success('Successfully added to Favourites');
     }
   }, [isSuccess, fIsError, FIsLoading, error?.data?.message]);
 
+  useEffect(() => {
+    if (data) {
+      const favoriteSet = new Set(JSON.parse(localStorage.getItem('favoriteDoctors')) || []);
+      setFavoriteDoctors(favoriteSet);
+    }
+  }, [data]);
   let content = null;
   if (isLoading) content = <div>Loading...</div>;
   if (!isLoading && isError) content = <div>Something Went Wrong!</div>;
@@ -54,7 +73,7 @@ const BookDoctor = () => {
                   {item.img && <img className="img-fluid" alt="" src={item.img} />}
                 </Link>
                 <a style={{ cursor: 'pointer' }} className="position-absolute top-0 end-0 me-2" onClick={() => handleAddFavourite(item._id)}>
-                  <FaRegHeart />
+                  {favoriteDoctors.has(item._id) ? <FaHeart /> : <FaRegHeart />}
                 </a>
               </div>
               <div className="pro-content">

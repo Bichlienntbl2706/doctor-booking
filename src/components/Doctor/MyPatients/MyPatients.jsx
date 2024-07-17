@@ -20,22 +20,41 @@ const MyPatients = () => {
     if (!isLoading && !isError && data?.length > 0) content =
         <>
             {data && data?.map((item) => (
-                <div className="col-md-4 mt-0 rounded p-3 m-3 text-center" style={{ background: '#f8f9fa' }}>
-                    <div className="">
-                        <Link to={'/'} className="my-3 patient-img">
-                            <img src={item?.img ? item?.img : img} alt="" />
-                        </Link>
-                        <div className="patients-info mt-4">
-                            <h5>{getInitPatientName(item)}</h5>
-                            <div className="info">
-                                {/* <p><FaClock className='icon' /> {moment(item?.appointmentTime).format("MMM Do YY")} </p> */}
-                                <p><FaLocationArrow className='icon' /> {item?.address}</p>
-                                <p><FaEnvelope className='icon' /> {item?.email}</p>
-                                <p><FaPhoneAlt className='icon' /> {item?.mobile}</p>
+                // <div className="col-md-3 mt-0 rounded p-3 m-3 text-center" style={{ background: '#f8f9fa' }}>
+                //     <div className="">
+                //         <Link to={'/'} className="my-3 patient-img">
+                //             <img src={item?.img ? item?.img : img} alt="" />
+                //         </Link>
+                //         <div className="patients-info mt-4">
+                //             <h5>{getInitPatientName(item)}</h5>
+                //             <div className="info">
+                //                 {/* <p><FaClock className='icon' /> {moment(item?.appointmentTime).format("MMM Do YY")} </p> */}
+                //                 <p><FaLocationArrow className='icon' /> {item?.address}</p>
+                //                 <p><FaEnvelope className='icon' /> {item?.email}</p>
+                //                 <p><FaPhoneAlt className='icon' /> {item?.mobile}</p>
+                //             </div>
+                //         </div>
+                //     </div>
+                // </div>
+                <div className="w-100 mb-3 rounded p-3 mr-2" style={{ background: '#f8f9fa' }} key={item.id}>
+                    <div className="d-flex justify-content-between align-items-center">
+                        <div className="d-flex align-items-center gap-3">
+                            <Link to={`/`} className="patient-img">
+                                <img src={item?.img ? item?.img : img} alt="" />
+                            </Link>
+                            <div className="patients-info">
+                                <h5>{getInitPatientName(item)}</h5>
+                                <div className="info mt-2" >
+                                    {/* <p><FaClock className='icon' /> {moment(item?.appointmentTime).format("MMM Do YY")} </p> */}
+                                    <p><FaLocationArrow className='icon' /> {item?.address}</p>
+                                    <p><FaEnvelope className='icon' /> {item?.email}</p>
+                                    <p><FaPhoneAlt className='icon' /> {item?.mobile}</p>
+
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+            </div>
             ))}
         </>
     return (

@@ -6,9 +6,12 @@ import { Tag } from 'antd';
 import './index.css';
 import { FaLocationArrow, FaRegThumbsUp, FaDollarSign, FaComment } from "react-icons/fa";
 import { truncate } from '../../../utils/truncate';
+import useAuthCheck from '../../../redux/hooks/useAuthCheck';
 
 const SearchContent = ({ data }) => {
     let services = [];
+
+    const { role } = useAuthCheck();
 
     // Handle different types for data.services
     if (typeof data?.services === 'string') {
@@ -82,10 +85,17 @@ const SearchContent = ({ data }) => {
                             <li><FaDollarSign /> {data?.price ? truncate(String(data.price), 4) : 60} (Per Hour)</li>
                         </ul>
                     </div>
-                    <div className="clinic-booking">
-                        <Link to={`/doctors/profile/${data?._id}`} className="view-pro-btn">View Profile</Link>
-                        <Link to={`/booking/${data?._id}`} className="apt-btn">Book Appointment</Link>
-                    </div>
+                    {role === 'patient' && 
+                        <div className="clinic-booking">
+                            <Link to={`/doctors/profile/${data?._id}`} className="view-pro-btn">View Profile</Link>
+                            <Link to={`/booking/${data?._id}`} className="apt-btn">Book Appointment</Link>
+                        </div>
+                    }
+                    { role === 'doctor' && 
+                        <div className="clinic-booking">
+                            <Link to={`/doctors/profile/${data?._id}`} className="view-pro-btn">View Profile</Link>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

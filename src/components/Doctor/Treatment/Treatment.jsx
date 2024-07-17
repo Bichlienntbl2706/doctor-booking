@@ -18,7 +18,7 @@ import TreatmentOverview from "./TreatmentOverview";
 const Treatment = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-    const { data } = useGetSingleAppointmentQuery(id)
+    const { data, refetch } = useGetSingleAppointmentQuery(id)
     const { handleSubmit } = useForm();
     const [isDisable, setIsDisable] = useState(true);
     const [selectAppointmentStatus, setSelectAppointmentStatus] = useState('');
@@ -31,38 +31,38 @@ const Treatment = () => {
     const [medicineList, setMedicineList] = useState([{ id: 1 }]);
 
     useEffect(() => {
-        const isInputEmpty = !selectAppointmentStatus || !patientStatus || !instruction  || !diagnosis.length === 0 || !disease.length === 0 || !medicalCheckup.length === 0;
+        const isInputEmpty = !selectAppointmentStatus || !patientStatus  || !diagnosis.length === 0 ||  !medicalCheckup.length === 0;
         setIsDisable(isInputEmpty);
-    }, [selectAppointmentStatus, patientStatus,instruction, medicineList, diagnosis, disease, medicalCheckup]);
+    }, [selectAppointmentStatus, patientStatus, diagnosis, medicalCheckup]);
 
     const [createPrescription, { isSuccess, isLoading, isError, error }] = useCreatePrescriptionMutation();
 
-    const addField = (e) => {
-        e.preventDefault();
-        setMedicineList([...medicineList, { id: medicineList.length + 1 }])
-    }
+    // const addField = (e) => {
+    //     e.preventDefault();
+    //     setMedicineList([...medicineList, { id: medicineList.length + 1 }])
+    // }
 
-    const removeFromAddTimeSlot = (id) => {
-        setMedicineList(medicineList.filter((item) => item.id !== id))
-    }
+    // const removeFromAddTimeSlot = (id) => {
+    //     setMedicineList(medicineList.filter((item) => item.id !== id))
+    // }
 
     // const handleFollowUpChange = (date) => {
     //     if (date) {
     //         setFollowUpdate(dayjs(date).format());
     //     }
     // };
-
+console.log("data treatment view: ", data)
     const onSubmit = (data) => {
         const obj = {};
         obj.status = selectAppointmentStatus;
         obj.patientType = patientStatus;
 
         diagnosis.length && (obj["diagnosis"] = diagnosis.join(','))
-        disease.length && (obj["disease"] = disease.join(','))
+        // disease.length && (obj["disease"] = disease.join(','))
         medicalCheckup.length && (obj["test"] = medicalCheckup.join(','))
         // obj.followUpdate = followUpDate;
-        obj.instruction = instruction;
-        obj.medicine = medicineList;
+        // obj.instruction = instruction;
+        // obj.medicine = medicineList;
         obj.appointmentId = id;
 
         createPrescription({ data: obj });
@@ -74,15 +74,17 @@ const Treatment = () => {
         }
         if (isSuccess) {
             message.success('Successfully Changed Saved !');
+            refetch();
             setSelectAppointmentStatus("");
             setPatientStatus("");
             setDaignosis([]);
-            setDisease([]);
+            // setDisease([]);
             setMedicalCheckup([]);
-            setInstruction('');
+            // setInstruction('');
             // setFollowUpdate('');
-            setMedicineList([{ id: 1 }]);
-            navigate('/dashboard/prescription')
+            // setMedicineList([{ id: 1 }]);
+            navigate(`/dashboard`)
+            // navigate(`/dashboard/treatment/view/${data?._id}`) 
         }
     }, [isLoading, isError, error, isSuccess])
 
@@ -126,7 +128,7 @@ const Treatment = () => {
                             <h6 className="card-title text-secondary">Identify Disease & Symtomps</h6>
 
                             <div className="row">
-                                <div className="col-md-6">
+                                <div className="col-md-12">
                                     <div className="form-group mb-3">
                                         <div>
                                             <label>Daignosis</label>
@@ -139,7 +141,7 @@ const Treatment = () => {
                                     </div>
                                 </div>
 
-                                <div className="col-md-6">
+                                {/* <div className="col-md-6">
                                     <div className="form-group mb-3">
                                         <div>
                                             <label>Disease</label>
@@ -150,7 +152,7 @@ const Treatment = () => {
                                             setSelectData={setDisease}
                                         />
                                     </div>
-                                </div>
+                                </div> */}
                             </div>
 
                         </div>
@@ -173,7 +175,7 @@ const Treatment = () => {
                         </div>
                     </div>
 
-                    <div className="col-md-12">
+                    {/* <div className="col-md-12">
                         <div className="card mb-2 p-3 mt-2">
                             <h6 className="card-title text-secondary">Medicine</h6>
                             {
@@ -244,7 +246,7 @@ const Treatment = () => {
                                 Add
                             </Button>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* <div className="col-md-12 mb-3">
                         <label>Follow Up Date</label>
@@ -259,12 +261,12 @@ const Treatment = () => {
                         </div>
                     </div> */}
 
-                    <div className="col-md-12 mb-3">
+                    {/* <div className="col-md-12 mb-3">
                         <div className="form-group mb-2">
                             <label>Instruction</label>
                             <TextArea rows={4} placeholder="Instruction text ..." onChange={(e) => setInstruction(e.target.value)} />
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className='text-center my-3'>
                         <Button htmlType='submit' type="primary" size='large' disabled={isDisable} loading={isLoading}>
