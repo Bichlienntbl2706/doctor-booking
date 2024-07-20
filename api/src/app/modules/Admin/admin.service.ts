@@ -21,14 +21,20 @@ const transporter = nodemailer.createTransport({
 
 const sendEmailNotification = async (
   email: string,
-  action: string
+  action: "block" | "unblock",
+  reason?: string
 ): Promise<void> => {
   try {
+    let emailText = `Your account has been ${action === "block" ? "blocked" : "unblocked"}.`;
+    if (action === "block" && reason) {
+      emailText += `\n\nReason: ${reason}`;
+    }
+
     await transporter.sendMail({
       from: process.env.ADMIN_EMAIL,
       to: email,
-      subject: `Account ${action} Notification`,
-      text: `Your account has been ${action === "block" ? "blocked" : "unblocked"}.`,
+      subject: `Account ${action.charAt(0).toUpperCase() + action.slice(1)} Notification`,
+      text: emailText,
     });
   } catch (error) {
     console.error("Error sending email:", error);
@@ -39,17 +45,14 @@ const sendEmailNotification = async (
 const blockEntity = async (
   model: any,
   entityId: string,
-  action: "block" | "unblock"
+  reason: string
 ): Promise<void> => {
   try {
-    const isBlocked = action === "block";
-    console.log(
-      `Updating ${model.modelName} with ID ${entityId} to ${isBlocked ? "block" : "unblock"}`
-    );
+    console.log(`Updating ${model.modelName} with ID ${entityId} to block`);
 
     const entity = await model.findByIdAndUpdate(
       entityId,
-      { isBlocked },
+      { isBlocked: true },
       { new: true }
     );
 
@@ -65,33 +68,65 @@ const blockEntity = async (
     }
 
     console.log(
-      `${model.modelName} with ID ${entityId} has been ${isBlocked ? "blocked" : "unblocked"}. Email: ${entity.email}`
+      `${model.modelName} with ID ${entityId} has been blocked. Email: ${entity.email}`
     );
 
-    await sendEmailNotification(entity.email, action);
+    await sendEmailNotification(entity.email, "block", reason);
   } catch (error: any) {
-    console.error(
-      `Error ${action}ing ${model.modelName.toLowerCase()}:`,
-      error
-    );
+    console.error(`Error blocking ${model.modelName.toLowerCase()}:`, error);
     throw new ApiError(httpStatus.BAD_REQUEST, error.message);
   }
 };
 
-const blockDoctor = async (doctorId: string): Promise<void> => {
-  await blockEntity(Doctor, doctorId, "block");
+const unblockEntity = async (model: any, entityId: string): Promise<void> => {
+  try {
+    console.log(`Updating ${model.modelName} with ID ${entityId} to unblock`);
+
+    const entity = await model.findByIdAndUpdate(
+      entityId,
+      { isBlocked: false },
+      { new: true }
+    );
+
+    if (!entity) {
+      throw new ApiError(httpStatus.NOT_FOUND, `${model.modelName} not found`);
+    }
+
+    if (!entity.email) {
+      throw new ApiError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        `${model.modelName} email not found`
+      );
+    }
+
+    console.log(
+      `${model.modelName} with ID ${entityId} has been unblocked. Email: ${entity.email}`
+    );
+
+    await sendEmailNotification(entity.email, "unblock");
+  } catch (error: any) {
+    console.error(`Error unblocking ${model.modelName.toLowerCase()}:`, error);
+    throw new ApiError(httpStatus.BAD_REQUEST, error.message);
+  }
+};
+
+const blockDoctor = async (doctorId: string, reason: string): Promise<void> => {
+  await blockEntity(Doctor, doctorId, reason);
 };
 
 const unblockDoctor = async (doctorId: string): Promise<void> => {
-  await blockEntity(Doctor, doctorId, "unblock");
+  await unblockEntity(Doctor, doctorId);
 };
 
-const blockPatient = async (patientId: string): Promise<void> => {
-  await blockEntity(Patient, patientId, "block");
+const blockPatient = async (
+  patientId: string,
+  reason: string
+): Promise<void> => {
+  await blockEntity(Patient, patientId, reason);
 };
 
 const unblockPatient = async (patientId: string): Promise<void> => {
-  await blockEntity(Patient, patientId, "unblock");
+  await unblockEntity(Patient, patientId);
 };
 const createAdmin = async (payload: any): Promise<any> => {
   try {
@@ -189,4 +224,4 @@ export const AdminService = {
   blockDoctor,
   unblockPatient,
   unblockDoctor,
-}; 
+};

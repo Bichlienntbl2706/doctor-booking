@@ -68,6 +68,11 @@ const AdminSidebar = () => {
                                 <FaRegUser /> <span>Profile</span>
                             </Link>
                         </li>
+                        <li className={location.pathname === '/admin/changePasswordAdmin' ? 'active' : ''}>
+                            <Link to={'/admin/changePasswordAdmin'}>
+                                <FaRegUser /> <span>Change Password</span>
+                            </Link>
+                        </li>
                     </ul>
                 </div>
             </div>

@@ -2,14 +2,15 @@ import express from 'express';
 import { auth } from '../../middlewares/auth';
 import { AuthUser } from '../../../enums';
 import { AppointmentController } from './appointment.controller';
+import Auth from '../../../models/auth.model';
 
 const router = express.Router();
 
 router.get('/', AppointmentController.getAllAppointment);
 
 router.get('/patient/appointments',auth(AuthUser.PATIENT, AuthUser.ADMIN), AppointmentController.getPatientAppointmentById);
-router.get('/patient/invoices',auth(AuthUser.PATIENT), AppointmentController.getPatientPaymentInfo);
-router.get('/doctor/invoices',auth(AuthUser.DOCTOR), AppointmentController.getDoctorInvoices);
+router.get('/patient/invoices',auth(AuthUser.PATIENT, AuthUser.ADMIN), AppointmentController.getPatientPaymentInfo);
+router.get('/doctor/invoices',auth(AuthUser.DOCTOR, AuthUser.ADMIN), AppointmentController.getDoctorInvoices);
 router.get('/invoices', AppointmentController.getInvoices)
 
 router.get('/doctor/appointments',auth(AuthUser.DOCTOR), AppointmentController.getDoctorAppointmentsById);

@@ -143,15 +143,6 @@ const replyReviewByDoctor = async (
   payload: Partial<IReview>
 ): Promise<IReview> => {
   try {
-    const isUserExist = await Doctor.findById(user.userId);
-
-    if (!isUserExist) {
-      throw new ApiError(
-        httpStatus.NOT_FOUND,
-        "Doctor Account is not found !!"
-      );
-    }
-
     const result = await Review.findByIdAndUpdate(
       id,
       { response: payload.response },

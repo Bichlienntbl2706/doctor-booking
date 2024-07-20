@@ -61,47 +61,45 @@ const AdminDashboard = () => {
 
     // Fetch appointments data
     const fetchAppointments = async () => {
-        try {
-          const response = await axios.get(
-            "http://localhost:5050/api/v1/appointment"
-          );
-          if (response.status === 200 && response.data.success) {
-            setAppointments(response.data.data);
-      
-            // Tính tổng doanh thu từ các cuộc hẹn đã thanh toán
-            let total = 0;
-            const doctorsEarningsCopy = {};
-      
-            response.data.data.forEach((appointment) => {
-              if (
-                appointment.paymentId &&
-                appointment.paymentId.totalAmount &&
-                appointment.doctorId
-              ) {
-                total += appointment.paymentId.totalAmount;
-      
-                // Tính tổng tiền kiếm được của từng bác sĩ
-                if (!doctorsEarningsCopy[appointment.doctorId._id]) {
-                  doctorsEarningsCopy[appointment.doctorId._id] =
-                    appointment.paymentId.totalAmount;
-                } else {
-                  doctorsEarningsCopy[appointment.doctorId._id] +=
-                    appointment.paymentId.totalAmount;
-                }
+      try {
+        const response = await axios.get(
+          "http://localhost:5050/api/v1/appointment"
+        );
+        if (response.status === 200 && response.data.success) {
+          setAppointments(response.data.data);
+
+          // Tính tổng doanh thu từ các cuộc hẹn đã thanh toán
+          let total = 0;
+          const doctorsEarningsCopy = {};
+
+          response.data.data.forEach((appointment) => {
+            if (
+              appointment.paymentId &&
+              appointment.paymentId.totalAmount &&
+              appointment.doctorId
+            ) {
+              total += appointment.paymentId.totalAmount;
+
+              // Tính tổng tiền kiếm được của từng bác sĩ
+              if (!doctorsEarningsCopy[appointment.doctorId._id]) {
+                doctorsEarningsCopy[appointment.doctorId._id] =
+                  appointment.paymentId.totalAmount;
+              } else {
+                doctorsEarningsCopy[appointment.doctorId._id] +=
+                  appointment.paymentId.totalAmount;
               }
-            });
-      
-            setTotalRevenue(total);
-            setDoctorsEarnings(doctorsEarningsCopy);
-          } else {
-            console.error("Error fetching appointments:", response.data.message);
-          }
-        } catch (error) {
-          console.error("Error fetching appointments:", error);
+            }
+          });
+
+          setTotalRevenue(total);
+          setDoctorsEarnings(doctorsEarningsCopy);
+        } else {
+          console.error("Error fetching appointments:", response.data.message);
         }
-      };
-      
-    
+      } catch (error) {
+        console.error("Error fetching appointments:", error);
+      }
+    };
 
     fetchAppointments(); // Call the fetch function when component mounts
   }, []);
@@ -287,22 +285,22 @@ const AdminDashboard = () => {
                   <table className="table table-hover table-center mb-0">
                     <thead>
                       <tr>
-                        <th>Doctor Name</th>
-                        <th>Speciality</th>
-                        <th>Patient Name</th>
-                        <th>Appointment Time</th>
-                        <th>Status</th>
-                        <th className="text-right">Amount</th>
+                        <th className="text-start">Doctor Name</th>
+                        <th className="text-start">Speciality</th>
+                        <th className="text-start">Patient Name</th>
+                        <th className="text-start">Appointment Time</th>
+                        <th className="text-start">Status</th>
+                        <th className="text-start">Amount</th>
                       </tr>
                     </thead>
-                    <tbody style={{ textAlign: "center" }}>
+                    <tbody>
                       {appointments.map((appointment) => (
                         <tr key={appointment._id}>
-                          <td style={{ verticalAlign: "middle" }}>
-                            <h2 className="table-avatar">
+                          <td className="align-middle text-start">
+                            <h2 className="table-avatar d-flex align-items-center">
                               <a
                                 href="profile.html"
-                                className="avatar avatar-sm mr-2"
+                                className="avatar avatar-sm me-2"
                               >
                                 <img
                                   className="avatar-img rounded-circle"
@@ -315,14 +313,14 @@ const AdminDashboard = () => {
                               </a>
                             </h2>
                           </td>
-                          <td
-                            style={{ verticalAlign: "middle" }}
-                          >{`${appointment.doctorId.specialization}`}</td>
-                          <td style={{ verticalAlign: "middle" }}>
-                            <h2 className="table-avatar">
+                          <td className="align-middle text-start">
+                            {`${appointment.doctorId.specialization}`}
+                          </td>
+                          <td className="align-middle text-start">
+                            <h2 className="table-avatar d-flex align-items-center">
                               <a
                                 href="profile.html"
-                                className="avatar avatar-sm mr-2"
+                                className="avatar avatar-sm me-2"
                               >
                                 <img
                                   className="avatar-img rounded-circle"
@@ -335,19 +333,18 @@ const AdminDashboard = () => {
                               </a>
                             </h2>
                           </td>
-                          <td style={{ verticalAlign: "middle" }}>
-                            {appointment.appointmentTime}{" "}
+                          <td className="align-middle text-start">
+                            {appointment.appointmentTime}
                             <span className="text-primary d-block">
                               {`${appointment.scheduleDate} ${appointment.scheduleTime}`}
                             </span>
                           </td>
-                          <td style={{ verticalAlign: "middle" }}>
+                          <td className="align-middle text-start">
                             {appointment.paymentStatus}
                           </td>
-                          <td
-                            style={{ verticalAlign: "middle" }}
-                            className="text-right"
-                          >{`${appointment.paymentId.totalAmount}`}</td>
+                          <td className="align-middle text-start">
+                            {`${appointment.paymentId.totalAmount}`}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

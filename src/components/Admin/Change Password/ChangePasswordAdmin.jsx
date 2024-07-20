@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import DashboardLayout from '../DashboardLayout/DashboardLayout';
+import DashboardLayout from '../../Doctor/DashboardLayout/DashboardLayout';
+import AdminLayout from '../AdminLayout/AdminLayout';
 import { Button } from 'antd';
 import { Form } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -10,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import useAuthCheck from '../../../redux/hooks/useAuthCheck';
 import { useNavigate } from 'react-router-dom';
 
-const ChangePassword = () => {
+const ChangePasswordAdmin = () => {
   const [user, setUser] = useState({
     oldPassword: '',
     newPassword: '',
@@ -28,13 +29,6 @@ const ChangePassword = () => {
 
   const [changePassword] = useChangePasswordMutation();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    // Nếu role là admin, điều hướng đến trang ChangePasswordAdmin
-    if (role === 'admin') {
-      navigate('/admin/changePasswordAdmin');
-    }
-  }, [role, navigate]);
 
   const handleValidation = (name, value) => {
     if (name === 'newPassword') {
@@ -87,23 +81,10 @@ const ChangePassword = () => {
     }
   };
 
-  // Kiểm tra nếu là doctor hoặc patient thì hiển thị trang Change Password, ngược lại redirect hoặc hiển thị thông báo
-  if (role !== 'doctor' && role !== 'patient') {
-    // Nếu không phải là doctor hoặc patient, có thể điều hướng hoặc hiển thị thông báo tùy thuộc vào yêu cầu của ứng dụng
-    return (
-      <DashboardLayout>
-        <ToastContainer />
-        <div className="w-100 mb-3 rounded p-2" style={{ background: '#f8f9fa' }}>
-          <h5 className='text-title mt-3'>Access Denied</h5>
-          <p>You do not have permission to access this page.</p>
-        </div>
-      </DashboardLayout>
-    );
-  }
+  const Layout = role === 'admin' ? AdminLayout : DashboardLayout;
 
-  // Nếu là doctor hoặc patient, hiển thị form Change Password
   return (
-    <DashboardLayout>
+    <Layout>
       <ToastContainer />
       <div className="w-100 mb-3 rounded p-2" style={{ background: '#f8f9fa' }}>
         <h5 className='text-title mt-3'>Change Your Password</h5>
@@ -169,8 +150,8 @@ const ChangePassword = () => {
           </div>
         </Form>
       </div>
-    </DashboardLayout>
+    </Layout>
   );
 }
 
-export default ChangePassword;
+export default ChangePasswordAdmin;

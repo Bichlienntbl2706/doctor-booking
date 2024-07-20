@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import AdminLayout from "../AdminLayout/AdminLayout";
-import { Modal } from "antd"; // Import Modal from Ant Design
+import { Input, Modal } from "antd"; // Import Modal from Ant Design
 import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
 import "react-toastify/dist/ReactToastify.css"; // Import react-toastify CSS
 import "bootstrap/dist/css/bootstrap.min.css"; // Import Bootstrap CSS
@@ -16,6 +16,8 @@ const Patients = () => {
   const [searchTerm, setSearchTerm] = useState(""); // State to store search term
   const [selectedGender, setSelectedGender] = useState(""); // State to store selected gender
   const [selectedDate, setSelectedDate] = useState(""); // State to store selected date
+  const [confirmUnbanModalVisible, setConfirmUnbanModalVisible] = useState(false);
+  const [selectedUnbanPatient, setSelectedUnbanPatient] = useState(null);
 
   const useQuery = () => {
     return new URLSearchParams(useLocation().search);
@@ -50,29 +52,39 @@ const Patients = () => {
     setConfirmBanModalVisible(true);
   };
 
+  const [blockReason, setBlockReason] = useState(""); // State to store block reason
+
+  const handleBlockReasonChange = (event) => {
+    setBlockReason(event.target.value);
+  };
+
   const handleConfirmBan = async () => {
     try {
-      // Call API to block patient
-      await axios.post(
-        `http://localhost:5050/api/v1/admin/block/patient/${selectedPatientId}`
-      );
-
-      // Update patient list after successful block
-      const response = await axios.get("http://localhost:5050/api/v1/patient");
-      if (response.status === 200 && response.data.success) {
-        setPatients(response.data.data);
-        setLoading(false);
-        toast.success("You Blocked A Patient !"); // Display toast notification
-      } else {
-        console.error("Error fetching patients:", response.data.message);
+      const patientToBlock = patients.find((patient) => patient._id === selectedPatientId);
+      if (!patientToBlock) {
+        console.error("Patient not found for blocking.");
+        return;
       }
-
-      // Close modal after successful block
+  
+      await axios.post(`http://localhost:5050/api/v1/admin/block/patient/${selectedPatientId}`, { reason: blockReason });
+  
+      // Cập nhật trạng thái bệnh nhân trong danh sách mà không cần tải lại trang
+      setPatients((prevPatients) =>
+        prevPatients.map((patient) =>
+          patient._id === selectedPatientId
+            ? { ...patient, isBlocked: true }
+            : patient
+        )
+      );
+  
+      toast.success(`You blocked patient. ${patientToBlock.firstName} ${patientToBlock.lastName}!`);
+  
       setConfirmBanModalVisible(false);
-      setSelectedPatientId(null); // Clear selected patient ID
+      setSelectedPatientId(null);
+      setBlockReason("");
     } catch (error) {
       console.error("Error blocking patient:", error);
-      toast.error("Có lỗi xảy ra khi ban bệnh nhân.");
+      toast.error("Có lỗi xảy ra khi block patient.");
     }
   };
 
@@ -81,35 +93,38 @@ const Patients = () => {
     setSelectedPatientId(null);
   };
 
-  const handleUnbanClick = async (id) => {
-    try {
-      // Call API to unblock patient
-      await axios.post(
-        `http://localhost:5050/api/v1/admin/unblock/patient/${id}`
-      );
+  const handleUnbanClick = (id) => {
+    const selectedPatient = patients.find((patient) => patient._id === id);
+    setSelectedUnbanPatient(selectedPatient);
+    setConfirmUnbanModalVisible(true);
+  };
 
-      // Update patient list after successful unblock
-      const response = await axios.get(
-        `http://localhost:5050/api/v1/patient/${id}`
+  const handleConfirmUnban = async () => {
+    try {
+      await axios.post(`http://localhost:5050/api/v1/admin/unblock/patient/${selectedUnbanPatient._id}`);
+  
+      // Cập nhật trạng thái bệnh nhân trong danh sách mà không cần tải lại trang
+      setPatients((prevPatients) =>
+        prevPatients.map((patient) =>
+          patient._id === selectedUnbanPatient._id
+            ? { ...patient, isBlocked: false }
+            : patient
+        )
       );
-      if (response.status === 200 && response.data.success) {
-        const updatedPatient = response.data.data;
-        const updatedPatients = patients.map((patient) =>
-          patient._id === id ? { ...updatedPatient, isBlocked: false } : patient
-        );
-        setPatients(updatedPatients);
-        toast.success("You Unblocked A Patient !"); // Display toast notification
-      } else {
-        console.error(
-          "Error fetching updated patient data:",
-          response.data.message
-        );
-        toast.error("Có lỗi xảy ra khi unban bệnh nhân.");
-      }
+  
+      toast.success(`You unblocked Patient. ${selectedUnbanPatient.firstName} ${selectedUnbanPatient.lastName}!`);
+  
+      setConfirmUnbanModalVisible(false);
+      setSelectedUnbanPatient(null);
     } catch (error) {
       console.error("Error unblocking patient:", error);
       toast.error("Có lỗi xảy ra khi unban bệnh nhân.");
     }
+  };
+
+  const handleCancelUnban = () => {
+    setConfirmUnbanModalVisible(false);
+    setSelectedUnbanPatient(null);
   };
 
   const handleOutsideClick = (event) => {
@@ -137,12 +152,13 @@ const Patients = () => {
     setSelectedDate(event.target.value);
   };
 
-  const filteredPatients = patients.filter((patient) => {
+  const filteredPatients = (patients || []).filter((patient) => {
     const matchesSearchTerm = `${patient.firstName} ${patient.lastName}`
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesGender = selectedGender
-      ? patient.gender && patient.gender.toLowerCase() === selectedGender.toLowerCase()
+      ? patient.gender &&
+        patient.gender.toLowerCase() === selectedGender.toLowerCase()
       : true;
     const matchesDate = selectedDate
       ? new Date(patient.createdAt).toLocaleDateString() ===
@@ -165,7 +181,11 @@ const Patients = () => {
             />
           </div>
           <div className="input-group ms-3">
-            <select className="form-select" value={selectedGender} onChange={handleGenderChange}>
+            <select
+              className="form-select"
+              value={selectedGender}
+              onChange={handleGenderChange}
+            >
               <option value="">Gender...</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
@@ -199,7 +219,11 @@ const Patients = () => {
                   <tr
                     key={patient._id}
                     className={patient.isBlocked ? "table-secondary" : ""}
-                    style={{ backgroundColor: patient.isBlocked ? "#d3d3d3" : "#ffffff" }}
+                    style={{
+                      backgroundColor: patient.isBlocked
+                        ? "#d3d3d3"
+                        : "#ffffff",
+                    }}
                   >
                     <td>
                       <Link to={`/admin/patient/${patient._id}`}>
@@ -244,22 +268,49 @@ const Patients = () => {
           )}
         </div>
         <Link to="/admin/createPatient">
-          <button className="btn btn-primary btn-lg rounded-circle position-fixed" style={{ bottom: '2rem', right: '2rem', width: '4rem', height: '4rem' }}>
+          <button
+            className="btn btn-primary btn-lg rounded-circle position-fixed"
+            style={{
+              bottom: "2rem",
+              right: "2rem",
+              width: "4rem",
+              height: "4rem",
+            }}
+          >
             +
           </button>
         </Link>
 
-        {/* Ban Confirmation Modal */}
         <Modal
           title="Ban Patient"
-          open={confirmBanModalVisible}
+          visible={confirmBanModalVisible}
           onOk={handleConfirmBan}
           onCancel={handleCancelBan}
+          okButtonProps={{ disabled: !blockReason }}
         >
-          <p>Are you sure you want to ban this patient?</p>
+          <p>
+            Are you sure you want to block patient. {selectedPatientId?.firstName}{" "}
+            {selectedPatientId?.lastName}?
+          </p>
+          <Input
+            placeholder="Enter reason for blocking"
+            value={blockReason}
+            onChange={(e) => setBlockReason(e.target.value)}
+          />
         </Modal>
 
-        {/* Toast container for displaying notifications */}
+        <Modal
+          title="Unban Patient"
+          visible={confirmUnbanModalVisible}
+          onOk={handleConfirmUnban}
+          onCancel={handleCancelUnban}
+        >
+          <p>
+            Are you sure you want to unblock Patient.{" "}
+            {selectedUnbanPatient?.firstName} {selectedUnbanPatient?.lastName}?
+          </p>
+        </Modal>
+
         <ToastContainer />
       </div>
     </AdminLayout>

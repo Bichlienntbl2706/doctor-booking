@@ -18,6 +18,9 @@ const Doctors = () => {
   const [searchPhoneTerm, setSearchPhoneTerm] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
 
+  const [confirmUnbanModalVisible, setConfirmUnbanModalVisible] = useState(false);
+  const [selectedUnbanDoctor, setSelectedUnbanDoctor] = useState(null);
+
   const useQuery = () => {
     return new URLSearchParams(useLocation().search);
   };
@@ -51,26 +54,32 @@ const Doctors = () => {
   };
 
   const handleConfirmBan = async () => {
-    try {
-      await axios.post(`http://localhost:5050/api/v1/admin/block/doctor/${selectedDoctorId}`, { reason: blockReason });
-
-      const response = await axios.get("http://localhost:5050/api/v1/doctor");
-      if (response.status === 200 && response.data.success) {
-        setDoctors(response.data.data.data);
-        setLoading(false);
-        toast.success("You Blocked a Doctor!");
-      } else {
-        console.error("Error fetching doctors:", response.data.message);
-      }
-
-      setConfirmBanModalVisible(false);
-      setSelectedDoctorId(null);
-      setBlockReason("");
-    } catch (error) {
-      console.error("Error blocking doctor:", error);
-      toast.error("Có lỗi xảy ra khi block bác sĩ.");
+  try {
+    const doctorToBlock = doctors.find((doctor) => doctor._id === selectedDoctorId);
+    if (!doctorToBlock) {
+      console.error("Doctor not found for blocking.");
+      return;
     }
-  };
+
+    await axios.post(`http://localhost:5050/api/v1/admin/block/doctor/${selectedDoctorId}`, { reason: blockReason });
+
+    const response = await axios.get("http://localhost:5050/api/v1/doctor");
+    if (response.status === 200 && response.data.success) {
+      setDoctors(response.data.data.data);
+      setLoading(false);
+      toast.success(`You blocked Dr. ${doctorToBlock.firstName} ${doctorToBlock.lastName}!`);
+    } else {
+      console.error("Error fetching doctors:", response.data.message);
+    }
+
+    setConfirmBanModalVisible(false);
+    setSelectedDoctorId(null);
+    setBlockReason("");
+  } catch (error) {
+    console.error("Error blocking doctor:", error);
+    toast.error("Có lỗi xảy ra khi block bác sĩ.");
+  }
+};
 
   const handleCancelBan = () => {
     setConfirmBanModalVisible(false);
@@ -78,26 +87,50 @@ const Doctors = () => {
     setBlockReason("");
   };
 
-  const handleUnbanClick = async (id) => {
-    try {
-      await axios.post(`http://localhost:5050/api/v1/admin/unblock/doctor/${id}`);
+  const handleUnbanClick = (doctor) => {
+    setSelectedUnbanDoctor(doctor);
+    setConfirmUnbanModalVisible(true);
+  };
 
-      const response = await axios.get(`http://localhost:5050/api/v1/doctor/${id}`);
+  const handleConfirmUnban = async () => {
+    try {
+      await axios.post(
+        `http://localhost:5050/api/v1/admin/unblock/doctor/${selectedUnbanDoctor._id}`
+      );
+
+      const response = await axios.get(
+        `http://localhost:5050/api/v1/doctor/${selectedUnbanDoctor._id}`
+      );
       if (response.status === 200 && response.data.success) {
         const updatedDoctor = response.data.data;
         const updatedDoctors = doctors.map((doctor) =>
-          doctor._id === id ? { ...updatedDoctor, isBlocked: false } : doctor
+          doctor._id === selectedUnbanDoctor._id
+            ? { ...updatedDoctor, isBlocked: false }
+            : doctor
         );
         setDoctors(updatedDoctors);
-        toast.success("You Unblocked a Doctor!");
+        toast.success(
+          `You unblocked Dr. ${selectedUnbanDoctor.firstName} ${selectedUnbanDoctor.lastName}!`
+        );
       } else {
-        console.error("Error fetching updated doctor data:", response.data.message);
+        console.error(
+          "Error fetching updated doctor data:",
+          response.data.message
+        );
         toast.error("Có lỗi xảy ra khi unban bác sĩ.");
       }
     } catch (error) {
       console.error("Error unblocking doctor:", error);
       toast.error("Có lỗi xảy ra khi unban bác sĩ.");
     }
+
+    setConfirmUnbanModalVisible(false);
+    setSelectedUnbanDoctor(null);
+  };
+
+  const handleCancelUnban = () => {
+    setConfirmUnbanModalVisible(false);
+    setSelectedUnbanDoctor(null);
   };
 
   const handleOutsideClick = (event) => {
@@ -186,7 +219,10 @@ const Doctors = () => {
               </thead>
               <tbody>
                 {filteredDoctors.map((doctor) => (
-                  <tr key={doctor._id} className={doctor.isBlocked ? "table-secondary" : ""}>
+                  <tr
+                    key={doctor._id}
+                    className={doctor.isBlocked ? "table-secondary" : ""}
+                  >
                     <td>
                       <Link to={`/admin/doctor/${doctor._id}`}>
                         {`${doctor.firstName} ${doctor.lastName}`}
@@ -207,7 +243,7 @@ const Doctors = () => {
                           {doctor.isBlocked ? (
                             <button
                               className="dropdown-item"
-                              onClick={() => handleUnbanClick(doctor._id)}
+                              onClick={() => handleUnbanClick(doctor)}
                             >
                               Unblock
                             </button>
@@ -235,7 +271,15 @@ const Doctors = () => {
           )}
         </div>
         <Link to="/admin/createDoctor">
-          <button className="btn btn-primary btn-lg rounded-circle position-fixed" style={{ bottom: '2rem', right: '2rem', width: '4rem', height: '4rem' }}>
+          <button
+            className="btn btn-primary btn-lg rounded-circle position-fixed"
+            style={{
+              bottom: "2rem",
+              right: "2rem",
+              width: "4rem",
+              height: "4rem",
+            }}
+          >
             +
           </button>
         </Link>
@@ -248,12 +292,28 @@ const Doctors = () => {
           onCancel={handleCancelBan}
           okButtonProps={{ disabled: !blockReason }}
         >
-          <p>Are you sure you want to ban this doctor?</p>
+          <p>
+            Are you sure you want to block Dr.{selectedDoctorId?.firstName}{" "}
+            {selectedDoctorId?.lastName}?
+          </p>
           <Input
             placeholder="Enter reason for blocking"
             value={blockReason}
             onChange={(e) => setBlockReason(e.target.value)}
           />
+        </Modal>
+
+        {/* Unban Confirmation Modal */}
+        <Modal
+          title="Unban Doctor"
+          visible={confirmUnbanModalVisible}
+          onOk={handleConfirmUnban}
+          onCancel={handleCancelUnban}
+        >
+          <p>
+            Are you sure you want to unblock Dr.{" "}
+            {selectedUnbanDoctor?.firstName} {selectedUnbanDoctor?.lastName}?
+          </p>
         </Modal>
 
         {/* Toast container for displaying notifications */}

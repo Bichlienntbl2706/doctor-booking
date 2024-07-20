@@ -7,7 +7,7 @@ import { Button, Steps, message } from "antd";
 import moment from "moment";
 import SelectApppointment from "./SelectApppointment";
 import useAuthCheck from "../../redux/hooks/useAuthCheck";
-import { useCreateAppointmentByUnauthenticateUserMutation } from "../../redux/api/appointmentApi";
+import { useCreateAppointmentByUnauthenticateUserMutation, useGetDoctorAppointmentsQuery } from "../../redux/api/appointmentApi"; // Cập nhật đây
 import { useDispatch } from "react-redux";
 import { addInvoice } from "../../redux/feature/invoiceSlice";
 import { useNavigate } from "react-router-dom";
@@ -27,10 +27,11 @@ let initialValue = {
   expiredMonth: '',
   cardExpiredYear: '',
   cvv: '',
-}
+};
+
 const AppointmentPage = () => {
   const dispatch = useDispatch();
-  const {data, role} = useAuthCheck();
+  const { data, role } = useAuthCheck();
   const [current, setCurrent] = useState(0);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectTime, setSelectTime] = useState('');
@@ -39,9 +40,19 @@ const AppointmentPage = () => {
   const [IsDisable, setIsDisable] = useState(true);
   const [isConfirmDisable, setIsConfirmDisable] = useState(true);
   const [patientId, setPatientId] = useState('');
+  const [doctorAppointments, setDoctorAppointments] = useState([]);
   const navigation = useNavigate();
 
-  const [createAppointmentByUnauthenticateUser, {data: appointmentData, isError, isSuccess, isLoading, error}] = useCreateAppointmentByUnauthenticateUserMutation()
+  const [createAppointmentByUnauthenticateUser, { data: appointmentData, isError, isSuccess, isLoading, error }] = useCreateAppointmentByUnauthenticateUserMutation();
+
+  // Hook để lấy thông tin về cuộc hẹn của bác sĩ
+  const { data: appointmentsData, isLoading: isAppointmentsLoading, isError: isAppointmentsError } = useGetDoctorAppointmentsQuery();
+
+  useEffect(() => {
+    if (appointmentsData) {
+      setDoctorAppointments(appointmentsData);
+    }
+  }, [appointmentsData]);
 
   const handleChange = (e) => { setSelectValue({ ...selectValue, [e.target.name]: e.target.value }) };
 
@@ -55,7 +66,7 @@ const AppointmentPage = () => {
     setIsDisable(isInputEmpty);
     setIsConfirmDisable(isConfirmInputEmpty);
   }, [selectValue, isCheck]);
-  
+
   const handleConfirmSchedule = () => {
     const obj = {};
     obj.patientInfo = {
@@ -66,7 +77,7 @@ const AppointmentPage = () => {
       patientId: role !== '' && role === 'patient' ? data.id : undefined,
       scheduleDate: selectedDate,
       scheduleTime: selectTime,
-    }
+    };
     obj.payment = {
       paymentType: selectValue.paymentType,
       paymentMethod: selectValue.paymentMethod,
@@ -75,23 +86,23 @@ const AppointmentPage = () => {
       cvv: selectValue.cvv,
       expiredMonth: selectValue.expiredMonth,
       nameOnCard: selectValue.nameOnCard
-    }
-    createAppointmentByUnauthenticateUser(obj)
-  }
+    };
+    createAppointmentByUnauthenticateUser(obj);
+  };
 
   useEffect(() => {
     if (isSuccess) {
-        message.success("Succcessfully Appointment Scheduled")
-        setSelectValue(initialValue);
-        dispatch(addInvoice({ ...appointmentData }))
-        navigation(`/booking/success/${appointmentData?._id}`)
+      message.success("Successfully Appointment Scheduled");
+      setSelectValue(initialValue);
+      dispatch(addInvoice({ ...appointmentData }));
+      navigation(`/booking/success/${appointmentData?._id}`);
     }
     if (isError) {
-        message.error(error?.data?.message);
+      message.error(error?.data?.message);
     }
-}, [isSuccess, isError, isLoading, appointmentData])
+  }, [isSuccess, isError, isLoading, appointmentData]);
 
-  const handleDateChange = (date) => { setSelectedDate(moment(date).format('YYYY-MM-DD HH:mm:ss')) }
+  const handleDateChange = (date) => { setSelectedDate(moment(date).format('YYYY-MM-DD HH:mm:ss')); };
 
   const steps = [
     {
@@ -105,7 +116,7 @@ const AppointmentPage = () => {
     },
     {
       title: 'Patient Information',
-      content: <PersonalInformation handleChange={handleChange} selectValue={selectValue} setPatientId={setPatientId}/>
+      content: <PersonalInformation handleChange={handleChange} selectValue={selectValue} setPatientId={setPatientId} />
     },
     {
       title: 'Payment',
@@ -119,12 +130,12 @@ const AppointmentPage = () => {
         selectTime={selectTime}
       />,
     },
-  ]
+  ];
 
   const items = steps.map((item) => ({
     key: item.title,
     title: item.title,
-  }))
+  }));
 
   return (
     <>
@@ -133,7 +144,7 @@ const AppointmentPage = () => {
         <div className="container" style={{ marginBottom: '12rem', marginTop: '8rem' }}>
           <Steps current={current} items={items} />
           <div className='mb-5 mt-3 mx-3'>{steps[current].content}</div>
-          <div className='text-end mx-3' >
+          <div className='text-end mx-3'>
             {current < steps.length - 1 && (
               <Button type="primary" size="large"
                 disabled={current === 0 ? (selectTime ? false : true) : IsDisable || !selectTime}
@@ -146,7 +157,7 @@ const AppointmentPage = () => {
       </div>
       <Footer />
     </>
-  )
-}
+  );
+};
 
-export default AppointmentPage
+export default AppointmentPage;

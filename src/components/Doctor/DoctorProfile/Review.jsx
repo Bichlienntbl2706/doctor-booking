@@ -8,9 +8,9 @@ import {
   useCreateReviewMutation,
   useGetDoctorReviewsQuery,
 } from "../../../redux/api/reviewsApi";
-import { Button, Radio, message, Space, Rate } from "antd";
+import { useGetPatientAppointmentsQuery } from "../../../redux/api/appointmentApi";
+import { Button, Radio, message, Space, Rate, Empty } from "antd";
 import { useForm } from "react-hook-form";
-import { Empty } from "antd";
 
 const desc = ["terrible", "bad", "normal", "good", "wonderful"];
 
@@ -20,9 +20,16 @@ const Review = ({ doctorId }) => {
   const [recommend, setRecommend] = useState(null);
   const [showError, setShowError] = useState(false);
 
-  const { data, isError, isLoading, refetch } = useGetDoctorReviewsQuery(
-    doctorId
-  );
+  const {
+    data: reviewsData,
+    isError,
+    isLoading,
+    refetch,
+  } = useGetDoctorReviewsQuery(doctorId);
+  console.log(reviewsData, "reviewsData");
+  const { data: appointmentsData, isLoading: isAppointmentsLoading } =
+    useGetPatientAppointmentsQuery();
+  console.log(appointmentsData, "appointmentsData1");
   const [
     createReview,
     {
@@ -45,8 +52,7 @@ const Review = ({ doctorId }) => {
 
   const onSubmit = (data) => {
     const obj = {
-      isRecommended:
-        recommend === 1 ? true : recommend === 2 ? false : null,
+      isRecommended: recommend === 1 ? true : recommend === 2 ? false : null,
       description: data.description,
       star: value && value.toString(),
       doctorId: doctorId,
@@ -81,12 +87,12 @@ const Review = ({ doctorId }) => {
     content = <Empty />;
   } else if (isError) {
     content = <div>Something Went Wrong !</div>;
-  } else if (data?.length === 0) {
+  } else if (reviewsData?.length === 0) {
     content = <div>No reviews available.</div>;
   } else {
     content = (
       <>
-        {data.map((item, key) => (
+        {reviewsData.map((item, key) => (
           <div className="mb-4" key={item._id}>
             <div className="d-flex gap-3 justify-content-between">
               <div className="d-flex gap-4">
@@ -95,7 +101,9 @@ const Review = ({ doctorId }) => {
                 </div>
                 <div>
                   <h5 className="text-nowrap">
-                    {item?.patientId?.firstName + " " + item?.patientId?.lastName}
+                    {item?.patientId?.firstName +
+                      " " +
+                      item?.patientId?.lastName}
                   </h5>
                   <p className="text-success">
                     <FaRegThumbsUp />{" "}
@@ -148,6 +156,10 @@ const Review = ({ doctorId }) => {
     );
   }
 
+  const hasCompletedAppointment = appointmentsData?.some(
+    (appointment) => appointment._id
+  );
+
   return (
     <>
       <div>
@@ -158,51 +170,54 @@ const Review = ({ doctorId }) => {
           {content}
         </div>
 
-        <div className="mt-5">
-          <h4>Write a review..</h4>
+        {hasCompletedAppointment && (
+          <div className="mt-5">
+            <h4>Write a review..</h4>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="form-group mb-3">
-              <div className="d-flex flex-column">
-                <label className="form-label">
-                  Your Review {value ? <strong>{desc[value - 1]}</strong> : ""}
-                </label>
-                <Space>
-                  <Rate tooltips={desc} onChange={setValue} value={value} />
-                </Space>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="form-group mb-3">
+                <div className="d-flex flex-column">
+                  <label className="form-label">
+                    Your Review{" "}
+                    {value ? <strong>{desc[value - 1]}</strong> : ""}
+                  </label>
+                  <Space>
+                    <Rate tooltips={desc} onChange={setValue} value={value} />
+                  </Space>
+                </div>
               </div>
-            </div>
-            <div className="form-group mb-3">
-              <Radio.Group onChange={onChange} value={recommend}>
-                <Space direction="vertical">
-                  <Radio value={1}>Recommend Doctor</Radio>
-                  <Radio value={2}>Not Recommend Doctor</Radio>
-                </Space>
-              </Radio.Group>
-            </div>
+              <div className="form-group mb-3">
+                <Radio.Group onChange={onChange} value={recommend}>
+                  <Space direction="vertical">
+                    <Radio value={1}>Recommend Doctor</Radio>
+                    <Radio value={2}>Not Recommend Doctor</Radio>
+                  </Space>
+                </Radio.Group>
+              </div>
 
-            <div className="form-group">
-              <label className="form-label">Your review</label>
-              <textarea
-                className="form-control"
-                {...register("description")}
-                placeholder="Description..."
-                rows={8}
-              />
-            </div>
-            <hr />
-            <div className="submit-section">
-              <Button
-                htmlType="submit"
-                size="medium"
-                type="primary"
-                disabled={!showError}
-              >
-                Add Review
-              </Button>
-            </div>
-          </form>
-        </div>
+              <div className="form-group">
+                <label className="form-label">Your review</label>
+                <textarea
+                  className="form-control"
+                  {...register("description")}
+                  placeholder="Description..."
+                  rows={8}
+                />
+              </div>
+              <hr />
+              <div className="submit-section">
+                <Button
+                  htmlType="submit"
+                  size="medium"
+                  type="primary"
+                  disabled={!showError}
+                >
+                  Add Review
+                </Button>
+              </div>
+            </form>
+          </div>
+        )}
       </div>
     </>
   );

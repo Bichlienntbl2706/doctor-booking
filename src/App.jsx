@@ -47,6 +47,8 @@ import DoctorProfileAdmin from "./components/Admin/Doctors/DoctorProfileAdmin";
 import Invoices from "./components/Admin/Invoices/Invoices";
 import Prescriptions from "./components/Admin/Prescriptions/Prescriptions";
 import PrescriptionDetail from "./components/Admin/Prescriptions/PrescriptionDetail";
+import ChangePasswordAdmin from "./components/Admin/Change Password/ChangePasswordAdmin";
+import InvoiceDetail from "./components/Admin/Invoices/InvoiceDetail";
 
 
 function App() {
@@ -119,12 +121,14 @@ function App() {
         <Route path="/admin/profile" element={<Profile />} />
         <Route path="/admin/reviews" element={<AdminReviews />} />
         <Route path="/admin/invoices" element={<Invoices />} />
+        <Route path="/admin/invoices/:id" element = {<InvoiceDetail/>}/>
         <Route path="/admin/prescriptions" element={<Prescriptions />} />
         <Route path="/admin/createPatient" element={<CreatePatient />} />
         <Route path="/admin/createDoctor" element={<CreateDoctor />} />
         <Route path="/admin/patient/:id" element={<PatientProfileAdmin />} />
         <Route path="/admin/doctor/:id" element={<DoctorProfileAdmin />} />
         <Route path="/admin/prescriptions/:id" element={<PrescriptionDetail/>}/>
+        <Route path = "/admin/changePasswordAdmin" element={<ChangePasswordAdmin/>}/>
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

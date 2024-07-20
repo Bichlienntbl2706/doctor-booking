@@ -7,6 +7,7 @@ import { CloudinaryHelper } from "../../../helpers/uploadHelper";
 import { AuthUser } from "../../../enums";
 import { auth } from "../../middlewares/auth";
 import { PrescriptionController } from "../prescription/prescription.controller";
+import { AuthController } from "../auth/auth.controller";
 
 const router = express.Router();
 
@@ -45,12 +46,17 @@ router.delete("/doctor/:id", DoctorController.deleteDoctor);
 
 
 //Add app
-router.get("/appointment", AppointmentController.getAllAppointment);
+router.get("/appointment/doctor/appointments", AppointmentController.getDoctorAppointmentsById);
 //Add invoice
 router.get('/invoices', AppointmentController.getInvoices)
-router.get('/patient-payment-info/:id',auth(AuthUser.PATIENT, AuthUser.DOCTOR, AuthUser.ADMIN), AppointmentController.getPaymentInfoViaAppintmentId);
+router.get('appointment/patient-payment-info/:id',auth(AuthUser.PATIENT, AuthUser.DOCTOR, AuthUser.ADMIN), AppointmentController.getPaymentInfoViaAppintmentId);
+
+//Change pasword
+
+router.patch('auth/change-password', AuthController.changePassword);
 
 //Add routes for prescription
 router.get('/prescription', PrescriptionController.getAllPrescriptions);
 router.get("/prescription/:id", PrescriptionController.getPrescriptionById);
 export const AdminRouter = router;
+

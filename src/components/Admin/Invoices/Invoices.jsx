@@ -63,7 +63,7 @@ console.log("doctor invoice: ", data)
             width: 100,
             render: function (data) {
                 return (
-                    <Link to={`/booking/invoice/${data?.appointmentId._id}`}>
+                    <Link to={`/admin/invoices/${data?.appointmentId._id}`}>
                         <Button type="primary" shape="circle" icon={<FaEye />} size="small" />
                     </Link>
                 )

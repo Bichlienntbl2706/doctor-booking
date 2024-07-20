@@ -59,8 +59,9 @@ const deleteAdmin = catchAsync(async (req: Request, res: Response) => {
 
 const blockDoctor = async (req: Request, res: Response): Promise<void> => {
   const doctorId = req.params.id;
+  const { reason } = req.body; // Nhận lý do từ body
   try {
-    await AdminService.blockDoctor(doctorId);
+    await AdminService.blockDoctor(doctorId, reason);
     res
       .status(200)
       .json({ success: true, message: "Doctor blocked successfully" });
@@ -87,8 +88,9 @@ const unblockDoctor = async (req: Request, res: Response): Promise<void> => {
 
 const blockPatient = async (req: Request, res: Response): Promise<void> => {
   const patientId = req.params.id;
+  const { reason } = req.body; // Nhận lý do từ body
   try {
-    await AdminService.blockPatient(patientId);
+    await AdminService.blockPatient(patientId, reason);
     res
       .status(200)
       .json({ success: true, message: "Patient blocked successfully" });
