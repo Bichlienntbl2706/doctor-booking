@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import showImg from '../../../images/specialities/specialities-01.png';
 import StarRatings from 'react-star-ratings';
@@ -7,11 +7,33 @@ import './index.css';
 import { FaLocationArrow, FaRegThumbsUp, FaDollarSign, FaComment } from "react-icons/fa";
 import { truncate } from '../../../utils/truncate';
 import useAuthCheck from '../../../redux/hooks/useAuthCheck';
+import { useGetDoctorReviewsQuery } from "../../../redux/api/reviewsApi";
 
 const SearchContent = ({ data }) => {
+    const {
+        data: reviewsData,
+        isLoading,
+        isError,
+      } = useGetDoctorReviewsQuery(data?._id);
+      const [averageRating, setAverageRating] = useState(0);
+      const [totalReviews, setTotalReviews] = useState(0);
     let services = [];
 
     const { role } = useAuthCheck();
+
+    useEffect(() => {
+        if (reviewsData) {
+          const totalReviews = reviewsData.length;
+          const totalRating = reviewsData.reduce((acc, review) => {
+            const star = parseFloat(review.star); // Ensure star is a number
+            return acc + (isNaN(star) ? 0 : star);
+          }, 0);
+          const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
+    
+          setAverageRating(parseFloat(averageRating.toFixed(2)));
+          setTotalReviews(totalReviews);
+        }
+      }, [reviewsData]);
 
     // Handle different types for data.services
     if (typeof data?.services === 'string') {
@@ -41,7 +63,7 @@ const SearchContent = ({ data }) => {
                         <div className='d-flex align-items-center'>
                             <div>
                                 <StarRatings
-                                    rating={5}
+                                    rating={averageRating}
                                     starRatedColor="#f4c150"
                                     numberOfStars={5}
                                     name='rating'
@@ -49,7 +71,7 @@ const SearchContent = ({ data }) => {
                                     starSpacing="2px"
                                 />
                             </div>
-                            <div>(4)</div>
+                            <div>({totalReviews} reviews)</div>
                         </div>
 
                         <div className="clinic-details">
@@ -79,8 +101,8 @@ const SearchContent = ({ data }) => {
                 <div className="doc-info-right me-3">
                     <div className="clini-infos">
                         <ul>
-                            <li><FaRegThumbsUp />  97%</li>
-                            <li><FaComment /> 4 Feedback</li>
+                            <li><FaRegThumbsUp />  {averageRating}</li>
+                            <li><FaComment /> {totalReviews} Feedback</li>
                             <li><FaLocationArrow />{truncate(data?.clinicAddress || '', 20)}</li>
                             <li><FaDollarSign /> {data?.price ? truncate(String(data.price), 4) : 60} (Per Hour)</li>
                         </ul>

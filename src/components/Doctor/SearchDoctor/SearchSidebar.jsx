@@ -43,14 +43,14 @@ const SearchSidebar = ({ setSearchTerm, setSorByGender, setSpecialist, setPriceR
           <Search placeholder="Search..." onSearch={onSearch} enterButton allowClear />
         </div>
 
-        <div className='mb-3'>
+        {/* <div className='mb-3'>
           <h6 style={{ color: '#05335c' }}>Date Range</h6>
           <DatePicker
             style={{ width: "100%" }}
             format="YYYY-MM-DD HH:mm:ss"
             onChange={handleDateChange}
           />
-        </div>
+        </div> */}
 
         <div className='mb-3'>
           <h6 style={{ color: '#05335c' }}>Gender</h6>

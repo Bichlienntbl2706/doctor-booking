@@ -38,6 +38,7 @@ export interface IDoctor extends Document{
   verified?: boolean;
   createdAt?: Date; 
     updatedAt?: Date; 
+    isBlocked?: Boolean;
 }
 const doctorSchema = new Schema({
   firstName: { type: String, required: true },
@@ -71,7 +72,11 @@ const doctorSchema = new Schema({
   experienceHospitalName: { type: String },
   experienceStart: { type: String },
   experienceEnd: { type: String },
-  verified: { type: Boolean, default: false }
+  verified: { type: Boolean, default: false },
+  isBlocked: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
 const Doctor = mongoose.model<IDoctor>('Doctor', doctorSchema);

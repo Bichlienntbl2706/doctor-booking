@@ -203,8 +203,8 @@ const createAppointment = async (payload: any): Promise<any> => {
     const newPayment = new Payment({
       appointmentId: appointment[0]._id,
       bookingFee: 10,
-      paymentMethod: payment.paymentMethod,
-      paymentType: payment.paymentType,
+      paymentMethod: "paypal",
+      paymentType: "creditCard",
       vat: parseFloat(vat.toFixed(2)),
       DoctorFee: docFee,
       totalAmount: parseFloat((vat + docFee + 10).toFixed(2)),
@@ -277,7 +277,12 @@ const createAppointment = async (payload: any): Promise<any> => {
 };
 
 const getAllAppointments = async (): Promise<any[]> => {
-  const result = await Appointment.find();
+  const result = await Appointment.find()
+    .populate("doctorId", "firstName lastName designation college degree img specialization")
+    
+    .populate("paymentId")
+
+    .populate("patientId", "firstName lastName address city country state img")
   return result;
 };
 
@@ -470,7 +475,7 @@ const getPatientPaymentInfo = async (user: any): Promise<any[]> => {
   const result = await Appointment.find({ patientId: isUserExist._id })
     .populate({
       path: "doctorId",
-      select: "firstName lastName specialization",
+      select: "firstName lastName specialization img",
     })
     .populate({
       path: "paymentId",
@@ -570,7 +575,7 @@ const getDoctorAppointmentsById = async (
   //     appointment.status !== 'cancel'
   // );
 
-  console.log('Filtered Result:', result);
+  // console.log('Filtered Result:', result);
   return result;
 };
 
@@ -605,6 +610,31 @@ const updateAppointmentByDoctor = async (
   return result;
 };
 
+const getInvoices = async (): Promise<any[]> => {
+  try {
+    const invoices = await Payment.find()
+      .populate({
+        path: "appointmentId",
+        populate: {
+          path: "patientId",
+          select: "firstName lastName email",
+        },
+      })
+      .populate({
+        path: "appointmentId",
+        populate: {
+          path: "doctorId",
+          select: "firstName lastName email",
+        },
+      });
+
+    return invoices;
+  } catch (error) {
+    console.error("Error fetching invoices:", error);
+    throw error;
+  }
+};
+
 export const AppointmentService = {
   createAppointment,
   getAllAppointments,
@@ -619,6 +649,7 @@ export const AppointmentService = {
   getDoctorAppointmentsById,
   getDoctorPatients,
   updateAppointmentByDoctor,
+  getInvoices
 };
 
 

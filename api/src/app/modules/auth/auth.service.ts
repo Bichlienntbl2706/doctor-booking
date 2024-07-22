@@ -13,6 +13,7 @@ import Auth, {IAuth} from '../../../models/auth.model';
 import Doctor from '../../../models/Doctor.model';
 import Patient from '../../../models/Patient.model';
 import ForgotPassword from '../../../models/ForgotPassword.model';
+import Admin from '../../../models/Admin.model';
 
 type ILoginResponse = {
     accessToken?: string;
@@ -50,6 +51,11 @@ const loginUser = async (user: any): Promise<ILoginResponse> => {
             additionalInfo = { patientId: getPatientInfo._id };
         }
        
+    }  else if (isUserExist.role === 'admin') {
+        const getAdminInfo = await Admin.findOne({ email: isUserExist.email });
+        if (getAdminInfo) {
+            additionalInfo = { adminId: getAdminInfo._id };
+        }
     }
   
     if (!password || !isUserExist.password) {
@@ -74,10 +80,13 @@ const loginUser = async (user: any): Promise<ILoginResponse> => {
         config.jwt.secret as string,
         config.jwt.JWT_EXPIRES_IN as string
     );
-  
-  console.log('id doctor: ',additionalInfo )
-    console.log('Login successful!');
-  
+    
+    console.log({
+        accessToken,
+        user: { role, userId, ...additionalInfo }
+    })
+
+    console.log(accessToken, { role, userId, ...additionalInfo })
     return {
         accessToken,
         user: { role, userId, ...additionalInfo }

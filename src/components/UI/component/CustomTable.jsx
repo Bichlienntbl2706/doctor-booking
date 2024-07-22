@@ -56,7 +56,7 @@ const CustomTable = ({
         pageSizeOptions: [5, 10],
         showSizeChanger: showSizeChanger,
         onChange: onPaginationChange,
-        showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+        // showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
         position: ['bottomCenter']
     } : false;
 

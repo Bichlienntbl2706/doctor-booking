@@ -140,19 +140,6 @@ console.log("data treatment view: ", data)
                                         />
                                     </div>
                                 </div>
-
-                                {/* <div className="col-md-6">
-                                    <div className="form-group mb-3">
-                                        <div>
-                                            <label>Disease</label>
-                                        </div>
-                                        <SelectForm
-                                            mode={true}
-                                            options={DiseaseOptions}
-                                            setSelectData={setDisease}
-                                        />
-                                    </div>
-                                </div> */}
                             </div>
 
                         </div>
@@ -174,99 +161,6 @@ console.log("data treatment view: ", data)
                             </div>
                         </div>
                     </div>
-
-                    {/* <div className="col-md-12">
-                        <div className="card mb-2 p-3 mt-2">
-                            <h6 className="card-title text-secondary">Medicine</h6>
-                            {
-                                medicineList?.map((item, index) => (
-                                    <div className="row form-row mb-4 position-relative border border-success rounded m-2 p-2" key={index + 1}>
-                                        <div className="col-md-6 mb-3">
-                                            <label>Medicine Name</label>
-                                            <div className="form-group mb-2">
-                                                <InputAutoCompleteForm
-                                                    id={item.id}
-                                                    medicineList={medicineList}
-                                                    setMedicineList={setMedicineList}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="col-md-6 mb-3">
-                                            <label>Dosage</label>
-                                            <div className="form-group mb-2">
-                                                <SelectFormForMedicine
-                                                    id={item.id}
-                                                    keyName={"dosage"}
-                                                    options={DosageOptions}
-                                                    medicineList={medicineList}
-                                                    setMedicineList={setMedicineList}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="col-md-6 mb-3">
-                                            <label>Frequency</label>
-                                            <div className="form-group mb-2">
-                                                <SelectFormForMedicine
-                                                    id={item.id}
-                                                    keyName={"frequency"}
-                                                    options={FrequencyOptions}
-                                                    medicineList={medicineList}
-                                                    setMedicineList={setMedicineList}
-                                                />
-                                            </div>
-                                        </div>
-
-                                        <div className="col-md-6 mb-3">
-                                            <label>Start Date / End Date</label>
-                                            <div className="form-group mb-2">
-                                                <Space direction="vertical" size={12}>
-                                                    <MedicineRangePickerForm
-                                                        id={item.id}
-                                                        medicineList={medicineList}
-                                                        setMedicineList={setMedicineList}
-                                                    />
-
-                                                </Space>
-                                            </div>
-                                        </div>
-
-                                        <a className="text-danger position-absolute text-end mb-3"
-                                            onClick={() => removeFromAddTimeSlot(item?.id)} style={{ top: '-35px' }}>
-                                            <FaRegTrashAlt />
-                                        </a>
-                                    </div>
-                                ))
-                            }
-                        </div>
-
-                        <div className="mb-4" style={{ width: '120px' }}>
-                            <Button type="primary" size='small' htmlType="button" onClick={addField} block icon={<FaPlus />}>
-                                Add
-                            </Button>
-                        </div>
-                    </div> */}
-
-                    {/* <div className="col-md-12 mb-3">
-                        <label>Follow Up Date</label>
-                        <div className="form-group mb-2">
-                            <DatePicker
-                                presets={DatePickerSinglePresets}
-                                onChange={handleFollowUpChange}
-                                showTime
-                                size="large"
-                                style={{ width: '100%' }}
-                            />
-                        </div>
-                    </div> */}
-
-                    {/* <div className="col-md-12 mb-3">
-                        <div className="form-group mb-2">
-                            <label>Instruction</label>
-                            <TextArea rows={4} placeholder="Instruction text ..." onChange={(e) => setInstruction(e.target.value)} />
-                        </div>
-                    </div> */}
 
                     <div className='text-center my-3'>
                         <Button htmlType='submit' type="primary" size='large' disabled={isDisable} loading={isLoading}>

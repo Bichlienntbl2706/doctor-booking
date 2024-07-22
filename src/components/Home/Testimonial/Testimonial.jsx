@@ -1,14 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from "react";
 import './index.css';
-import { useGetAllReviewsQuery } from '../../../redux/api/reviewsApi';
+import { useGetAllReviewsQuery,useGetDoctorReviewsQuery } from '../../../redux/api/reviewsApi';
 import StarRatings from 'react-star-ratings';
 import { truncate } from '../../../utils/truncate';
 import { FaCheckDouble } from "react-icons/fa";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 
-const Testimonial = () => {
-    const { data, isLoading, isError } = useGetAllReviewsQuery({});
+const Testimonial = (data) => {
+    // const { data, isLoading, isError } = useGetAllReviewsQuery({});
+    const {data: reviewsData, isLoading, isError } = useGetDoctorReviewsQuery(data?._id);
+      const [averageRating, setAverageRating] = useState(0);
+
+      useEffect(() => {
+        if (reviewsData) {
+          const totalReviews = reviewsData.length;
+          const totalRating = reviewsData.reduce((acc, review) => {
+            const star = parseFloat(review.star); // Ensure star is a number
+            return acc + (isNaN(star) ? 0 : star);
+          }, 0);
+          const averageRating = totalReviews > 0 ? totalRating / totalReviews : 0;
+    
+          setAverageRating(parseFloat(averageRating.toFixed(2)));
+        }
+      }, [reviewsData]);
     let content = null;
     if (!isLoading && isError) content = <div>Something Went Wrong !</div>
     if (!isLoading && !isError && data?.length === 0) content = <div>Empty</div>
@@ -31,7 +46,7 @@ const Testimonial = () => {
                             <div>
                                 <p className='recomended'><FaCheckDouble /> Recomended</p>
                                 <StarRatings
-                                    rating={5}
+                                    rating={averageRating}
                                     starRatedColor="#f4c150"
                                     numberOfStars={5}
                                     name='rating'

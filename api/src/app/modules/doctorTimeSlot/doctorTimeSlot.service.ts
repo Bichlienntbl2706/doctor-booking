@@ -358,6 +358,7 @@ const getAppointmentTimeOfEachDoctor = async (id: string, filter: any): Promise<
                 while (startDate < endDate) {
                     const selectableTime = {
                         id: newTimeSlots.length + 1,
+                        day: filterDayFormatted,
                         time: startDate.format('hh:mm a'), 
                         disabled: bookedTimeSlots.includes(startDate.format('hh:mm a'))
                     };

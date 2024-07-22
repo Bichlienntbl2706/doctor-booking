@@ -12,6 +12,7 @@ import { DoctorTimeSlotRouter } from '../modules/doctorTimeSlot/doctorTimeSlot.r
 import { BlogRoutes } from '../modules/blog/blog.route';
 import { MedicineRouter } from '../modules/medicines/medicine.route';
 import { ContactRouter } from '../modules/contact/contact.route';
+import { AdminRouter } from "../modules/admin/admin.route";
 
 const router = express.Router();
 
@@ -59,6 +60,10 @@ const moduleRoutes = [
     {
         path: '/contact',
         route: ContactRouter,
+    },
+    {
+        path: '/admin',
+        route: AdminRouter,
     }
 ];
 

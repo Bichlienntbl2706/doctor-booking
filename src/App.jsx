@@ -43,6 +43,16 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Dashboard from './components/Doctor/Dashboard/Dashboard';
 import PrivateOutlet from './components/Shared/PrivateOutlet';
 import NotFound from './components/UI/NotFound';
+import Invoices from './components/Admin/Invoices/Invoices';
+import Prescriptions from './components/Admin/Prescriptions/Prescriptions';
+import PrescriptionDetail from './components/Admin/Prescriptions/PrescriptionDetail';
+import ChangePasswordAdmin from './components/Admin/ChangePassword/ChangePasswordAdmin';
+import InvoiceDetail from './components/Admin/Invoices/InvoiceDetail';
+import CreatePatient from './components/Admin/Patients/CreatePatient';
+import CreateDoctor from './components/Admin/Doctors/CreateDoctor';
+import PatientProfileAdmin from './components/Admin/Patients/PatientProfileAdmin';
+import DoctorProfileAdmin from './components/Admin/Doctors/DoctorProfileAdmin';
+
 
 function App() {
   return (
@@ -84,14 +94,22 @@ function App() {
         <Route path='/booking/success/:id' element={<BookingSuccess />} />
         <Route path='/booking/invoice/:id' element={<BookingInvoice />} />
         {/* Admin Dashboard  */}
-        <Route path='/admin/dashboard' element={<AdminDashboard />} />
-        <Route path='/admin/appointments' element={<AdminAppointments />} />
-        <Route path='/admin/doctors' element={<Doctors />} />
-        <Route path='/admin/patients' element={<Patients />} />
-        <Route path='/admin/profile' element={<Profile />} />
-        <Route path='/admin/reviews' element={<AdminReviews />} />
-        <Route path='/admin/transaction' element={<Transactions />} />
-        <Route path='/admin/specialites' element={<Specialites />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/appointments" element={<AdminAppointments />} />
+        <Route path="/admin/doctors" element={<Doctors />} />
+        <Route path="/admin/patients" element={<Patients />} />
+        <Route path="/admin/profile" element={<Profile />} />
+        <Route path="/admin/reviews" element={<AdminReviews />} />
+        <Route path="/admin/invoices" element={<Invoices />} />
+        <Route path="/admin/invoices/:id" element = {<InvoiceDetail/>}/>
+        <Route path="/admin/prescriptions" element={<Prescriptions />} />
+        <Route path="/admin/createPatient" element={<CreatePatient />} />
+        <Route path="/admin/createDoctor" element={<CreateDoctor />} />
+        <Route path="/admin/patients/:id" element={<PatientProfileAdmin />} />
+        <Route path="/admin/doctors/:id" element={<DoctorProfileAdmin />} />
+        <Route path="/admin/prescriptions/:id" element={<PrescriptionDetail/>}/>
+        <Route path = "/admin/changePasswordAdmin" element={<ChangePasswordAdmin/>}/>
+        <Route path="*" element={<NotFound />} />
 
         <Route path='*' element={<NotFound/>}/>
       </Routes>

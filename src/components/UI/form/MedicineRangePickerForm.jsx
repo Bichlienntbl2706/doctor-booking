@@ -1,6 +1,5 @@
 // import React, { useEffect, useState } from 'react';
-// import { DateRangePresets } from '../../../constant/global';
-// import { DatePicker, Space } from "antd";
+// import { DatePicker } from "antd";
 // import moment from 'moment';
 
 // const { RangePicker } = DatePicker;
@@ -11,13 +10,8 @@
 //     useEffect(() => {
 //         const findObj = medicineList.find((item) => item.id === id);
 //         if (findObj && findObj.duration) {
-//             let [startDate, endDate] = findObj.duration.split(',').map(date => moment(date));
-
-//             // Ensure startDate is before endDate
-//             if (startDate.isAfter(endDate)) {
-//                 [startDate, endDate] = [endDate, startDate];
-//             }
-
+//             const [startDate, endDate] = findObj.duration.split(',').map(date => moment(date, 'YYYY-MM-DD'));
+//             console.log("Parsed dates: ", { startDate, endDate });
 //             setDates([startDate, endDate]);
 //         }
 //     }, [id, medicineList]);
@@ -42,25 +36,24 @@
 //     };
 
 //     const disabledDate = (current) => {
-//         // Disable dates before today
 //         return current && current < moment().startOf('day');
 //     };
 
 //     return (
-//         <>
-//             <RangePicker
-//                 presets={DateRangePresets}
-//                 onChange={onRangeChange}
-//                 size="large"
-//                 style={{ width: '100%' }}
-//                 disabledDate={disabledDate}
-//                 value={dates}
-//             />
-//         </>
+//         <RangePicker
+//             onChange={onRangeChange}
+//             size="large"
+//             style={{ width: '100%' }}
+//             disabledDate={disabledDate}
+//             value={dates}
+//             format="YYYY-MM-DD"
+//         />
 //     );
 // }
 
 // export default MedicineRangePickerForm;
+
+
 import React, { useEffect, useState } from 'react';
 import { DateRangePresets } from '../../../constant/global';
 import { DatePicker } from "antd";

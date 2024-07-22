@@ -67,10 +67,10 @@ const BookDoctor = () => {
       <>
         {doctors.map((item) => (
           <SwiperSlide key={item._id}>
-            <div className="profile-widget">
+            <div className="profile-widget"  style={{height: 600}}>
               <div className="doc-img">
                 <Link to={`/doctors/profile/${item._id}`}>
-                  {item.img && <img className="img-fluid" alt="" src={item.img} />}
+                  {item.img && <img  style={{height: 300}} className="img-fluid" alt="" src={item.img} />}
                 </Link>
                 <a style={{ cursor: 'pointer' }} className="position-absolute top-0 end-0 me-2" onClick={() => handleAddFavourite(item._id)}>
                   {favoriteDoctors.has(item._id) ? <FaHeart /> : <FaRegHeart />}

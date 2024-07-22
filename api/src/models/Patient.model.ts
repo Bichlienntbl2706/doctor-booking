@@ -17,6 +17,7 @@ export interface IPatient extends Document{
     img?: string;
     createdAt?: Date; 
     updatedAt?: Date; 
+    isBlocked?: Boolean;
 }
 
 const patientSchema = new Schema({
@@ -33,7 +34,11 @@ const patientSchema = new Schema({
     country: { type: String },
     email: { type: String, required: true, unique: true },
     address: { type: String },
-    img: { type: String }
+    img: { type: String },
+    isBlocked: {
+        type: Boolean,
+        default: false,
+    },
   }, { timestamps: true });
 
   const Patient = mongoose.model<IPatient>('Patient', patientSchema)

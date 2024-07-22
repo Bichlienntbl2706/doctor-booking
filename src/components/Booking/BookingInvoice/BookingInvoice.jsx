@@ -1,21 +1,25 @@
 import Footer from '../../Shared/Footer/Footer';
 import logo from '../../../images/logo.png';
 import './BookingInvoice.css';
-import { useParams } from 'react-router-dom';
+import { useParams,useNavigate } from 'react-router-dom';
 import { useGetAppointmentedPaymentInfoQuery } from '../../../redux/api/appointmentApi';
 import moment from 'moment';
 import { Empty, Button } from 'antd';
 import Header from '../../Shared/Header/Header';
 import { useRef } from "react";
-import { FaPrint } from "react-icons/fa";
+import { FaArrowAltCircleLeft, FaPrint } from "react-icons/fa";
 import ReactToPrint from "react-to-print";
 
 const BookingInvoice = () => {
     const ref = useRef();
     const { id } = useParams();
     const { data, isLoading, isError } = useGetAppointmentedPaymentInfoQuery(id)
-console.log("data booking: ", data)
+// console.log("data booking: ", data)
     let content = null;
+    const navigate = useNavigate();
+    const handleClick = () => {
+        navigate('/admin/invoices');
+      };
     if (isLoading) content = <div>Loading ...</div>
     if (!isLoading && isError) content = <div>Something went Wrong!</div>
     if (!isLoading && !isError && !data) content = <Empty />
@@ -135,7 +139,18 @@ console.log("data booking: ", data)
         <>
             <Header />
             <div className="content" style={{ marginBottom: '7rem', marginTop:'10rem' }}>
+            <div className="d-flex justify-content-start"  style={{ marginLeft: "8rem" }}>
+            <Button
+              type="primary"
+              icon={<FaArrowAltCircleLeft />}
+              size="medium"
+              onClick={handleClick}
+            >
+              Back
+            </Button>
+          </div>
                 <div className="d-flex justify-content-end mb-4" style={{ marginRight: '8rem' }}>
+                    
                     <ReactToPrint
                         bodyClass="print-agreement"
                         content={() => ref.current}

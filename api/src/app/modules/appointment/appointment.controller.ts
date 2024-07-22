@@ -138,6 +138,17 @@ const getDoctorInvoices = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+// Get all invoices
+const getInvoices = catchAsync(async (req: Request, res: Response) => {
+    const result = await AppointmentService.getInvoices();
+    sendResponse(res, {
+        statusCode: 200,
+        message: "Successfully retrieved all invoices",
+        data: result,
+        success: false
+    });
+  });
+
 export const AppointmentController = {
     getDoctorAppointmentsById,
     updateAppointmentByDoctor,
@@ -151,7 +162,8 @@ export const AppointmentController = {
     getPaymentInfoViaAppintmentId,
     getPatientPaymentInfo,
     getDoctorInvoices,
-    getAppointmentByTrackingId
+    getAppointmentByTrackingId,
+    getInvoices
 }
 
 

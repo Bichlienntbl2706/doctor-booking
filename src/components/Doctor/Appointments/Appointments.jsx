@@ -264,7 +264,7 @@ const Appointments = () => {
     const { data, isError, isLoading } = useGetDoctorAppointmentsQuery({});
     const [updateAppointment, { isError: updateIsError, isSuccess, error }] = useUpdateAppointmentMutation();
     const [currentPage, setCurrentPage] = useState(1);
-    const [appointmentsPerPage] = useState(3); // Number of appointments per page
+    const [appointmentsPerPage] = useState(5); // Number of appointments per page
 
     console.log("data appointment: ", data);
     
@@ -363,14 +363,17 @@ const Appointments = () => {
                         </div>
                     ))
                 }
-                <Pagination
+                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                 <Pagination
                     current={currentPage}
                     pageSize={appointmentsPerPage}
                     total={filteredData.length}
                     onChange={(page) => setCurrentPage(page)}
-                    showSizeChanger={false} // Optional: Hide size changer
-                    showQuickJumper
+                    showSizeChanger={true} // Optional: Hide size changer
+                    // showQuickJumper
                 />
+                 </div>
+               
             </>
     }
 

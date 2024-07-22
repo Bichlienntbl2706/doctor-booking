@@ -5,7 +5,7 @@ const DashboardLayout = ({ children }) => {
 	return (
 		<>
 			<Header />
-			<div className="container-fluid" style={{marginTop:160, marginBottom:200}}>
+			<div className="container-fluid" style={{marginTop:120, marginBottom:100}}>
 				<div className="row">
 					<div className="col-md-5 col-lg-4 col-xl-3">
 						<DashboardSidebar />

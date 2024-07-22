@@ -69,6 +69,10 @@ const DoctorProfileSetting = () => {
     const onChange = (date, dateString) => { 
         setDate(moment(dateString).format());
     };
+    const disabledDate = (current) => {
+        // Disable future dates
+        return current && current > moment().endOf('day');
+    };
 
     const onSubmit = (data) => {
         const obj = data;
@@ -155,7 +159,7 @@ const DoctorProfileSetting = () => {
                     <div className="col-md-6">
                         <div className="form-group mb-2 card-label">
                             <label>Date of Birth {data?.dob && moment(data.dob).format('LL')}</label>
-                            <DatePicker onChange={onChange} value={date ? moment(date) : null} format={"YYYY-MM-DD"} style={{ width: '100%', padding: '6px' }} />
+                            <DatePicker onChange={onChange} value={date ? moment(date) : null} format={"YYYY-MM-DD"} style={{ width: '100%', padding: '6px' }} disabledDate={disabledDate} />
                         </div>
                     </div>
 

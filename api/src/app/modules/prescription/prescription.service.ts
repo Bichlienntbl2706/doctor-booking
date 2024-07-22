@@ -318,8 +318,8 @@ const getPrescriptionById = async (id: string): Promise<any | null> => {
     
     const result = await Prescription.findById(id)
         .populate('appointmentId', 'scheduleDate scheduleTime status trackingId patientType description prescriptionStatus paymentStatus')
-        .populate('doctorId', 'firstName lastName designation email college address country state specialization')
-        .populate('patientId', 'firstName lastName gender dateOfBirth email bloodGroup address img city country weight mobile');
+        .populate('doctorId', 'firstName lastName designation email college address country state specialization ')
+        .populate('patientId', 'firstName lastName gender dateOfBirth email bloodGroup address img city country weight mobile ');
 
     
     if (result) {
@@ -356,7 +356,7 @@ const getPatientPrescriptionById = async (user: any): Promise<IPrescription[] | 
     }
     console.log("PatientId", {patientId: user})
     const result = await Prescription.find({ patientId: user.patientId })
-        .populate('doctorId', 'firstName lastName designation')
+        .populate('doctorId', 'firstName lastName designation img')
         .populate('appointmentId', 'scheduleDate scheduleTime status trackingId');
     
     console.log(result); 
